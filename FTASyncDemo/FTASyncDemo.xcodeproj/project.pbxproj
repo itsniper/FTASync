@@ -1,0 +1,675 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		8B6D39F715283B2400B296D6 /* Mogenerator */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 8B6D39F815283B2400B296D6 /* Build configuration list for PBXAggregateTarget "Mogenerator" */;
+			buildPhases = (
+				8B6D39FB15283B4C00B296D6 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Mogenerator;
+			productName = Mogenerator;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		8B6D397D15282F1800B296D6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D397C15282F1800B296D6 /* UIKit.framework */; };
+		8B6D397F15282F1800B296D6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D397E15282F1800B296D6 /* Foundation.framework */; };
+		8B6D398115282F1800B296D6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D398015282F1800B296D6 /* CoreGraphics.framework */; };
+		8B6D398715282F1800B296D6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B6D398515282F1800B296D6 /* InfoPlist.strings */; };
+		8B6D398915282F1800B296D6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D398815282F1800B296D6 /* main.m */; };
+		8B6D398D15282F1800B296D6 /* FTAAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D398C15282F1800B296D6 /* FTAAppDelegate.m */; };
+		8B6D399B15282F1800B296D6 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D399A15282F1800B296D6 /* SenTestingKit.framework */; };
+		8B6D399C15282F1800B296D6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D397C15282F1800B296D6 /* UIKit.framework */; };
+		8B6D399D15282F1800B296D6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D397E15282F1800B296D6 /* Foundation.framework */; };
+		8B6D39A515282F1800B296D6 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 8B6D39A315282F1800B296D6 /* InfoPlist.strings */; };
+		8B6D39A815282F1800B296D6 /* FTASyncDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39A715282F1800B296D6 /* FTASyncDemoTests.m */; };
+		8B6D39B21528313900B296D6 /* DefaultPrefs.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8B6D39B11528313900B296D6 /* DefaultPrefs.plist */; };
+		8B6D39DA152836E500B296D6 /* NSAttributeDescription+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39BC152836E500B296D6 /* NSAttributeDescription+MagicalDataImport.m */; };
+		8B6D39DB152836E500B296D6 /* NSEntityDescription+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39BE152836E500B296D6 /* NSEntityDescription+MagicalDataImport.m */; };
+		8B6D39DC152836E500B296D6 /* NSNumber+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39C0152836E500B296D6 /* NSNumber+MagicalDataImport.m */; };
+		8B6D39DD152836E500B296D6 /* NSObject+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39C2152836E500B296D6 /* NSObject+MagicalDataImport.m */; };
+		8B6D39DE152836E500B296D6 /* NSRelationshipDescription+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39C4152836E500B296D6 /* NSRelationshipDescription+MagicalDataImport.m */; };
+		8B6D39DF152836E500B296D6 /* NSString+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39C6152836E500B296D6 /* NSString+MagicalDataImport.m */; };
+		8B6D39E0152836E500B296D6 /* NSManagedObject+MagicalDataImport.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39C8152836E500B296D6 /* NSManagedObject+MagicalDataImport.m */; };
+		8B6D39E1152836E500B296D6 /* NSManagedObject+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39CA152836E500B296D6 /* NSManagedObject+MagicalRecord.m */; };
+		8B6D39E2152836E500B296D6 /* NSManagedObjectContext+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39CC152836E500B296D6 /* NSManagedObjectContext+MagicalRecord.m */; };
+		8B6D39E3152836E500B296D6 /* NSManagedObjectModel+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39CE152836E500B296D6 /* NSManagedObjectModel+MagicalRecord.m */; };
+		8B6D39E4152836E500B296D6 /* NSPersistentStore+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39D0152836E500B296D6 /* NSPersistentStore+MagicalRecord.m */; };
+		8B6D39E5152836E500B296D6 /* NSPersistentStoreCoordinator+MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39D2152836E500B296D6 /* NSPersistentStoreCoordinator+MagicalRecord.m */; };
+		8B6D39E6152836E500B296D6 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 8B6D39D4152836E500B296D6 /* LICENSE */; };
+		8B6D39E7152836E500B296D6 /* MagicalRecordHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39D6152836E500B296D6 /* MagicalRecordHelpers.m */; };
+		8B6D39E8152836E500B296D6 /* MRCoreDataAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39D9152836E500B296D6 /* MRCoreDataAction.m */; };
+		8B6D39EE1528379F00B296D6 /* FTASyncDemo.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39EC1528379F00B296D6 /* FTASyncDemo.xcdatamodeld */; };
+		8B6D3A0115283DFC00B296D6 /* _ToDoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39FE15283DFC00B296D6 /* _ToDoItem.m */; };
+		8B6D3A0215283DFC00B296D6 /* ToDoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A0015283DFC00B296D6 /* ToDoItem.m */; };
+		8B6D3A0415283F3E00B296D6 /* FTAMainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B6D3A0315283F3E00B296D6 /* FTAMainWindow.xib */; };
+		8B6D3A0C152840ED00B296D6 /* FTASetupTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A0B152840EC00B296D6 /* FTASetupTableViewController.m */; };
+		8B6D3A101528447800B296D6 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D3A0F1528447800B296D6 /* CoreData.framework */; };
+		8B6D3A1B152848AF00B296D6 /* FTAToDoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A1A152848AE00B296D6 /* FTAToDoTableViewController.m */; };
+		8B6D3A1F1528498000B296D6 /* FTAToDoDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A1D1528497F00B296D6 /* FTAToDoDetailViewController.m */; };
+		8B6D3A201528498000B296D6 /* FTAToDoDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B6D3A1E1528498000B296D6 /* FTAToDoDetailViewController.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		8B6D399E15282F1800B296D6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B6D396F15282F1700B296D6 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B6D397715282F1700B296D6;
+			remoteInfo = FTASyncDemo;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		8B6D397815282F1700B296D6 /* FTASyncDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FTASyncDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B6D397C15282F1800B296D6 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		8B6D397E15282F1800B296D6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		8B6D398015282F1800B296D6 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		8B6D398415282F1800B296D6 /* FTASyncDemo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FTASyncDemo-Info.plist"; sourceTree = "<group>"; };
+		8B6D398615282F1800B296D6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		8B6D398815282F1800B296D6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		8B6D398A15282F1800B296D6 /* FTASyncDemo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "FTASyncDemo-Prefix.pch"; sourceTree = "<group>"; };
+		8B6D398B15282F1800B296D6 /* FTAAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTAAppDelegate.h; sourceTree = "<group>"; };
+		8B6D398C15282F1800B296D6 /* FTAAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTAAppDelegate.m; sourceTree = "<group>"; };
+		8B6D399915282F1800B296D6 /* FTASyncDemoTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FTASyncDemoTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8B6D399A15282F1800B296D6 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		8B6D39A215282F1800B296D6 /* FTASyncDemoTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "FTASyncDemoTests-Info.plist"; sourceTree = "<group>"; };
+		8B6D39A415282F1800B296D6 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		8B6D39A615282F1800B296D6 /* FTASyncDemoTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FTASyncDemoTests.h; sourceTree = "<group>"; };
+		8B6D39A715282F1800B296D6 /* FTASyncDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FTASyncDemoTests.m; sourceTree = "<group>"; };
+		8B6D39B11528313900B296D6 /* DefaultPrefs.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = DefaultPrefs.plist; sourceTree = "<group>"; };
+		8B6D39BB152836E500B296D6 /* NSAttributeDescription+MagicalDataImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSAttributeDescription+MagicalDataImport.h"; sourceTree = "<group>"; };
+		8B6D39BC152836E500B296D6 /* NSAttributeDescription+MagicalDataImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSAttributeDescription+MagicalDataImport.m"; sourceTree = "<group>"; };
+		8B6D39BD152836E500B296D6 /* NSEntityDescription+MagicalDataImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSEntityDescription+MagicalDataImport.h"; sourceTree = "<group>"; };
+		8B6D39BE152836E500B296D6 /* NSEntityDescription+MagicalDataImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSEntityDescription+MagicalDataImport.m"; sourceTree = "<group>"; };
+		8B6D39BF152836E500B296D6 /* NSNumber+MagicalDataImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNumber+MagicalDataImport.h"; sourceTree = "<group>"; };
+		8B6D39C0152836E500B296D6 /* NSNumber+MagicalDataImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNumber+MagicalDataImport.m"; sourceTree = "<group>"; };
+		8B6D39C1152836E500B296D6 /* NSObject+MagicalDataImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+MagicalDataImport.h"; sourceTree = "<group>"; };
+		8B6D39C2152836E500B296D6 /* NSObject+MagicalDataImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+MagicalDataImport.m"; sourceTree = "<group>"; };
+		8B6D39C3152836E500B296D6 /* NSRelationshipDescription+MagicalDataImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSRelationshipDescription+MagicalDataImport.h"; sourceTree = "<group>"; };
+		8B6D39C4152836E500B296D6 /* NSRelationshipDescription+MagicalDataImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSRelationshipDescription+MagicalDataImport.m"; sourceTree = "<group>"; };
+		8B6D39C5152836E500B296D6 /* NSString+MagicalDataImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MagicalDataImport.h"; sourceTree = "<group>"; };
+		8B6D39C6152836E500B296D6 /* NSString+MagicalDataImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MagicalDataImport.m"; sourceTree = "<group>"; };
+		8B6D39C7152836E500B296D6 /* NSManagedObject+MagicalDataImport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+MagicalDataImport.h"; sourceTree = "<group>"; };
+		8B6D39C8152836E500B296D6 /* NSManagedObject+MagicalDataImport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+MagicalDataImport.m"; sourceTree = "<group>"; };
+		8B6D39C9152836E500B296D6 /* NSManagedObject+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+MagicalRecord.h"; sourceTree = "<group>"; };
+		8B6D39CA152836E500B296D6 /* NSManagedObject+MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+MagicalRecord.m"; sourceTree = "<group>"; };
+		8B6D39CB152836E500B296D6 /* NSManagedObjectContext+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectContext+MagicalRecord.h"; sourceTree = "<group>"; };
+		8B6D39CC152836E500B296D6 /* NSManagedObjectContext+MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectContext+MagicalRecord.m"; sourceTree = "<group>"; };
+		8B6D39CD152836E500B296D6 /* NSManagedObjectModel+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObjectModel+MagicalRecord.h"; sourceTree = "<group>"; };
+		8B6D39CE152836E500B296D6 /* NSManagedObjectModel+MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObjectModel+MagicalRecord.m"; sourceTree = "<group>"; };
+		8B6D39CF152836E500B296D6 /* NSPersistentStore+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSPersistentStore+MagicalRecord.h"; sourceTree = "<group>"; };
+		8B6D39D0152836E500B296D6 /* NSPersistentStore+MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSPersistentStore+MagicalRecord.m"; sourceTree = "<group>"; };
+		8B6D39D1152836E500B296D6 /* NSPersistentStoreCoordinator+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSPersistentStoreCoordinator+MagicalRecord.h"; sourceTree = "<group>"; };
+		8B6D39D2152836E500B296D6 /* NSPersistentStoreCoordinator+MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSPersistentStoreCoordinator+MagicalRecord.m"; sourceTree = "<group>"; };
+		8B6D39D3152836E500B296D6 /* CoreData+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CoreData+MagicalRecord.h"; sourceTree = "<group>"; };
+		8B6D39D4152836E500B296D6 /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		8B6D39D5152836E500B296D6 /* MagicalRecordHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagicalRecordHelpers.h; sourceTree = "<group>"; };
+		8B6D39D6152836E500B296D6 /* MagicalRecordHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagicalRecordHelpers.m; sourceTree = "<group>"; };
+		8B6D39D7152836E500B296D6 /* MagicalRecordShorthand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagicalRecordShorthand.h; sourceTree = "<group>"; };
+		8B6D39D8152836E500B296D6 /* MRCoreDataAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MRCoreDataAction.h; sourceTree = "<group>"; };
+		8B6D39D9152836E500B296D6 /* MRCoreDataAction.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MRCoreDataAction.m; sourceTree = "<group>"; };
+		8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FTASyncDemo.xcdatamodel; sourceTree = "<group>"; };
+		8B6D39FD15283DFC00B296D6 /* _ToDoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _ToDoItem.h; sourceTree = "<group>"; };
+		8B6D39FE15283DFC00B296D6 /* _ToDoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _ToDoItem.m; sourceTree = "<group>"; };
+		8B6D39FF15283DFC00B296D6 /* ToDoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToDoItem.h; sourceTree = "<group>"; };
+		8B6D3A0015283DFC00B296D6 /* ToDoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToDoItem.m; sourceTree = "<group>"; };
+		8B6D3A0315283F3E00B296D6 /* FTAMainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FTAMainWindow.xib; sourceTree = "<group>"; };
+		8B6D3A0A152840EC00B296D6 /* FTASetupTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASetupTableViewController.h; sourceTree = "<group>"; };
+		8B6D3A0B152840EC00B296D6 /* FTASetupTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASetupTableViewController.m; sourceTree = "<group>"; };
+		8B6D3A0F1528447800B296D6 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		8B6D3A19152848AE00B296D6 /* FTAToDoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAToDoTableViewController.h; sourceTree = "<group>"; };
+		8B6D3A1A152848AE00B296D6 /* FTAToDoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAToDoTableViewController.m; sourceTree = "<group>"; };
+		8B6D3A1C1528497E00B296D6 /* FTAToDoDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAToDoDetailViewController.h; sourceTree = "<group>"; };
+		8B6D3A1D1528497F00B296D6 /* FTAToDoDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAToDoDetailViewController.m; sourceTree = "<group>"; };
+		8B6D3A1E1528498000B296D6 /* FTAToDoDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FTAToDoDetailViewController.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8B6D397515282F1700B296D6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B6D397D15282F1800B296D6 /* UIKit.framework in Frameworks */,
+				8B6D397F15282F1800B296D6 /* Foundation.framework in Frameworks */,
+				8B6D398115282F1800B296D6 /* CoreGraphics.framework in Frameworks */,
+				8B6D3A101528447800B296D6 /* CoreData.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8B6D399515282F1800B296D6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B6D399B15282F1800B296D6 /* SenTestingKit.framework in Frameworks */,
+				8B6D399C15282F1800B296D6 /* UIKit.framework in Frameworks */,
+				8B6D399D15282F1800B296D6 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		8B6D396D15282F1700B296D6 = {
+			isa = PBXGroup;
+			children = (
+				8B6D398215282F1800B296D6 /* FTASyncDemo */,
+				8B6D39A015282F1800B296D6 /* FTASyncDemoTests */,
+				8B6D397B15282F1700B296D6 /* Frameworks */,
+				8B6D397915282F1700B296D6 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		8B6D397915282F1700B296D6 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D397815282F1700B296D6 /* FTASyncDemo.app */,
+				8B6D399915282F1800B296D6 /* FTASyncDemoTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		8B6D397B15282F1700B296D6 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D3A0F1528447800B296D6 /* CoreData.framework */,
+				8B6D397C15282F1800B296D6 /* UIKit.framework */,
+				8B6D397E15282F1800B296D6 /* Foundation.framework */,
+				8B6D398015282F1800B296D6 /* CoreGraphics.framework */,
+				8B6D399A15282F1800B296D6 /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		8B6D398215282F1800B296D6 /* FTASyncDemo */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D39EB1528373F00B296D6 /* Data */,
+				8B6D39B7152836E500B296D6 /* OpenSource */,
+				8B6D398B15282F1800B296D6 /* FTAAppDelegate.h */,
+				8B6D398C15282F1800B296D6 /* FTAAppDelegate.m */,
+				8B6D3A0315283F3E00B296D6 /* FTAMainWindow.xib */,
+				8B6D3A0A152840EC00B296D6 /* FTASetupTableViewController.h */,
+				8B6D3A0B152840EC00B296D6 /* FTASetupTableViewController.m */,
+				8B6D3A19152848AE00B296D6 /* FTAToDoTableViewController.h */,
+				8B6D3A1A152848AE00B296D6 /* FTAToDoTableViewController.m */,
+				8B6D3A1C1528497E00B296D6 /* FTAToDoDetailViewController.h */,
+				8B6D3A1D1528497F00B296D6 /* FTAToDoDetailViewController.m */,
+				8B6D3A1E1528498000B296D6 /* FTAToDoDetailViewController.xib */,
+				8B6D398315282F1800B296D6 /* Supporting Files */,
+			);
+			path = FTASyncDemo;
+			sourceTree = "<group>";
+		};
+		8B6D398315282F1800B296D6 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D398415282F1800B296D6 /* FTASyncDemo-Info.plist */,
+				8B6D398515282F1800B296D6 /* InfoPlist.strings */,
+				8B6D398815282F1800B296D6 /* main.m */,
+				8B6D398A15282F1800B296D6 /* FTASyncDemo-Prefix.pch */,
+				8B6D39B11528313900B296D6 /* DefaultPrefs.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8B6D39A015282F1800B296D6 /* FTASyncDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D39A615282F1800B296D6 /* FTASyncDemoTests.h */,
+				8B6D39A715282F1800B296D6 /* FTASyncDemoTests.m */,
+				8B6D39A115282F1800B296D6 /* Supporting Files */,
+			);
+			path = FTASyncDemoTests;
+			sourceTree = "<group>";
+		};
+		8B6D39A115282F1800B296D6 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D39A215282F1800B296D6 /* FTASyncDemoTests-Info.plist */,
+				8B6D39A315282F1800B296D6 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		8B6D39B7152836E500B296D6 /* OpenSource */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D39B8152836E500B296D6 /* MagicalRecord */,
+			);
+			path = OpenSource;
+			sourceTree = "<group>";
+		};
+		8B6D39B8152836E500B296D6 /* MagicalRecord */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D39B9152836E500B296D6 /* Categories */,
+				8B6D39D3152836E500B296D6 /* CoreData+MagicalRecord.h */,
+				8B6D39D4152836E500B296D6 /* LICENSE */,
+				8B6D39D5152836E500B296D6 /* MagicalRecordHelpers.h */,
+				8B6D39D6152836E500B296D6 /* MagicalRecordHelpers.m */,
+				8B6D39D7152836E500B296D6 /* MagicalRecordShorthand.h */,
+				8B6D39D8152836E500B296D6 /* MRCoreDataAction.h */,
+				8B6D39D9152836E500B296D6 /* MRCoreDataAction.m */,
+			);
+			path = MagicalRecord;
+			sourceTree = "<group>";
+		};
+		8B6D39B9152836E500B296D6 /* Categories */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D39BA152836E500B296D6 /* DataImport */,
+				8B6D39C7152836E500B296D6 /* NSManagedObject+MagicalDataImport.h */,
+				8B6D39C8152836E500B296D6 /* NSManagedObject+MagicalDataImport.m */,
+				8B6D39C9152836E500B296D6 /* NSManagedObject+MagicalRecord.h */,
+				8B6D39CA152836E500B296D6 /* NSManagedObject+MagicalRecord.m */,
+				8B6D39CB152836E500B296D6 /* NSManagedObjectContext+MagicalRecord.h */,
+				8B6D39CC152836E500B296D6 /* NSManagedObjectContext+MagicalRecord.m */,
+				8B6D39CD152836E500B296D6 /* NSManagedObjectModel+MagicalRecord.h */,
+				8B6D39CE152836E500B296D6 /* NSManagedObjectModel+MagicalRecord.m */,
+				8B6D39CF152836E500B296D6 /* NSPersistentStore+MagicalRecord.h */,
+				8B6D39D0152836E500B296D6 /* NSPersistentStore+MagicalRecord.m */,
+				8B6D39D1152836E500B296D6 /* NSPersistentStoreCoordinator+MagicalRecord.h */,
+				8B6D39D2152836E500B296D6 /* NSPersistentStoreCoordinator+MagicalRecord.m */,
+			);
+			path = Categories;
+			sourceTree = "<group>";
+		};
+		8B6D39BA152836E500B296D6 /* DataImport */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D39BB152836E500B296D6 /* NSAttributeDescription+MagicalDataImport.h */,
+				8B6D39BC152836E500B296D6 /* NSAttributeDescription+MagicalDataImport.m */,
+				8B6D39BD152836E500B296D6 /* NSEntityDescription+MagicalDataImport.h */,
+				8B6D39BE152836E500B296D6 /* NSEntityDescription+MagicalDataImport.m */,
+				8B6D39BF152836E500B296D6 /* NSNumber+MagicalDataImport.h */,
+				8B6D39C0152836E500B296D6 /* NSNumber+MagicalDataImport.m */,
+				8B6D39C1152836E500B296D6 /* NSObject+MagicalDataImport.h */,
+				8B6D39C2152836E500B296D6 /* NSObject+MagicalDataImport.m */,
+				8B6D39C3152836E500B296D6 /* NSRelationshipDescription+MagicalDataImport.h */,
+				8B6D39C4152836E500B296D6 /* NSRelationshipDescription+MagicalDataImport.m */,
+				8B6D39C5152836E500B296D6 /* NSString+MagicalDataImport.h */,
+				8B6D39C6152836E500B296D6 /* NSString+MagicalDataImport.m */,
+			);
+			path = DataImport;
+			sourceTree = "<group>";
+		};
+		8B6D39EB1528373F00B296D6 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				8B6D39EC1528379F00B296D6 /* FTASyncDemo.xcdatamodeld */,
+				8B6D39FD15283DFC00B296D6 /* _ToDoItem.h */,
+				8B6D39FE15283DFC00B296D6 /* _ToDoItem.m */,
+				8B6D39FF15283DFC00B296D6 /* ToDoItem.h */,
+				8B6D3A0015283DFC00B296D6 /* ToDoItem.m */,
+			);
+			name = Data;
+			path = DataClasses;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8B6D397715282F1700B296D6 /* FTASyncDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8B6D39AB15282F1800B296D6 /* Build configuration list for PBXNativeTarget "FTASyncDemo" */;
+			buildPhases = (
+				8B6D397415282F1700B296D6 /* Sources */,
+				8B6D397515282F1700B296D6 /* Frameworks */,
+				8B6D397615282F1700B296D6 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FTASyncDemo;
+			productName = FTASyncDemo;
+			productReference = 8B6D397815282F1700B296D6 /* FTASyncDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		8B6D399815282F1800B296D6 /* FTASyncDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8B6D39AE15282F1800B296D6 /* Build configuration list for PBXNativeTarget "FTASyncDemoTests" */;
+			buildPhases = (
+				8B6D399415282F1800B296D6 /* Sources */,
+				8B6D399515282F1800B296D6 /* Frameworks */,
+				8B6D399615282F1800B296D6 /* Resources */,
+				8B6D399715282F1800B296D6 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8B6D399F15282F1800B296D6 /* PBXTargetDependency */,
+			);
+			name = FTASyncDemoTests;
+			productName = FTASyncDemoTests;
+			productReference = 8B6D399915282F1800B296D6 /* FTASyncDemoTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		8B6D396F15282F1700B296D6 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = "Five3 Apps";
+			};
+			buildConfigurationList = 8B6D397215282F1700B296D6 /* Build configuration list for PBXProject "FTASyncDemo" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 8B6D396D15282F1700B296D6;
+			productRefGroup = 8B6D397915282F1700B296D6 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8B6D397715282F1700B296D6 /* FTASyncDemo */,
+				8B6D399815282F1800B296D6 /* FTASyncDemoTests */,
+				8B6D39F715283B2400B296D6 /* Mogenerator */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		8B6D397615282F1700B296D6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B6D398715282F1800B296D6 /* InfoPlist.strings in Resources */,
+				8B6D39B21528313900B296D6 /* DefaultPrefs.plist in Resources */,
+				8B6D39E6152836E500B296D6 /* LICENSE in Resources */,
+				8B6D3A0415283F3E00B296D6 /* FTAMainWindow.xib in Resources */,
+				8B6D3A201528498000B296D6 /* FTAToDoDetailViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8B6D399615282F1800B296D6 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B6D39A515282F1800B296D6 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		8B6D399715282F1800B296D6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+		8B6D39FB15283B4C00B296D6 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd FTASyncDemo\nmogenerator -m DataClasses/FTASyncDemo.xcdatamodeld/FTASyncDemo.xcdatamodel/ --output-dir DataClasses/ --template-var arc=true";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8B6D397415282F1700B296D6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B6D398915282F1800B296D6 /* main.m in Sources */,
+				8B6D398D15282F1800B296D6 /* FTAAppDelegate.m in Sources */,
+				8B6D39DA152836E500B296D6 /* NSAttributeDescription+MagicalDataImport.m in Sources */,
+				8B6D39DB152836E500B296D6 /* NSEntityDescription+MagicalDataImport.m in Sources */,
+				8B6D39DC152836E500B296D6 /* NSNumber+MagicalDataImport.m in Sources */,
+				8B6D39DD152836E500B296D6 /* NSObject+MagicalDataImport.m in Sources */,
+				8B6D39DE152836E500B296D6 /* NSRelationshipDescription+MagicalDataImport.m in Sources */,
+				8B6D39DF152836E500B296D6 /* NSString+MagicalDataImport.m in Sources */,
+				8B6D39E0152836E500B296D6 /* NSManagedObject+MagicalDataImport.m in Sources */,
+				8B6D39E1152836E500B296D6 /* NSManagedObject+MagicalRecord.m in Sources */,
+				8B6D39E2152836E500B296D6 /* NSManagedObjectContext+MagicalRecord.m in Sources */,
+				8B6D39E3152836E500B296D6 /* NSManagedObjectModel+MagicalRecord.m in Sources */,
+				8B6D39E4152836E500B296D6 /* NSPersistentStore+MagicalRecord.m in Sources */,
+				8B6D39E5152836E500B296D6 /* NSPersistentStoreCoordinator+MagicalRecord.m in Sources */,
+				8B6D39E7152836E500B296D6 /* MagicalRecordHelpers.m in Sources */,
+				8B6D39E8152836E500B296D6 /* MRCoreDataAction.m in Sources */,
+				8B6D39EE1528379F00B296D6 /* FTASyncDemo.xcdatamodeld in Sources */,
+				8B6D3A0115283DFC00B296D6 /* _ToDoItem.m in Sources */,
+				8B6D3A0215283DFC00B296D6 /* ToDoItem.m in Sources */,
+				8B6D3A0C152840ED00B296D6 /* FTASetupTableViewController.m in Sources */,
+				8B6D3A1B152848AF00B296D6 /* FTAToDoTableViewController.m in Sources */,
+				8B6D3A1F1528498000B296D6 /* FTAToDoDetailViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8B6D399415282F1800B296D6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8B6D39A815282F1800B296D6 /* FTASyncDemoTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		8B6D399F15282F1800B296D6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8B6D397715282F1700B296D6 /* FTASyncDemo */;
+			targetProxy = 8B6D399E15282F1800B296D6 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		8B6D398515282F1800B296D6 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8B6D398615282F1800B296D6 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		8B6D39A315282F1800B296D6 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				8B6D39A415282F1800B296D6 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		8B6D39A915282F1800B296D6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		8B6D39AA15282F1800B296D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		8B6D39AC15282F1800B296D6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
+				INFOPLIST_FILE = "FTASyncDemo/FTASyncDemo-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		8B6D39AD15282F1800B296D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
+				INFOPLIST_FILE = "FTASyncDemo/FTASyncDemo-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+		8B6D39AF15282F1800B296D6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/FTASyncDemo.app/FTASyncDemo";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
+				INFOPLIST_FILE = "FTASyncDemoTests/FTASyncDemoTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		8B6D39B015282F1800B296D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(BUILT_PRODUCTS_DIR)/FTASyncDemo.app/FTASyncDemo";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
+				INFOPLIST_FILE = "FTASyncDemoTests/FTASyncDemoTests-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUNDLE_LOADER)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+		8B6D39F915283B2400B296D6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		8B6D39FA15283B2400B296D6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		8B6D397215282F1700B296D6 /* Build configuration list for PBXProject "FTASyncDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B6D39A915282F1800B296D6 /* Debug */,
+				8B6D39AA15282F1800B296D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8B6D39AB15282F1800B296D6 /* Build configuration list for PBXNativeTarget "FTASyncDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B6D39AC15282F1800B296D6 /* Debug */,
+				8B6D39AD15282F1800B296D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8B6D39AE15282F1800B296D6 /* Build configuration list for PBXNativeTarget "FTASyncDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B6D39AF15282F1800B296D6 /* Debug */,
+				8B6D39B015282F1800B296D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8B6D39F815283B2400B296D6 /* Build configuration list for PBXAggregateTarget "Mogenerator" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8B6D39F915283B2400B296D6 /* Debug */,
+				8B6D39FA15283B2400B296D6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		8B6D39EC1528379F00B296D6 /* FTASyncDemo.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */,
+			);
+			currentVersion = 8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */;
+			path = FTASyncDemo.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
+	};
+	rootObject = 8B6D396F15282F1700B296D6 /* Project object */;
+}
