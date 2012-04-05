@@ -2,7 +2,7 @@
 // Make changes to ToDoItem.h instead.
 
 #import <CoreData/CoreData.h>
-
+#import "FTASyncParent.h"
 
 extern const struct ToDoItemAttributes {
 	__unsafe_unretained NSString *name;
@@ -22,7 +22,7 @@ extern const struct ToDoItemFetchedProperties {
 @interface ToDoItemID : NSManagedObjectID {}
 @end
 
-@interface _ToDoItem : NSManagedObject {}
+@interface _ToDoItem : FTASyncParent {}
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_;
 + (NSString*)entityName;
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_;

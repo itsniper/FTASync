@@ -1,0 +1,32 @@
+# FTASync
+
+Allows you to sync CoreData entities with a Parse backend. 
+
+# Requires
+
+* [Magical Record](https://github.com/magicalpanda/MagicalRecord) - Easier handling of the CoreData stuff. May remove this at some point.
+* [Parse SDK](https://www.parse.com/apps/quickstart)
+
+# Installation
+
+1. Add a new data model version.
+2. Add a new *abstract* entity to the data model and name it (and it's class name) FTASyncParent. Add the following attributes:
+    * BOOL createdHere (Default: YES)
+    * BOOL deleted (Default: NO)
+    * String objectId
+    * Int16 syncStatus (Default: 2)
+    * Date updatedAt
+3. For each entity that should sync, set the parent entity field to FTASyncParent.
+4. In your XCode Project, add all the .h and .m files from the *Source* folder into your project.
+5. Add *FTASync.h* to your AppDelegate file.
+6. Add `[FTASyncHandler sharedInstance];` to the `- (BOOL)application:didFinishLaunchingWithOptions:' method in your AppDelegate.
+
+# Usage
+
+## Sync all entities
+
+Simply add *FTASync.h* and call `[[FTASyncHandler sharedInstance] syncAll];`.
+
+## Sync a specific entity
+
+Simply add *FTASync.h* and call `[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"EntityName" inManagedObjectContext:[NSManagedObjectContext MR_context]]];` replacing "EntityName" with the entity to sync.

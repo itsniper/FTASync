@@ -8,6 +8,7 @@
 
 #import "FTAToDoTableViewController.h"
 #import "ToDoItem.h"
+#import "FTASync.h"
 
 @interface FTAToDoTableViewController ()
 @property (strong, nonatomic, readwrite) FTAToDoDetailViewController *detailViewController;
@@ -45,6 +46,7 @@
 {
     [super viewDidLoad];
 
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(syncToDo)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addToDo)];
     
     self.title = NSLocalizedString(@"ToDo", @"");    
@@ -116,8 +118,12 @@
     NSLog(@"%@", @"INSERT");
     [self.detailViewController setCurrentToDo:nil];
     [self.navigationController pushViewController:self.detailViewController animated:YES];
-    
+}
+
+- (void)syncToDo {
+    NSLog(@"SYNCING");
     //[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"Reward" inManagedObjectContext:[NSManagedObjectContext MR_context]]];
+    [[FTASyncHandler sharedInstance] syncAll];
 }
 
 #pragma mark - Table view data source

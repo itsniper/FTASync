@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="872" systemVersion="10K549" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="ToDoItem" representedClassName="ToDoItem" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="priority" optional="YES" attributeType="Integer 16" minValueString="0" maxValueString="10" defaultValueString="1" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="ToDoItem" positionX="160" positionY="192" width="128" height="75"/>
+    </elements>
+</model>

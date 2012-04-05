@@ -15,5 +15,6 @@
 @property (strong, nonatomic, readonly) FTAToDoDetailViewController *detailViewController;
 
 - (void)addToDo;
+- (void)syncToDo;
 
 @end

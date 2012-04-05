@@ -9,6 +9,8 @@
 #import "FTAAppDelegate.h"
 #import "FTAToDoTableViewController.h"
 #import "FTASetupTableViewController.h"
+#import <Parse/Parse.h>
+#import "FTASync.h"
 
 
 @implementation FTAAppDelegate
@@ -23,6 +25,12 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"DefaultPrefs" ofType:@"plist"]]];
     
     [MagicalRecordHelpers setupAutoMigratingCoreDataStack];
+    
+    [Parse setApplicationId:@"XXXX" 
+                  clientKey:@"XXXX"];
+    
+    //Need to make sure FTASyncHandler gets initialized immediately so it's registered for notifications
+    [FTASyncHandler sharedInstance];
     
     self.window.rootViewController = self.tabBarController;
     

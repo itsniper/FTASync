@@ -21,6 +21,19 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		8B5AFC50152D1797000AF428 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC4F152D1797000AF428 /* Parse.framework */; };
+		8B5AFC52152D17C6000AF428 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC51152D17C6000AF428 /* AudioToolbox.framework */; };
+		8B5AFC54152D17D1000AF428 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC53152D17D1000AF428 /* CFNetwork.framework */; };
+		8B5AFC56152D17DD000AF428 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC55152D17DD000AF428 /* SystemConfiguration.framework */; };
+		8B5AFC58152D17E6000AF428 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC57152D17E6000AF428 /* MobileCoreServices.framework */; };
+		8B5AFC5A152D17FE000AF428 /* libz.1.1.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC59152D17FD000AF428 /* libz.1.1.3.dylib */; };
+		8B5AFC5C152D180D000AF428 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC5B152D180D000AF428 /* Security.framework */; };
+		8B5AFC5E152D181F000AF428 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC5D152D181F000AF428 /* QuartzCore.framework */; };
+		8B5AFC67152D2BD7000AF428 /* FTAParseSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC61152D2BD7000AF428 /* FTAParseSync.m */; };
+		8B5AFC68152D2BD7000AF428 /* FTASyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC64152D2BD7000AF428 /* FTASyncHandler.m */; };
+		8B5AFC69152D2BD7000AF428 /* NSManagedObject+FTAParseSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC66152D2BD7000AF428 /* NSManagedObject+FTAParseSync.m */; };
+		8B5AFC6E152D2EED000AF428 /* _FTASyncParent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC6B152D2EED000AF428 /* _FTASyncParent.m */; };
+		8B5AFC6F152D2EED000AF428 /* FTASyncParent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC6D152D2EED000AF428 /* FTASyncParent.m */; };
 		8B6D397D15282F1800B296D6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D397C15282F1800B296D6 /* UIKit.framework */; };
 		8B6D397F15282F1800B296D6 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D397E15282F1800B296D6 /* Foundation.framework */; };
 		8B6D398115282F1800B296D6 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D398015282F1800B296D6 /* CoreGraphics.framework */; };
@@ -70,6 +83,26 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B5AFC4F152D1797000AF428 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
+		8B5AFC51152D17C6000AF428 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		8B5AFC53152D17D1000AF428 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		8B5AFC55152D17DD000AF428 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		8B5AFC57152D17E6000AF428 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		8B5AFC59152D17FD000AF428 /* libz.1.1.3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.1.3.dylib; path = usr/lib/libz.1.1.3.dylib; sourceTree = SDKROOT; };
+		8B5AFC5B152D180D000AF428 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		8B5AFC5D152D181F000AF428 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		8B5AFC5F152D1BC4000AF428 /* FTASyncDemo1.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FTASyncDemo1.xcdatamodel; sourceTree = "<group>"; };
+		8B5AFC60152D2BD6000AF428 /* FTAParseSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAParseSync.h; sourceTree = "<group>"; };
+		8B5AFC61152D2BD7000AF428 /* FTAParseSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAParseSync.m; sourceTree = "<group>"; };
+		8B5AFC62152D2BD7000AF428 /* FTASync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASync.h; sourceTree = "<group>"; };
+		8B5AFC63152D2BD7000AF428 /* FTASyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASyncHandler.h; sourceTree = "<group>"; };
+		8B5AFC64152D2BD7000AF428 /* FTASyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASyncHandler.m; sourceTree = "<group>"; };
+		8B5AFC65152D2BD7000AF428 /* NSManagedObject+FTAParseSync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSManagedObject+FTAParseSync.h"; sourceTree = "<group>"; };
+		8B5AFC66152D2BD7000AF428 /* NSManagedObject+FTAParseSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSManagedObject+FTAParseSync.m"; sourceTree = "<group>"; };
+		8B5AFC6A152D2EED000AF428 /* _FTASyncParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _FTASyncParent.h; sourceTree = "<group>"; };
+		8B5AFC6B152D2EED000AF428 /* _FTASyncParent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _FTASyncParent.m; sourceTree = "<group>"; };
+		8B5AFC6C152D2EED000AF428 /* FTASyncParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASyncParent.h; sourceTree = "<group>"; };
+		8B5AFC6D152D2EED000AF428 /* FTASyncParent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASyncParent.m; sourceTree = "<group>"; };
 		8B6D397815282F1700B296D6 /* FTASyncDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FTASyncDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B6D397C15282F1800B296D6 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		8B6D397E15282F1800B296D6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -139,10 +172,18 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B5AFC5E152D181F000AF428 /* QuartzCore.framework in Frameworks */,
+				8B5AFC5C152D180D000AF428 /* Security.framework in Frameworks */,
+				8B5AFC5A152D17FE000AF428 /* libz.1.1.3.dylib in Frameworks */,
+				8B6D398115282F1800B296D6 /* CoreGraphics.framework in Frameworks */,
+				8B5AFC58152D17E6000AF428 /* MobileCoreServices.framework in Frameworks */,
+				8B5AFC56152D17DD000AF428 /* SystemConfiguration.framework in Frameworks */,
+				8B5AFC54152D17D1000AF428 /* CFNetwork.framework in Frameworks */,
+				8B5AFC52152D17C6000AF428 /* AudioToolbox.framework in Frameworks */,
 				8B6D397D15282F1800B296D6 /* UIKit.framework in Frameworks */,
 				8B6D397F15282F1800B296D6 /* Foundation.framework in Frameworks */,
-				8B6D398115282F1800B296D6 /* CoreGraphics.framework in Frameworks */,
 				8B6D3A101528447800B296D6 /* CoreData.framework in Frameworks */,
+				8B5AFC50152D1797000AF428 /* Parse.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,6 +200,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8B5AFC35152D137D000AF428 /* FTASync */ = {
+			isa = PBXGroup;
+			children = (
+				8B5AFC60152D2BD6000AF428 /* FTAParseSync.h */,
+				8B5AFC61152D2BD7000AF428 /* FTAParseSync.m */,
+				8B5AFC62152D2BD7000AF428 /* FTASync.h */,
+				8B5AFC63152D2BD7000AF428 /* FTASyncHandler.h */,
+				8B5AFC64152D2BD7000AF428 /* FTASyncHandler.m */,
+				8B5AFC65152D2BD7000AF428 /* NSManagedObject+FTAParseSync.h */,
+				8B5AFC66152D2BD7000AF428 /* NSManagedObject+FTAParseSync.m */,
+			);
+			name = FTASync;
+			path = ../../../Source;
+			sourceTree = "<group>";
+		};
 		8B6D396D15282F1700B296D6 = {
 			isa = PBXGroup;
 			children = (
@@ -181,6 +237,14 @@
 		8B6D397B15282F1700B296D6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				8B5AFC5D152D181F000AF428 /* QuartzCore.framework */,
+				8B5AFC5B152D180D000AF428 /* Security.framework */,
+				8B5AFC59152D17FD000AF428 /* libz.1.1.3.dylib */,
+				8B5AFC57152D17E6000AF428 /* MobileCoreServices.framework */,
+				8B5AFC55152D17DD000AF428 /* SystemConfiguration.framework */,
+				8B5AFC53152D17D1000AF428 /* CFNetwork.framework */,
+				8B5AFC51152D17C6000AF428 /* AudioToolbox.framework */,
+				8B5AFC4F152D1797000AF428 /* Parse.framework */,
 				8B6D3A0F1528447800B296D6 /* CoreData.framework */,
 				8B6D397C15282F1800B296D6 /* UIKit.framework */,
 				8B6D397E15282F1800B296D6 /* Foundation.framework */,
@@ -244,6 +308,7 @@
 		8B6D39B7152836E500B296D6 /* OpenSource */ = {
 			isa = PBXGroup;
 			children = (
+				8B5AFC35152D137D000AF428 /* FTASync */,
 				8B6D39B8152836E500B296D6 /* MagicalRecord */,
 			);
 			path = OpenSource;
@@ -307,10 +372,14 @@
 			isa = PBXGroup;
 			children = (
 				8B6D39EC1528379F00B296D6 /* FTASyncDemo.xcdatamodeld */,
+				8B5AFC6A152D2EED000AF428 /* _FTASyncParent.h */,
+				8B5AFC6B152D2EED000AF428 /* _FTASyncParent.m */,
 				8B6D39FD15283DFC00B296D6 /* _ToDoItem.h */,
 				8B6D39FE15283DFC00B296D6 /* _ToDoItem.m */,
 				8B6D39FF15283DFC00B296D6 /* ToDoItem.h */,
 				8B6D3A0015283DFC00B296D6 /* ToDoItem.m */,
+				8B5AFC6C152D2EED000AF428 /* FTASyncParent.h */,
+				8B5AFC6D152D2EED000AF428 /* FTASyncParent.m */,
 			);
 			name = Data;
 			path = DataClasses;
@@ -462,6 +531,11 @@
 				8B6D3A0C152840ED00B296D6 /* FTASetupTableViewController.m in Sources */,
 				8B6D3A1B152848AF00B296D6 /* FTAToDoTableViewController.m in Sources */,
 				8B6D3A1F1528498000B296D6 /* FTAToDoDetailViewController.m in Sources */,
+				8B5AFC67152D2BD7000AF428 /* FTAParseSync.m in Sources */,
+				8B5AFC68152D2BD7000AF428 /* FTASyncHandler.m in Sources */,
+				8B5AFC69152D2BD7000AF428 /* NSManagedObject+FTAParseSync.m in Sources */,
+				8B5AFC6E152D2EED000AF428 /* _FTASyncParent.m in Sources */,
+				8B5AFC6F152D2EED000AF428 /* FTASyncParent.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -551,10 +625,16 @@
 		8B6D39AC15282F1800B296D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Justin Bergen (R5573PNUK8)";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
 				INFOPLIST_FILE = "FTASyncDemo/FTASyncDemo-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "69CAB4E2-FBFC-4C22-87FD-7992D705F7E2";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -562,6 +642,10 @@
 		8B6D39AD15282F1800B296D6 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
 				INFOPLIST_FILE = "FTASyncDemo/FTASyncDemo-Info.plist";
@@ -655,6 +739,7 @@
 				8B6D39FA15283B2400B296D6 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
@@ -662,6 +747,7 @@
 		8B6D39EC1528379F00B296D6 /* FTASyncDemo.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				8B5AFC5F152D1BC4000AF428 /* FTASyncDemo1.xcdatamodel */,
 				8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */,
 			);
 			currentVersion = 8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */;
