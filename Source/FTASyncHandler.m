@@ -51,9 +51,12 @@
 #pragma mark - CoreData Maintenance
 
 - (void)contextWasSaved:(NSNotification *)notification {
+    DLog(@"%@", @"contextWasSaved:");
     if (_syncInProgress) {
+        DLog(@"%@", @"syncInProgress == YES");
         return;
     }
+    DLog(@"%@", @"syncInProgress == NO");
     
     NSSet *updatedObjects = [[notification userInfo] objectForKey:NSUpdatedObjectsKey];
     NSSet *deletedObjects = [[notification userInfo] objectForKey:NSDeletedObjectsKey];
@@ -133,6 +136,13 @@
     }
     DLog(@"Number of remote objects: %i", [remoteObjectsForSync count]);
     
+    //Remove objects deleted locally from remote sync array (push to remote done in FTAParseSync)
+    NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [entityDesc name]];
+    NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
+    DLog(@"Deleted objects from prefs: %@", deletedLocalObjects);
+    NSPredicate *deletedLocalInRemotePredicate = [NSPredicate predicateWithFormat: @"NOT (objectId IN %@)", deletedLocalObjects];
+    [remoteObjectsForSync filterUsingPredicate:deletedLocalInRemotePredicate];
+    
     //Add new remote objects
     NSPredicate *newRemotePredicate = nil;
     if (lastUpdate) {
@@ -147,13 +157,6 @@
     for (PFObject *remoteObject in newRemoteObjects) {
         [NSManagedObject FTA_newObjectForClass:entityDesc WithParseObject:remoteObject];
     }
-    
-    //Remove objects deleted locally from remote sync array (push to remote done in FTAParseSync)
-    NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [entityDesc name]];
-    NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
-    DLog(@"Deleted objects from prefs: %@", deletedLocalObjects);
-    NSPredicate *deletedLocalInRemotePredicate = [NSPredicate predicateWithFormat: @"NOT (objectId IN %@)", deletedLocalObjects];
-    [remoteObjectsForSync filterUsingPredicate:deletedLocalInRemotePredicate];
     
     //Remove objects removed on remote
     NSPredicate *deletedRemotePredicate = [NSPredicate predicateWithFormat:@"deleted == YES"];
@@ -187,6 +190,9 @@
             [localObject FTA_updateObjectWithParseObject:remoteObject];
         }
     }
+    _syncInProgress = YES;
+    [[NSManagedObjectContext MR_contextForCurrentThread] MR_save];
+    _syncInProgress = NO;
     
     //Sync objects changed locally
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];

@@ -12,7 +12,7 @@
         <attribute name="priority" optional="YES" attributeType="Integer 16" maxValueString="10" defaultValueString="1"/>
     </entity>
     <elements>
-        <element name="ToDoItem" positionX="160" positionY="192" width="128" height="75"/>
         <element name="FTASyncParent" positionX="160" positionY="192" width="128" height="120"/>
+        <element name="ToDoItem" positionX="160" positionY="357" width="128" height="75"/>
     </elements>
 </model>
