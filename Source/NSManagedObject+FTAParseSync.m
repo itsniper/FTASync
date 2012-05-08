@@ -44,6 +44,9 @@
     if ([self valueForKey:@"syncStatus"] != [NSNumber numberWithInt:2]) {
         parseObject.objectId = [self valueForKey:@"objectId"];
     }
+    else {
+        [parseObject setValue:[NSNumber numberWithInt:0] forKey:@"deleted"];
+    }
         
     return parseObject;
 }
