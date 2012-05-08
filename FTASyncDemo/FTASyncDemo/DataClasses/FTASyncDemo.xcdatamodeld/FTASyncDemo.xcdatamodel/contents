@@ -2,7 +2,6 @@
 <model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="872" systemVersion="10K549" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="FTASyncParent" representedClassName="FTASyncParent" isAbstract="YES">
         <attribute name="createdHere" optional="YES" attributeType="Boolean" defaultValueString="YES"/>
-        <attribute name="deleted" optional="YES" attributeType="Boolean" defaultValueString="NO"/>
         <attribute name="objectId" optional="YES" attributeType="String"/>
         <attribute name="syncStatus" optional="YES" attributeType="Integer 16" defaultValueString="2"/>
         <attribute name="updatedAt" optional="YES" attributeType="Date"/>
@@ -12,7 +11,7 @@
         <attribute name="priority" optional="YES" attributeType="Integer 16" maxValueString="10" defaultValueString="1"/>
     </entity>
     <elements>
-        <element name="FTASyncParent" positionX="160" positionY="192" width="128" height="120"/>
-        <element name="ToDoItem" positionX="160" positionY="357" width="128" height="75"/>
+        <element name="FTASyncParent" positionX="160" positionY="192" width="128" height="105"/>
+        <element name="ToDoItem" positionX="160" positionY="384" width="128" height="75"/>
     </elements>
 </model>

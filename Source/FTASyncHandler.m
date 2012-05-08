@@ -122,7 +122,7 @@
     DLog(@"Last update: %@", lastUpdate);
     
     //Add new local objects
-    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 2 OR syncStatus == nil"]];
+    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus == 2 OR syncStatus == nil"]];
     NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
     DLog(@"Number of new local objects: %i", [newLocalObjects count]);
     if ([newLocalObjects count] > 0) {
@@ -149,7 +149,7 @@
         newRemotePredicate = [NSPredicate predicateWithFormat:@"createdAt > %@", lastUpdate];
     }
     else {
-        newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = NO", lastUpdate];
+        newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted == NO OR deleted == nil", lastUpdate];
     }
     NSArray *newRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:newRemotePredicate];
     DLog(@"Number of new remote objects: %i", [newRemoteObjects count]);
@@ -164,7 +164,7 @@
     [remoteObjectsForSync removeObjectsInArray:deletedRemoteObjects];
     DLog(@"Number of deleted remote objects: %i", [deletedRemoteObjects count]);
     for (PFObject *remoteObject in deletedRemoteObjects) {
-        [request setPredicate:[NSPredicate predicateWithFormat:@"objectId = %@", remoteObject.objectId]];
+        [request setPredicate:[NSPredicate predicateWithFormat:@"objectId == %@", remoteObject.objectId]];
         FTASyncParent *localObject = [NSManagedObject MR_executeFetchRequestAndReturnFirstObject:request];
         if (!localObject) {
             DLog(@"Object already removed locally: %@", remoteObject);
@@ -176,7 +176,7 @@
     //Sync objects changed on remote
     DLog(@"Number of updated remote objects: %i", [remoteObjectsForSync count]);
     for (PFObject *remoteObject in remoteObjectsForSync) {
-        [request setPredicate:[NSPredicate predicateWithFormat:@"objectId = %@", remoteObject.objectId]];
+        [request setPredicate:[NSPredicate predicateWithFormat:@"objectId == %@", remoteObject.objectId]];
         FTASyncParent *localObject = [NSManagedObject MR_executeFetchRequestAndReturnFirstObject:request];
         if (!localObject) {
             ALog(@"Could not find local object matching remote object: @%", remoteObject);
@@ -195,7 +195,7 @@
     _syncInProgress = NO;
     
     //Sync objects changed locally
-    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
+    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus == 1"]];
     NSArray *updatedLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
     DLog(@"Number of updated local objects: %i", [updatedLocalObjects count]);
     [objectsToSync addObjectsFromArray:updatedLocalObjects];
@@ -211,7 +211,7 @@
         return;
     }
     
-    //TODO: Call FTAParseSync to push updates to Parse and then update local updatedAt and objectId.
+    //Push changes to remote server and update local object's metadata
     DLog(@"Total number of objects to sync: %i", [objectsToSync count]);
     NSError *error;
     BOOL success = [self.remoteInterface putUpdatedObjects:objectsToSync forClass:entityDesc error:&error];
