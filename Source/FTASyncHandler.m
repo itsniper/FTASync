@@ -114,10 +114,10 @@
     }
     
     NSMutableArray *objectsToSync = [[NSMutableArray alloc] initWithCapacity:1];
-    
-    //Get the time of the most recently sync'd object
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:entityDesc];
+    
+    //Get the time of the most recently sync'd object
     NSDate *lastUpdate = [NSManagedObject FTA_lastUpdateForClass:entityDesc];
     DLog(@"Last update: %@", lastUpdate);
     
@@ -131,10 +131,12 @@
     
     //Get updated remote objects
     NSMutableArray *remoteObjectsForSync = [NSMutableArray arrayWithArray:[self.remoteInterface getObjectsOfClass:[entityDesc name] updatedSince:lastUpdate]];
+#ifdef DEBUG
     for (PFObject *object in remoteObjectsForSync) {
         DLog(@"%@", object.updatedAt);
-    }
+    }   
     DLog(@"Number of remote objects: %i", [remoteObjectsForSync count]);
+#endif
     
     //Remove objects deleted locally from remote sync array (push to remote done in FTAParseSync)
     NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [entityDesc name]];
