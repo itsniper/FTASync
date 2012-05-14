@@ -8,7 +8,7 @@
 
 #import "FTAAppDelegate.h"
 #import "FTAToDoTableViewController.h"
-#import "FTASetupTableViewController.h"
+#import "FTAPersonTableViewController.h"
 #import <Parse/Parse.h>
 #import "FTASync.h"
 
@@ -37,7 +37,7 @@
     FTAToDoTableViewController *todoTableViewController = [[FTAToDoTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     [self.todoNavController pushViewController:todoTableViewController animated:NO];
     
-    FTASetupTableViewController *setupTableViewController = [[FTASetupTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    FTAPersonTableViewController *setupTableViewController = [[FTAPersonTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
     [self.setupNavController pushViewController:setupTableViewController animated:NO];
     
     [self.window makeKeyAndVisible];

@@ -65,11 +65,19 @@
 		8B6D3A0115283DFC00B296D6 /* _ToDoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D39FE15283DFC00B296D6 /* _ToDoItem.m */; };
 		8B6D3A0215283DFC00B296D6 /* ToDoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A0015283DFC00B296D6 /* ToDoItem.m */; };
 		8B6D3A0415283F3E00B296D6 /* FTAMainWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B6D3A0315283F3E00B296D6 /* FTAMainWindow.xib */; };
-		8B6D3A0C152840ED00B296D6 /* FTASetupTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A0B152840EC00B296D6 /* FTASetupTableViewController.m */; };
+		8B6D3A0C152840ED00B296D6 /* FTAPersonTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A0B152840EC00B296D6 /* FTAPersonTableViewController.m */; };
 		8B6D3A101528447800B296D6 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D3A0F1528447800B296D6 /* CoreData.framework */; };
 		8B6D3A1B152848AF00B296D6 /* FTAToDoTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A1A152848AE00B296D6 /* FTAToDoTableViewController.m */; };
 		8B6D3A1F1528498000B296D6 /* FTAToDoDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B6D3A1D1528497F00B296D6 /* FTAToDoDetailViewController.m */; };
 		8B6D3A201528498000B296D6 /* FTAToDoDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B6D3A1E1528498000B296D6 /* FTAToDoDetailViewController.xib */; };
+		8B7A263315607CCF006FB602 /* FTAPersonDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A263115607CCF006FB602 /* FTAPersonDetailViewController.m */; };
+		8B7A263415607CCF006FB602 /* FTAPersonDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8B7A263215607CCF006FB602 /* FTAPersonDetailViewController.xib */; };
+		8B7A263715607D98006FB602 /* _Person.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A263615607D98006FB602 /* _Person.m */; };
+		8B7A263A15607DA5006FB602 /* Person.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A263915607DA5006FB602 /* Person.m */; };
+		8B7A263F15608327006FB602 /* preview.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7A263C15608327006FB602 /* preview.png */; };
+		8B7A264015608327006FB602 /* setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7A263D15608327006FB602 /* setup.png */; };
+		8B7A264115608327006FB602 /* user.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7A263E15608327006FB602 /* user.png */; };
+		8B7A2644156090C8006FB602 /* FTASelectionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A2643156090C8006FB602 /* FTASelectionTableViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -157,14 +165,27 @@
 		8B6D39FF15283DFC00B296D6 /* ToDoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToDoItem.h; sourceTree = "<group>"; };
 		8B6D3A0015283DFC00B296D6 /* ToDoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToDoItem.m; sourceTree = "<group>"; };
 		8B6D3A0315283F3E00B296D6 /* FTAMainWindow.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FTAMainWindow.xib; sourceTree = "<group>"; };
-		8B6D3A0A152840EC00B296D6 /* FTASetupTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASetupTableViewController.h; sourceTree = "<group>"; };
-		8B6D3A0B152840EC00B296D6 /* FTASetupTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASetupTableViewController.m; sourceTree = "<group>"; };
+		8B6D3A0A152840EC00B296D6 /* FTAPersonTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAPersonTableViewController.h; sourceTree = "<group>"; };
+		8B6D3A0B152840EC00B296D6 /* FTAPersonTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAPersonTableViewController.m; sourceTree = "<group>"; };
 		8B6D3A0F1528447800B296D6 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		8B6D3A19152848AE00B296D6 /* FTAToDoTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAToDoTableViewController.h; sourceTree = "<group>"; };
 		8B6D3A1A152848AE00B296D6 /* FTAToDoTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAToDoTableViewController.m; sourceTree = "<group>"; };
 		8B6D3A1C1528497E00B296D6 /* FTAToDoDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAToDoDetailViewController.h; sourceTree = "<group>"; };
 		8B6D3A1D1528497F00B296D6 /* FTAToDoDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAToDoDetailViewController.m; sourceTree = "<group>"; };
 		8B6D3A1E1528498000B296D6 /* FTAToDoDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FTAToDoDetailViewController.xib; sourceTree = "<group>"; };
+		8B7A262615607515006FB602 /* FTASyncDemo2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FTASyncDemo2.xcdatamodel; sourceTree = "<group>"; };
+		8B7A263015607CCE006FB602 /* FTAPersonDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTAPersonDetailViewController.h; sourceTree = "<group>"; };
+		8B7A263115607CCF006FB602 /* FTAPersonDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTAPersonDetailViewController.m; sourceTree = "<group>"; };
+		8B7A263215607CCF006FB602 /* FTAPersonDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FTAPersonDetailViewController.xib; sourceTree = "<group>"; };
+		8B7A263515607D98006FB602 /* _Person.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _Person.h; sourceTree = "<group>"; };
+		8B7A263615607D98006FB602 /* _Person.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _Person.m; sourceTree = "<group>"; };
+		8B7A263815607DA5006FB602 /* Person.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Person.h; sourceTree = "<group>"; };
+		8B7A263915607DA5006FB602 /* Person.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Person.m; sourceTree = "<group>"; };
+		8B7A263C15608327006FB602 /* preview.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = preview.png; sourceTree = "<group>"; };
+		8B7A263D15608327006FB602 /* setup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = setup.png; sourceTree = "<group>"; };
+		8B7A263E15608327006FB602 /* user.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = user.png; sourceTree = "<group>"; };
+		8B7A2642156090C7006FB602 /* FTASelectionTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASelectionTableViewController.h; sourceTree = "<group>"; };
+		8B7A2643156090C8006FB602 /* FTASelectionTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASelectionTableViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -262,13 +283,19 @@
 				8B6D398B15282F1800B296D6 /* FTAAppDelegate.h */,
 				8B6D398C15282F1800B296D6 /* FTAAppDelegate.m */,
 				8B6D3A0315283F3E00B296D6 /* FTAMainWindow.xib */,
-				8B6D3A0A152840EC00B296D6 /* FTASetupTableViewController.h */,
-				8B6D3A0B152840EC00B296D6 /* FTASetupTableViewController.m */,
+				8B7A2642156090C7006FB602 /* FTASelectionTableViewController.h */,
+				8B7A2643156090C8006FB602 /* FTASelectionTableViewController.m */,
 				8B6D3A19152848AE00B296D6 /* FTAToDoTableViewController.h */,
 				8B6D3A1A152848AE00B296D6 /* FTAToDoTableViewController.m */,
 				8B6D3A1C1528497E00B296D6 /* FTAToDoDetailViewController.h */,
 				8B6D3A1D1528497F00B296D6 /* FTAToDoDetailViewController.m */,
 				8B6D3A1E1528498000B296D6 /* FTAToDoDetailViewController.xib */,
+				8B6D3A0A152840EC00B296D6 /* FTAPersonTableViewController.h */,
+				8B6D3A0B152840EC00B296D6 /* FTAPersonTableViewController.m */,
+				8B7A263015607CCE006FB602 /* FTAPersonDetailViewController.h */,
+				8B7A263115607CCF006FB602 /* FTAPersonDetailViewController.m */,
+				8B7A263215607CCF006FB602 /* FTAPersonDetailViewController.xib */,
+				8B7A263B15608327006FB602 /* Resources */,
 				8B6D398315282F1800B296D6 /* Supporting Files */,
 			);
 			path = FTASyncDemo;
@@ -374,15 +401,29 @@
 				8B6D39EC1528379F00B296D6 /* FTASyncDemo.xcdatamodeld */,
 				8B5AFC6A152D2EED000AF428 /* _FTASyncParent.h */,
 				8B5AFC6B152D2EED000AF428 /* _FTASyncParent.m */,
+				8B7A263515607D98006FB602 /* _Person.h */,
+				8B7A263615607D98006FB602 /* _Person.m */,
 				8B6D39FD15283DFC00B296D6 /* _ToDoItem.h */,
 				8B6D39FE15283DFC00B296D6 /* _ToDoItem.m */,
-				8B6D39FF15283DFC00B296D6 /* ToDoItem.h */,
-				8B6D3A0015283DFC00B296D6 /* ToDoItem.m */,
 				8B5AFC6C152D2EED000AF428 /* FTASyncParent.h */,
 				8B5AFC6D152D2EED000AF428 /* FTASyncParent.m */,
+				8B7A263815607DA5006FB602 /* Person.h */,
+				8B7A263915607DA5006FB602 /* Person.m */,
+				8B6D39FF15283DFC00B296D6 /* ToDoItem.h */,
+				8B6D3A0015283DFC00B296D6 /* ToDoItem.m */,
 			);
 			name = Data;
 			path = DataClasses;
+			sourceTree = "<group>";
+		};
+		8B7A263B15608327006FB602 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8B7A263C15608327006FB602 /* preview.png */,
+				8B7A263D15608327006FB602 /* setup.png */,
+				8B7A263E15608327006FB602 /* user.png */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -462,6 +503,10 @@
 				8B6D39E6152836E500B296D6 /* LICENSE in Resources */,
 				8B6D3A0415283F3E00B296D6 /* FTAMainWindow.xib in Resources */,
 				8B6D3A201528498000B296D6 /* FTAToDoDetailViewController.xib in Resources */,
+				8B7A263415607CCF006FB602 /* FTAPersonDetailViewController.xib in Resources */,
+				8B7A263F15608327006FB602 /* preview.png in Resources */,
+				8B7A264015608327006FB602 /* setup.png in Resources */,
+				8B7A264115608327006FB602 /* user.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,7 +573,7 @@
 				8B6D39EE1528379F00B296D6 /* FTASyncDemo.xcdatamodeld in Sources */,
 				8B6D3A0115283DFC00B296D6 /* _ToDoItem.m in Sources */,
 				8B6D3A0215283DFC00B296D6 /* ToDoItem.m in Sources */,
-				8B6D3A0C152840ED00B296D6 /* FTASetupTableViewController.m in Sources */,
+				8B6D3A0C152840ED00B296D6 /* FTAPersonTableViewController.m in Sources */,
 				8B6D3A1B152848AF00B296D6 /* FTAToDoTableViewController.m in Sources */,
 				8B6D3A1F1528498000B296D6 /* FTAToDoDetailViewController.m in Sources */,
 				8B5AFC67152D2BD7000AF428 /* FTAParseSync.m in Sources */,
@@ -536,6 +581,10 @@
 				8B5AFC69152D2BD7000AF428 /* NSManagedObject+FTAParseSync.m in Sources */,
 				8B5AFC6E152D2EED000AF428 /* _FTASyncParent.m in Sources */,
 				8B5AFC6F152D2EED000AF428 /* FTASyncParent.m in Sources */,
+				8B7A263315607CCF006FB602 /* FTAPersonDetailViewController.m in Sources */,
+				8B7A263715607D98006FB602 /* _Person.m in Sources */,
+				8B7A263A15607DA5006FB602 /* Person.m in Sources */,
+				8B7A2644156090C8006FB602 /* FTASelectionTableViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -749,6 +798,7 @@
 			children = (
 				8B5AFC5F152D1BC4000AF428 /* FTASyncDemo1.xcdatamodel */,
 				8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */,
+				8B7A262615607515006FB602 /* FTASyncDemo2.xcdatamodel */,
 			);
 			currentVersion = 8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */;
 			path = FTASyncDemo.xcdatamodeld;

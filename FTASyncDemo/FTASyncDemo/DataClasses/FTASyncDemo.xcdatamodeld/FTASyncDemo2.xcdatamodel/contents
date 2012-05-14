@@ -6,19 +6,12 @@
         <attribute name="syncStatus" optional="YES" attributeType="Integer 16" defaultValueString="2"/>
         <attribute name="updatedAt" optional="YES" attributeType="Date"/>
     </entity>
-    <entity name="Person" representedClassName="Person" parentEntity="FTASyncParent" syncable="YES">
-        <attribute name="name" optional="YES" attributeType="String"/>
-        <attribute name="photo" optional="YES" attributeType="Binary" defaultValueString="defaultPerson"/>
-        <relationship name="toDoItem" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ToDoItem" inverseName="person" inverseEntity="ToDoItem"/>
-    </entity>
     <entity name="ToDoItem" representedClassName="ToDoItem" parentEntity="FTASyncParent">
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="priority" optional="YES" attributeType="Integer 16" maxValueString="10" defaultValueString="1"/>
-        <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="toDoItem" inverseEntity="Person"/>
     </entity>
     <elements>
         <element name="FTASyncParent" positionX="160" positionY="192" width="128" height="105"/>
         <element name="ToDoItem" positionX="160" positionY="384" width="128" height="75"/>
-        <element name="Person" positionX="333" positionY="387" width="128" height="90"/>
     </elements>
 </model>

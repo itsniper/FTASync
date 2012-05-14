@@ -6,7 +6,6 @@
 
 extern const struct FTASyncParentAttributes {
 	__unsafe_unretained NSString *createdHere;
-	__unsafe_unretained NSString *deleted;
 	__unsafe_unretained NSString *objectId;
 	__unsafe_unretained NSString *syncStatus;
 	__unsafe_unretained NSString *updatedAt;
@@ -17,7 +16,6 @@ extern const struct FTASyncParentRelationships {
 
 extern const struct FTASyncParentFetchedProperties {
 } FTASyncParentFetchedProperties;
-
 
 
 
@@ -45,18 +43,6 @@ extern const struct FTASyncParentFetchedProperties {
 - (void)setCreatedHereValue:(BOOL)value_;
 
 //- (BOOL)validateCreatedHere:(id*)value_ error:(NSError**)error_;
-
-
-
-
-@property (nonatomic, strong) NSNumber *deleted;
-
-
-@property BOOL deletedValue;
-- (BOOL)deletedValue;
-- (void)setDeletedValue:(BOOL)value_;
-
-//- (BOOL)validateDeleted:(id*)value_ error:(NSError**)error_;
 
 
 
@@ -104,15 +90,6 @@ extern const struct FTASyncParentFetchedProperties {
 
 - (BOOL)primitiveCreatedHereValue;
 - (void)setPrimitiveCreatedHereValue:(BOOL)value_;
-
-
-
-
-- (NSNumber*)primitiveDeleted;
-- (void)setPrimitiveDeleted:(NSNumber*)value;
-
-- (BOOL)primitiveDeletedValue;
-- (void)setPrimitiveDeletedValue:(BOOL)value_;
 
 
 

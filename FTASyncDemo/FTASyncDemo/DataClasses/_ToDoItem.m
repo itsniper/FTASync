@@ -9,6 +9,7 @@ const struct ToDoItemAttributes ToDoItemAttributes = {
 };
 
 const struct ToDoItemRelationships ToDoItemRelationships = {
+	.person = @"person",
 };
 
 const struct ToDoItemFetchedProperties ToDoItemFetchedProperties = {
@@ -83,6 +84,10 @@ const struct ToDoItemFetchedProperties ToDoItemFetchedProperties = {
 
 
 
+
+@dynamic person;
+
+	
 
 
 

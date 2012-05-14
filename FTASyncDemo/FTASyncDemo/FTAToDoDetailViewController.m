@@ -6,16 +6,22 @@
 //  Copyright (c) 2012 Five3 Apps. All rights reserved.
 //
 
+#import <QuartzCore/QuartzCore.h>
 #import "FTAToDoDetailViewController.h"
+#import "FTASelectionTableViewController.h"
 
 @implementation FTAToDoDetailViewController
 
 @synthesize todoName = _todoName;
 @synthesize priorityValue = _priorityValue;
 @synthesize priorityValueSlider = _priorityValueSlider;
+@synthesize personButton = _personButton;
 
 @synthesize editingContext = _editingContext;
 @synthesize currentToDo = _currentToDo;
+
+@synthesize people = _people;
+@synthesize possiblePeople = _possiblePeople;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -93,12 +99,40 @@
     }
 }
 
+- (NSArray *)people {
+    if (!_people) {
+        _people = [Person MR_findAllSortedBy:@"name" ascending:YES inContext:self.editingContext];
+    }
+    
+    return _people;
+}
+
+- (NSDictionary *)possiblePeople {
+    if (!_possiblePeople) {
+        NSMutableDictionary *peopleDictionary = [NSMutableDictionary dictionaryWithCapacity:[self.people count]];
+        NSInteger indexNum = 0;
+        for (Person *aPerson in self.people) {
+            [peopleDictionary setObject:aPerson.name forKey:[NSString stringWithFormat:@"%i", indexNum]];
+            indexNum++;
+        }
+        _possiblePeople = peopleDictionary;
+    }
+    
+    return _possiblePeople;
+}
+
 #pragma mark - Controller
 
 - (void)updateInterfaceForCurrentToDo {
     self.todoName.text = [self.currentToDo valueForKey:@"name"];
     self.priorityValue.text = [[self.currentToDo valueForKey:@"priority"] stringValue];
     self.priorityValueSlider.value = [[self.currentToDo valueForKey:@"priority"] intValue];
+    if ([self.currentToDo person]) {
+        self.personButton.titleLabel.text = [[self.currentToDo person] name];
+    }
+    else {
+        self.personButton.titleLabel.text = @"Select a person";
+    }
 }
 
 - (IBAction)priorityValueChanged:(UISlider *)sender {
@@ -120,6 +154,33 @@
     //TODO: Handle the error
     
     [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (IBAction)choosePerson:(id)sender {
+    if ([self.possiblePeople count] < 1) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"No People" message:@"You have not yet setup any people" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+        [alert show];
+        return;
+    }
+    
+    FTASelectionTableViewController *detailViewController = [[FTASelectionTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    [detailViewController setPossibleSelections:[NSArray arrayWithObject:self.possiblePeople]];
+    [detailViewController setAllowMultipleSelection:[NSArray arrayWithObject:[NSNumber numberWithBool:NO]]];
+    NSSet *peopleKeys = [self.possiblePeople keysOfEntriesPassingTest:^BOOL(id key, id obj, BOOL *stop) {
+        Person *person = [self.currentToDo person];
+        if ([person.name isEqualToString:obj]) {
+            return YES;
+        }
+        return NO;
+    }];
+    NSMutableArray *selections = [NSMutableArray arrayWithObjects:[NSMutableArray arrayWithObjects:[peopleKeys anyObject], nil], nil];
+    [detailViewController setSelections:selections];
+    [detailViewController setCallbackBlock:^(NSArray *array) {
+        NSString *personIndex = [[array objectAtIndex:0] lastObject];
+        [self.currentToDo setPerson:[self.people objectAtIndex:[personIndex intValue]]];
+    }];
+    
+    [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
 #pragma mark - Text field delegate

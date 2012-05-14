@@ -5,7 +5,6 @@
 
 const struct FTASyncParentAttributes FTASyncParentAttributes = {
 	.createdHere = @"createdHere",
-	.deleted = @"deleted",
 	.objectId = @"objectId",
 	.syncStatus = @"syncStatus",
 	.updatedAt = @"updatedAt",
@@ -47,10 +46,6 @@ const struct FTASyncParentFetchedProperties FTASyncParentFetchedProperties = {
 		NSSet *affectingKey = [NSSet setWithObject:@"createdHere"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
 	}
-	if ([key isEqualToString:@"deletedValue"]) {
-		NSSet *affectingKey = [NSSet setWithObject:@"deleted"];
-		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
-	}
 	if ([key isEqualToString:@"syncStatusValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"syncStatus"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
@@ -82,32 +77,6 @@ const struct FTASyncParentFetchedProperties FTASyncParentFetchedProperties = {
 
 - (void)setPrimitiveCreatedHereValue:(BOOL)value_ {
 	[self setPrimitiveCreatedHere:[NSNumber numberWithBool:value_]];
-}
-
-
-
-
-
-@dynamic deleted;
-
-
-
-- (BOOL)deletedValue {
-	NSNumber *result = [self deleted];
-	return [result boolValue];
-}
-
-- (void)setDeletedValue:(BOOL)value_ {
-	[self setDeleted:[NSNumber numberWithBool:value_]];
-}
-
-- (BOOL)primitiveDeletedValue {
-	NSNumber *result = [self primitiveDeleted];
-	return [result boolValue];
-}
-
-- (void)setPrimitiveDeletedValue:(BOOL)value_ {
-	[self setPrimitiveDeleted:[NSNumber numberWithBool:value_]];
 }
 
 

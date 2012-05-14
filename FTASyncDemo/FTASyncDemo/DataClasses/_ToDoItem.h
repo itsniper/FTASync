@@ -10,11 +10,13 @@ extern const struct ToDoItemAttributes {
 } ToDoItemAttributes;
 
 extern const struct ToDoItemRelationships {
+	__unsafe_unretained NSString *person;
 } ToDoItemRelationships;
 
 extern const struct ToDoItemFetchedProperties {
 } ToDoItemFetchedProperties;
 
+@class Person;
 
 
 
@@ -52,6 +54,13 @@ extern const struct ToDoItemFetchedProperties {
 
 
 
+@property (nonatomic, strong) Person* person;
+
+//- (BOOL)validatePerson:(id*)value_ error:(NSError**)error_;
+
+
+
+
 @end
 
 @interface _ToDoItem (CoreDataGeneratedAccessors)
@@ -74,6 +83,11 @@ extern const struct ToDoItemFetchedProperties {
 - (void)setPrimitivePriorityValue:(short)value_;
 
 
+
+
+
+- (Person*)primitivePerson;
+- (void)setPrimitivePerson:(Person*)value;
 
 
 @end
