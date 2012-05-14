@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <Parse/Parse.h>
 #import "FTASyncParent.h"
-#import "NSManagedObject+FTAParseSync.h"
+#import "FTASyncParent+FTAParseSync.h"
 
 @interface FTAParseSync : NSObject
 

@@ -118,7 +118,7 @@
 	[request setEntity:entityDesc];
     
     //Get the time of the most recently sync'd object
-    NSDate *lastUpdate = [NSManagedObject FTA_lastUpdateForClass:entityDesc];
+    NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
     DLog(@"Last update: %@", lastUpdate);
     
     //Add new local objects
@@ -156,42 +156,18 @@
     NSArray *newRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:newRemotePredicate];
     DLog(@"Number of new remote objects: %i", [newRemoteObjects count]);
     [remoteObjectsForSync removeObjectsInArray:newRemoteObjects];
-    for (PFObject *remoteObject in newRemoteObjects) {
-        [NSManagedObject FTA_newObjectForClass:entityDesc WithRemoteObject:remoteObject];
-    }
+    [FTASyncParent FTA_newObjectsForClass:entityDesc withRemoteObjects:newRemoteObjects];
     
     //Remove objects removed on remote
     NSPredicate *deletedRemotePredicate = [NSPredicate predicateWithFormat:@"deleted == YES"];
     NSArray *deletedRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:deletedRemotePredicate];
     [remoteObjectsForSync removeObjectsInArray:deletedRemoteObjects];
     DLog(@"Number of deleted remote objects: %i", [deletedRemoteObjects count]);
-    for (PFObject *remoteObject in deletedRemoteObjects) {
-        [request setPredicate:[NSPredicate predicateWithFormat:@"objectId == %@", remoteObject.objectId]];
-        FTASyncParent *localObject = [NSManagedObject MR_executeFetchRequestAndReturnFirstObject:request];
-        if (!localObject) {
-            DLog(@"Object already removed locally: %@", remoteObject);
-        }
-        
-        [localObject MR_deleteEntity];
-    }
+    [FTASyncParent FTA_deleteObjectsForClass:entityDesc withRemoteObjects:deletedRemoteObjects];
     
     //Sync objects changed on remote
     DLog(@"Number of updated remote objects: %i", [remoteObjectsForSync count]);
-    for (PFObject *remoteObject in remoteObjectsForSync) {
-        [request setPredicate:[NSPredicate predicateWithFormat:@"objectId == %@", remoteObject.objectId]];
-        FTASyncParent *localObject = [NSManagedObject MR_executeFetchRequestAndReturnFirstObject:request];
-        if (!localObject) {
-            ALog(@"Could not find local object matching remote object: @%", remoteObject);
-            break;
-        }
-        
-        if ([localObject.syncStatus intValue] == 1) {
-            [objectsToSync addObject:localObject];
-        }
-        else {
-            [localObject FTA_updateObjectWithRemoteObject:remoteObject];
-        }
-    }
+    [FTASyncParent FTA_updateObjectsForClass:entityDesc withRemoteObjects:remoteObjectsForSync];
     _syncInProgress = YES;
     [[NSManagedObjectContext MR_contextForCurrentThread] MR_save];
     _syncInProgress = NO;
