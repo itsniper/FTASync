@@ -105,7 +105,7 @@
 		8B5AFC62152D2BD7000AF428 /* FTASync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASync.h; sourceTree = "<group>"; };
 		8B5AFC63152D2BD7000AF428 /* FTASyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASyncHandler.h; sourceTree = "<group>"; };
 		8B5AFC64152D2BD7000AF428 /* FTASyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASyncHandler.m; sourceTree = "<group>"; };
-		8B5AFC65152D2BD7000AF428 /* NSManagedObject+FTAParseSync.h */ = {isa = PBXFileReference; fileEncoding = 4; path = "NSManagedObject+FTAParseSync.h"; sourceTree = "<group>"; };
+		8B5AFC65152D2BD7000AF428 /* FTASyncParent+FTAParseSync.h */ = {isa = PBXFileReference; fileEncoding = 4; path = "FTASyncParent+FTAParseSync.h"; sourceTree = "<group>"; };
 		8B5AFC66152D2BD7000AF428 /* FTASyncParent+FTAParseSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "FTASyncParent+FTAParseSync.m"; sourceTree = "<group>"; };
 		8B5AFC6A152D2EED000AF428 /* _FTASyncParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _FTASyncParent.h; sourceTree = "<group>"; };
 		8B5AFC6B152D2EED000AF428 /* _FTASyncParent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _FTASyncParent.m; sourceTree = "<group>"; };
@@ -229,7 +229,7 @@
 				8B5AFC62152D2BD7000AF428 /* FTASync.h */,
 				8B5AFC63152D2BD7000AF428 /* FTASyncHandler.h */,
 				8B5AFC64152D2BD7000AF428 /* FTASyncHandler.m */,
-				8B5AFC65152D2BD7000AF428 /* NSManagedObject+FTAParseSync.h */,
+				8B5AFC65152D2BD7000AF428 /* FTASyncParent+FTAParseSync.h */,
 				8B5AFC66152D2BD7000AF428 /* FTASyncParent+FTAParseSync.m */,
 			);
 			name = FTASync;
