@@ -157,7 +157,7 @@
     DLog(@"Number of new remote objects: %i", [newRemoteObjects count]);
     [remoteObjectsForSync removeObjectsInArray:newRemoteObjects];
     for (PFObject *remoteObject in newRemoteObjects) {
-        [NSManagedObject FTA_newObjectForClass:entityDesc WithParseObject:remoteObject];
+        [NSManagedObject FTA_newObjectForClass:entityDesc WithRemoteObject:remoteObject];
     }
     
     //Remove objects removed on remote
@@ -189,7 +189,7 @@
             [objectsToSync addObject:localObject];
         }
         else {
-            [localObject FTA_updateObjectWithParseObject:remoteObject];
+            [localObject FTA_updateObjectWithRemoteObject:remoteObject];
         }
     }
     _syncInProgress = YES;

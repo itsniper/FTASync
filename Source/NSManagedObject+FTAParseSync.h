@@ -11,11 +11,11 @@
 
 @interface NSManagedObject (FTAParseSync)
 
-+ (void)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithParseObject:(PFObject *)parseObject;
++ (void)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithRemoteObject:(PFObject *)parseObject;
 + (NSDate *)FTA_lastUpdateForClass:(NSEntityDescription *)entityDesc;
 
-- (PFObject *)FTA_parseObjectForObject;
-- (void)FTA_updateObjectWithParseObject:(PFObject *)parseObject;
-- (void)FTA_updateObjectMetadataWithParseObject:(PFObject *)parseObject;
+- (PFObject *)FTA_remoteObjectForObject;
+- (void)FTA_updateObjectWithRemoteObject:(PFObject *)parseObject;
+- (void)FTA_updateObjectMetadataWithRemoteObject:(PFObject *)parseObject;
 
 @end

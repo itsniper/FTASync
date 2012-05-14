@@ -27,7 +27,7 @@
     
     //Get parse objects for all updated objects
     for (FTASyncParent *localObject in updatedObjects) {
-        PFObject *parseObject = [localObject FTA_parseObjectForObject];
+        PFObject *parseObject = [localObject FTA_remoteObjectForObject];
         [updatedParseObjects addObject:parseObject];
     }
     NSUInteger updateCount = [updatedParseObjects count];
@@ -65,7 +65,7 @@
         ALog(@"%@", @"Local and Parse object arrays are out of sync!");
     }
     [updatedObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [obj FTA_updateObjectWithParseObject:[updatedParseObjects objectAtIndex:idx]];
+        [obj FTA_updateObjectWithRemoteObject:[updatedParseObjects objectAtIndex:idx]];
     }];
     
     return YES;

@@ -10,10 +10,10 @@
 
 @implementation NSManagedObject (FTAParseSync)
 
-+ (void)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithParseObject:(PFObject *)parseObject {
++ (void)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithRemoteObject:(PFObject *)parseObject {
     NSManagedObject *newObject = [NSEntityDescription insertNewObjectForEntityForName:[entityDesc name] inManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     [newObject setValue:[NSNumber numberWithBool:NO] forKey:@"createdHere"];
-    [newObject FTA_updateObjectWithParseObject:parseObject];
+    [newObject FTA_updateObjectWithRemoteObject:parseObject];
 }
 
 + (NSDate *)FTA_lastUpdateForClass:(NSEntityDescription *)entityDesc {
@@ -29,7 +29,7 @@
     return [[results objectAtIndex:0] valueForKey:@"updatedAt"];
 }
 
-- (PFObject *)FTA_parseObjectForObject {
+- (PFObject *)FTA_remoteObjectForObject {
     NSArray *attributes = [[[self entity] attributesByName] allKeys];
     PFObject *parseObject = [PFObject objectWithClassName:[[self entity] name]];
     
@@ -51,7 +51,7 @@
     return parseObject;
 }
 
-- (void)FTA_updateObjectWithParseObject:(PFObject *)parseObject {
+- (void)FTA_updateObjectWithRemoteObject:(PFObject *)parseObject {
     NSArray *attributes = [[[self entity] attributesByName] allKeys];
     for (NSString *attribute in attributes) {
         if (![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
@@ -60,10 +60,10 @@
         }
     }
     
-    [self FTA_updateObjectMetadataWithParseObject:parseObject];
+    [self FTA_updateObjectMetadataWithRemoteObject:parseObject];
 }
 
-- (void)FTA_updateObjectMetadataWithParseObject:(PFObject *)parseObject {
+- (void)FTA_updateObjectMetadataWithRemoteObject:(PFObject *)parseObject {
     if ([self valueForKey:@"syncStatus"] == [NSNumber numberWithInt:2] || [self valueForKey:@"syncStatus"] == nil) {
         [self setValue:parseObject.objectId forKey:@"objectId"];
     }
