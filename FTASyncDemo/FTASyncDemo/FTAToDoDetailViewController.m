@@ -100,23 +100,19 @@
 }
 
 - (NSArray *)people {
-    if (!_people) {
-        _people = [Person MR_findAllSortedBy:@"name" ascending:YES inContext:self.editingContext];
-    }
+    _people = [Person MR_findAllSortedBy:@"name" ascending:YES inContext:self.editingContext];
     
     return _people;
 }
 
 - (NSDictionary *)possiblePeople {
-    if (!_possiblePeople) {
-        NSMutableDictionary *peopleDictionary = [NSMutableDictionary dictionaryWithCapacity:[self.people count]];
-        NSInteger indexNum = 0;
-        for (Person *aPerson in self.people) {
-            [peopleDictionary setObject:aPerson.name forKey:[NSString stringWithFormat:@"%i", indexNum]];
-            indexNum++;
-        }
-        _possiblePeople = peopleDictionary;
+    NSMutableDictionary *peopleDictionary = [NSMutableDictionary dictionaryWithCapacity:[self.people count]];
+    NSInteger indexNum = 0;
+    for (Person *aPerson in self.people) {
+        [peopleDictionary setObject:aPerson.name forKey:[NSString stringWithFormat:@"%i", indexNum]];
+        indexNum++;
     }
+    _possiblePeople = peopleDictionary;
     
     return _possiblePeople;
 }

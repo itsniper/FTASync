@@ -64,7 +64,7 @@
     for (NSManagedObject *updatedObject in updatedObjects) {
         NSString *parentEntity = [[[updatedObject entity] superentity] name];
         
-        if ([parentEntity isEqualToString:@"FTASyncParent"]) {
+        if ([parentEntity isEqualToString:@"FTASyncParent"] && [updatedObject valueForKey:@"syncStatus"] == [NSNumber numberWithInt:0]) {
             [updatedObject setValue:[NSNumber numberWithInt:1] forKey:@"syncStatus"];
             DLog(@"Updated Object: %@", updatedObject);
         }
@@ -122,7 +122,7 @@
     DLog(@"Last update: %@", lastUpdate);
     
     //Add new local objects
-    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus == 2 OR syncStatus == nil"]];
+    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = nil OR syncStatus = 2 OR syncStatus = 3"]];
     NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
     DLog(@"Number of new local objects: %i", [newLocalObjects count]);
     if ([newLocalObjects count] > 0) {
@@ -151,7 +151,7 @@
         newRemotePredicate = [NSPredicate predicateWithFormat:@"createdAt > %@", lastUpdate];
     }
     else {
-        newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted == NO OR deleted == nil", lastUpdate];
+        newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = NO OR deleted = nil", lastUpdate];
     }
     NSArray *newRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:newRemotePredicate];
     DLog(@"Number of new remote objects: %i", [newRemoteObjects count]);
@@ -159,7 +159,7 @@
     [FTASyncParent FTA_newObjectsForClass:entityDesc withRemoteObjects:newRemoteObjects];
     
     //Remove objects removed on remote
-    NSPredicate *deletedRemotePredicate = [NSPredicate predicateWithFormat:@"deleted == YES"];
+    NSPredicate *deletedRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = YES"];
     NSArray *deletedRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:deletedRemotePredicate];
     [remoteObjectsForSync removeObjectsInArray:deletedRemoteObjects];
     DLog(@"Number of deleted remote objects: %i", [deletedRemoteObjects count]);
@@ -173,7 +173,7 @@
     _syncInProgress = NO;
     
     //Sync objects changed locally
-    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus == 1"]];
+    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
     NSArray *updatedLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
     DLog(@"Number of updated local objects: %i", [updatedLocalObjects count]);
     [objectsToSync addObjectsFromArray:updatedLocalObjects];

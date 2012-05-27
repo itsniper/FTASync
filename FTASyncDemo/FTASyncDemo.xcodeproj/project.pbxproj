@@ -31,7 +31,6 @@
 		8B5AFC5E152D181F000AF428 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC5D152D181F000AF428 /* QuartzCore.framework */; };
 		8B5AFC67152D2BD7000AF428 /* FTAParseSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC61152D2BD7000AF428 /* FTAParseSync.m */; };
 		8B5AFC68152D2BD7000AF428 /* FTASyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC64152D2BD7000AF428 /* FTASyncHandler.m */; };
-		8B5AFC69152D2BD7000AF428 /* FTASyncParent+FTAParseSync.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC66152D2BD7000AF428 /* FTASyncParent+FTAParseSync.m */; };
 		8B5AFC6E152D2EED000AF428 /* _FTASyncParent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC6B152D2EED000AF428 /* _FTASyncParent.m */; };
 		8B5AFC6F152D2EED000AF428 /* FTASyncParent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B5AFC6D152D2EED000AF428 /* FTASyncParent.m */; };
 		8B6D397D15282F1800B296D6 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D397C15282F1800B296D6 /* UIKit.framework */; };
@@ -105,8 +104,6 @@
 		8B5AFC62152D2BD7000AF428 /* FTASync.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASync.h; sourceTree = "<group>"; };
 		8B5AFC63152D2BD7000AF428 /* FTASyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASyncHandler.h; sourceTree = "<group>"; };
 		8B5AFC64152D2BD7000AF428 /* FTASyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASyncHandler.m; sourceTree = "<group>"; };
-		8B5AFC65152D2BD7000AF428 /* FTASyncParent+FTAParseSync.h */ = {isa = PBXFileReference; fileEncoding = 4; path = "FTASyncParent+FTAParseSync.h"; sourceTree = "<group>"; };
-		8B5AFC66152D2BD7000AF428 /* FTASyncParent+FTAParseSync.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "FTASyncParent+FTAParseSync.m"; sourceTree = "<group>"; };
 		8B5AFC6A152D2EED000AF428 /* _FTASyncParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _FTASyncParent.h; sourceTree = "<group>"; };
 		8B5AFC6B152D2EED000AF428 /* _FTASyncParent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _FTASyncParent.m; sourceTree = "<group>"; };
 		8B5AFC6C152D2EED000AF428 /* FTASyncParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASyncParent.h; sourceTree = "<group>"; };
@@ -229,8 +226,6 @@
 				8B5AFC62152D2BD7000AF428 /* FTASync.h */,
 				8B5AFC63152D2BD7000AF428 /* FTASyncHandler.h */,
 				8B5AFC64152D2BD7000AF428 /* FTASyncHandler.m */,
-				8B5AFC65152D2BD7000AF428 /* FTASyncParent+FTAParseSync.h */,
-				8B5AFC66152D2BD7000AF428 /* FTASyncParent+FTAParseSync.m */,
 			);
 			name = FTASync;
 			path = ../../../Source;
@@ -578,7 +573,6 @@
 				8B6D3A1F1528498000B296D6 /* FTAToDoDetailViewController.m in Sources */,
 				8B5AFC67152D2BD7000AF428 /* FTAParseSync.m in Sources */,
 				8B5AFC68152D2BD7000AF428 /* FTASyncHandler.m in Sources */,
-				8B5AFC69152D2BD7000AF428 /* FTASyncParent+FTAParseSync.m in Sources */,
 				8B5AFC6E152D2EED000AF428 /* _FTASyncParent.m in Sources */,
 				8B5AFC6F152D2EED000AF428 /* FTASyncParent.m in Sources */,
 				8B7A263315607CCF006FB602 /* FTAPersonDetailViewController.m in Sources */,

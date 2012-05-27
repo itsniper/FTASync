@@ -12,7 +12,6 @@
 #import "CoreData+MagicalRecord.h"
 #import "FTAParseSync.h"
 #import "FTASyncParent.h"
-#import "FTASyncParent+FTAParseSync.h"
 
 #define kFTASyncDeletedObjectAging 30
 //TODO: Create a method to clean out deleted objects on Parse after above # of days

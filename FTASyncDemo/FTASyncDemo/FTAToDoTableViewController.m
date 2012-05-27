@@ -235,6 +235,7 @@
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+    [self.tableView reloadData];
     [self.tableView endUpdates];
 }
 
