@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import <Parse/Parse.h>
+//#import <Parse/Parse.h>
 #import "CoreData+MagicalRecord.h"
 #import "FTAParseSync.h"
 #import "FTASyncParent.h"
@@ -16,9 +16,7 @@
 #define kFTASyncDeletedObjectAging 30
 //TODO: Create a method to clean out deleted objects on Parse after above # of days
 
-@interface FTASyncHandler : NSObject {
-    BOOL _syncInProgress;
-}
+@interface FTASyncHandler : NSObject
 
 @property (strong, nonatomic) FTAParseSync *remoteInterface;
 

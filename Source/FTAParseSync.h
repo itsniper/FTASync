@@ -12,6 +12,8 @@
 
 @interface FTAParseSync : NSObject
 
+- (BOOL)canSync;
+
 - (NSArray *)getObjectsOfClass:(NSString *)className updatedSince:(NSDate *)lastUpdate;
 - (BOOL)putUpdatedObjects:(NSArray *)updatedObjects forClass:(NSEntityDescription *)entityDesc error:(NSError **)error;
 

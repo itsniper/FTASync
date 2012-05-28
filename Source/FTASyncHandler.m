@@ -93,7 +93,19 @@
 
 #pragma mark - Sync
 
+- (BOOL)canSync {
+    if (![self.remoteInterface canSync]) {
+        return NO;
+    }
+    
+    return YES;
+}
+
 - (void)syncAll {
+    if (!self.canSync) {
+        return;
+    }
+    
     NSManagedObjectModel *dataModel = [NSManagedObjectModel MR_defaultManagedObjectModel];
     
     for (NSEntityDescription *anEntity in dataModel) {
@@ -107,6 +119,10 @@
 }
 
 - (void)syncEntity:(NSEntityDescription *)entityDesc {
+    if (!self.canSync) {
+        return;
+    }
+    
     NSString *parentEntity = [[entityDesc superentity] name];
     if (![parentEntity isEqualToString:@"FTASyncParent"]) {
         ALog(@"Requested a sync for an entity (%@) that does not inherit from FTASyncParent!", [entityDesc name]);

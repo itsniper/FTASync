@@ -10,6 +10,20 @@
 
 @implementation FTAParseSync
 
+- (BOOL)canSync {
+    if (![PFUser currentUser]) {
+        UIAlertView *noLogin = [[UIAlertView alloc] initWithTitle:@"Cannot Sync" 
+                                                          message:@"You must by logged in to sync" 
+                                                         delegate:self 
+                                                cancelButtonTitle:@"OK" 
+                                                otherButtonTitles:nil];
+        [noLogin show];
+        return NO;
+    }
+    
+    return YES;
+}
+
 - (NSArray *)getObjectsOfClass:(NSString *)className updatedSince:(NSDate *)lastUpdate {
     PFQuery *query = [PFQuery queryWithClassName:className];
     
