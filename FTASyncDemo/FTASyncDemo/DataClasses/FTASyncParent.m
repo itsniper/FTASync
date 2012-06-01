@@ -78,8 +78,8 @@
 }
 
 - (void)FTA_updateRemoteObject:(PFObject *)parseObject {
-    NSArray *attributes = [[[self entity] attributesByName] allKeys];
-    NSArray *relationships = [[[self entity] relationshipsByName] allKeys];
+    NSDictionary *attributes = [[self entity] attributesByName];
+    NSDictionary *relationships = [[self entity] relationshipsByName];
     //PFObject *parseObject = [PFObject objectWithClassName:NSStringFromClass([self class])];
     
     if (self.objectId) {
@@ -120,7 +120,7 @@
         NSObject *value = [self valueForKey:relationship];
         //TODO: Will the actual classes be preserved through here??
         
-        if ([value isKindOfClass:[NSSet class]]) {
+        if ([[relationships objectForKey:relationship] isToMany]) {
             //To-many relationship            
             NSSet *relatedObjects = (NSSet *)value;
             NSMutableArray *objectArray = [[NSMutableArray alloc] initWithCapacity:[relatedObjects count]];
@@ -142,7 +142,7 @@
             
             [parseObject setObject:objectArray forKey:relationship];
         }
-        else if ([value isKindOfClass:[FTASyncParent class]]) {
+        else {
             //To-one relationship
             FTASyncParent *relatedObject = (FTASyncParent *) value;
             PFObject *relatedRemoteObject = nil;
@@ -184,7 +184,7 @@
         NSEntityDescription *destEntity = [[relationships objectForKey:relationship] destinationEntity];
         //TODO: Will the actual classes be preserved through here??
         
-        if ([value isKindOfClass:[NSSet class]]) {
+        if ([[relationships objectForKey:relationship] isToMany]) {
             //To-many relationship
             NSMutableArray *relatedLocalObjects = [NSMutableArray arrayWithArray:[(NSSet *)value allObjects]];
             NSArray *relatedRemoteObjects = [parseObject objectForKey:relationship];
@@ -216,7 +216,7 @@
                     //Object on the other side of the relationship doesn't exist
                     DLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
                     localObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject];
-                    //localObject.syncStatusValue = 3;
+                    localObject.syncStatusValue = 0; //Object is not new local nor does it have local changes
                 }
                 else if ([(NSMutableSet *)value containsObject:localObject]) {
                     continue;
@@ -229,7 +229,7 @@
                 //[(NSMutableSet *)value addObject:localObject];
             }
         }
-        else if ([value isKindOfClass:[FTASyncParent class]]) {
+        else {
             //To-one relationship
             PFObject *relatedRemoteObject = [parseObject objectForKey:relationship];
             FTASyncParent *localRelatedObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId];
@@ -238,7 +238,7 @@
                 //Object on the other side of the relationship doesn't exist
                 DLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
                 localRelatedObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject];
-                //localRelatedObject.syncStatusValue = 3;
+                localRelatedObject.syncStatusValue = 0; //Object is not new local nor does it have local changes
             }
             
             [self setValue:localRelatedObject forKey:relationship];
