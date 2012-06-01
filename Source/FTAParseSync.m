@@ -10,14 +10,34 @@
 
 @implementation FTAParseSync
 
+@synthesize reachability = _reachability;
+
+#pragma mark - Custom Accessors
+
+- (KSReachability *)reachability {
+    if (!_reachability) {
+        _reachability = [KSReachability reachabilityToHost:nil];
+    }
+    
+    return _reachability;
+}
+
+#pragma - Sync
+
 - (BOOL)canSync {
+    if (!self.reachability.reachable) {
+        DCLog(@"No network connectivity");
+        return NO;
+    }
+    
     if (![PFUser currentUser]) {
-        UIAlertView *noLogin = [[UIAlertView alloc] initWithTitle:@"Cannot Sync" 
-                                                          message:@"You must by logged in to sync" 
-                                                         delegate:self 
-                                                cancelButtonTitle:@"OK" 
-                                                otherButtonTitles:nil];
-        [noLogin show];
+//        UIAlertView *noLogin = [[UIAlertView alloc] initWithTitle:@"Cannot Sync" 
+//                                                          message:@"You must by logged in to sync" 
+//                                                         delegate:nil 
+//                                                cancelButtonTitle:@"OK" 
+//                                                otherButtonTitles:nil];
+//        [noLogin show];
+        DCLog(@"No Parse user is logged in");
         return NO;
     }
     

@@ -9,8 +9,11 @@
 #import <Foundation/Foundation.h>
 #import <Parse/Parse.h>
 #import "FTASyncParent.h"
+#import "KSReachability.h"
 
 @interface FTAParseSync : NSObject
+
+@property (strong, nonatomic) KSReachability *reachability;
 
 - (BOOL)canSync;
 

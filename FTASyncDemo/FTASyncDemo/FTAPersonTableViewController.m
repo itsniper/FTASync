@@ -121,9 +121,9 @@
 }
 
 - (void)syncPerson {
-    NSLog(@"SYNCING PERSON");
+    DCLog(@"SYNCING PERSON");
     //[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"Reward" inManagedObjectContext:[NSManagedObjectContext MR_context]]];
-    [[FTASyncHandler sharedInstance] syncAll];
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:nil progressBlock:nil];
 }
 
 #pragma mark - Table view data source

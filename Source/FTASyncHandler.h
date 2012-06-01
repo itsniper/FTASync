@@ -8,17 +8,23 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-//#import <Parse/Parse.h>
-#import "CoreData+MagicalRecord.h"
 #import "FTAParseSync.h"
-#import "FTASyncParent.h"
 
-#define kFTASyncDeletedObjectAging 30
-//TODO: Create a method to clean out deleted objects on Parse after above # of days
+typedef void (^FTASyncProgressBlock)(float progress, NSString* message);
+typedef void (^FTACompletionBlock)(void);
+//typedef void (^FTASyncErrorHandler)(NSError *error, NSManagedObjectContext *context);
 
-@interface FTASyncHandler : NSObject
+
+@interface FTASyncHandler : NSObject {
+    
+}
 
 @property (strong, nonatomic) FTAParseSync *remoteInterface;
+@property (atomic, getter = isSyncInProgress) BOOL syncInProgress;
+@property (atomic) float progress;
+@property (atomic, copy) FTASyncProgressBlock progressBlock;
+//@property (copy) FTASyncErrorHandler errorHandler;
+@property (nonatomic, getter = isIgnoreContextSave) BOOL ignoreContextSave;
 
 +(FTASyncHandler *)sharedInstance;
 
@@ -26,5 +32,9 @@
 
 - (void)syncAll;
 - (void)syncEntity:(NSEntityDescription *)entityName;
+- (void)syncAll;
+- (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
+
+-(void)handleError:(NSError *)error;
 
 @end

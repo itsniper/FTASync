@@ -7,11 +7,66 @@
 //
 
 #import "FTASyncHandler.h"
+#import "FTASyncParent.h"
+#import "CoreData+MagicalRecord.h"
+
+#define kFTASyncDeletedObjectAging 30 //TODO: Create a method to clean out deleted objects on Parse after above # of days
+#define kSyncAutomatically  NO //TODO: Create methods to sync automatically after context save
+#define kAutoSyncDelay 30
 
 
 @implementation FTASyncHandler
 
 @synthesize remoteInterface = _remoteInterface;
+<<<<<<< HEAD
+=======
+@synthesize syncInProgress = _syncInProgress;
+@synthesize progress = _progress;
+@synthesize progressBlock = _progressBlock;
+//@synthesize errorHandler = _errorHandler;
+@synthesize ignoreContextSave = _ignoreContextSave;
+
+//- (id)init {
+//    self = [super init];
+//    if (!self) {
+//        return nil;
+//    }
+//    
+//    //Need to set the errorHandler property so that it can be reused
+//    self.errorHandler = ^(NSError *error, NSManagedObjectContext *context){
+//        [context rollback];
+//        
+//        
+//        NSDictionary *userInfo = [error userInfo];
+//        for (NSArray *detailedError in [userInfo allValues])
+//        {
+//            if ([detailedError isKindOfClass:[NSArray class]])
+//            {
+//                for (NSError *e in detailedError)
+//                {
+//                    if ([e respondsToSelector:@selector(userInfo)])
+//                    {
+//                        DLog(@"Error Details: %@", [e userInfo]);
+//                    }
+//                    else
+//                    {
+//                        DLog(@"Error Details: %@", e);
+//                    }
+//                }
+//            }
+//            else
+//            {
+//                DLog(@"Error: %@", detailedError);
+//            }
+//        }
+//        DLog(@"Error Message: %@", [error localizedDescription]);
+//        DLog(@"Error Domain: %@", [error domain]);
+//        DLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+//    };
+//    
+//    return self;
+//}
+>>>>>>> 1de9e8e... Moved the sync to a background thread
 
 #pragma mark - Singleton
 
@@ -52,11 +107,20 @@
 
 - (void)contextWasSaved:(NSNotification *)notification {
     DLog(@"%@", @"contextWasSaved:");
-    if (_syncInProgress) {
+
+    //TODO: Remove this if all sync happens off the main thread/context
+    if (self.isSyncInProgress) {
         DLog(@"%@", @"syncInProgress == YES");
         return;
     }
     DLog(@"%@", @"syncInProgress == NO");
+    //-----------------------------------------------------------------
+    
+    if (self.isIgnoreContextSave) {
+        DLog(@"%@", @"ignoreContextSave == YES");
+        return;
+    }
+    DLog(@"%@", @"ignoreContextSave == NO");
     
     NSSet *updatedObjects = [[notification userInfo] objectForKey:NSUpdatedObjectsKey];
     NSSet *deletedObjects = [[notification userInfo] objectForKey:NSDeletedObjectsKey];
@@ -93,33 +157,9 @@
 
 #pragma mark - Sync
 
-- (BOOL)canSync {
-    if (![self.remoteInterface canSync]) {
-        return NO;
-    }
-    
-    return YES;
-}
-
-- (void)syncAll {
-    if (!self.canSync) {
-        return;
-    }
-    
-    NSManagedObjectModel *dataModel = [NSManagedObjectModel MR_defaultManagedObjectModel];
-    
-    for (NSEntityDescription *anEntity in dataModel) {
-        NSString *parentEntity = [[anEntity superentity] name];
-        
-        if ([parentEntity isEqualToString:@"FTASyncParent"]) {
-            DLog(@"Requesting sync for entity: %@", anEntity);
-            [self syncEntity:anEntity];
-        }
-    }
-}
-
 - (void)syncEntity:(NSEntityDescription *)entityDesc {
-    if (!self.canSync) {
+    if ([NSThread isMainThread]) {
+        ALog(@"%@", @"This should NEVER be run on the main thread!!");
         return;
     }
     
@@ -141,17 +181,24 @@
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = nil OR syncStatus = 2 OR syncStatus = 3"]];
     NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
     DLog(@"Number of new local objects: %i", [newLocalObjects count]);
+#ifdef DEBUG
+    for (FTASyncParent *object in newLocalObjects) {
+        if (object.syncStatusValue == 3) {
+            DLog(@"!!!!!!!OBJECT WITH SYNC STATUS 3!!!!!! %@", object);
+        }
+    }
+#endif
     if ([newLocalObjects count] > 0) {
         [objectsToSync addObjectsFromArray:newLocalObjects];
     }
     
     //Get updated remote objects
     NSMutableArray *remoteObjectsForSync = [NSMutableArray arrayWithArray:[self.remoteInterface getObjectsOfClass:[entityDesc name] updatedSince:lastUpdate]];
+    DLog(@"Number of remote objects: %i", [remoteObjectsForSync count]);
 #ifdef DEBUG
     for (PFObject *object in remoteObjectsForSync) {
         DLog(@"%@", object.updatedAt);
     }   
-    DLog(@"Number of remote objects: %i", [remoteObjectsForSync count]);
 #endif
     
     //Remove objects deleted locally from remote sync array (push to remote done in FTAParseSync)
@@ -184,9 +231,24 @@
     //Sync objects changed on remote
     DLog(@"Number of updated remote objects: %i", [remoteObjectsForSync count]);
     [FTASyncParent FTA_updateObjectsForClass:entityDesc withRemoteObjects:remoteObjectsForSync];
+<<<<<<< HEAD
     _syncInProgress = YES;
     [[NSManagedObjectContext MR_contextForCurrentThread] MR_save];
     _syncInProgress = NO;
+=======
+    //TODO: Remove
+    if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
+        ALog(@"%@", @"Should not be working with the main context!");
+    }
+    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+        [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+        self.syncInProgress = NO;
+        self.progressBlock = nil;
+        self.progress = 0;
+        
+        [self handleError:error];
+    }];
+>>>>>>> 1de9e8e... Moved the sync to a background thread
     
     //Sync objects changed locally
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
@@ -197,9 +259,20 @@
     if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
         DLog(@"NO OBJECTS TO SYNC");
         if ([deletedRemoteObjects count] > 0) {
+<<<<<<< HEAD
             _syncInProgress = YES;
             [[NSManagedObjectContext MR_contextForCurrentThread] MR_save];
             _syncInProgress = NO;
+=======
+            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+                [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+                self.syncInProgress = NO;
+                self.progressBlock = nil;
+                self.progress = 0;
+                
+                [self handleError:error];
+            }];
+>>>>>>> 1de9e8e... Moved the sync to a background thread
         }
         
         return;
@@ -207,16 +280,132 @@
     
     //Push changes to remote server and update local object's metadata
     DLog(@"Total number of objects to sync: %i", [objectsToSync count]);
-    NSError *error;
+    NSError *error = nil;
     BOOL success = [self.remoteInterface putUpdatedObjects:objectsToSync forClass:entityDesc error:&error];
     if (!success) {
-        DLog(@"%@", error);
+        [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+        self.syncInProgress = NO;
+        self.progressBlock = nil;
+        self.progress = 0;
+        
+        [self handleError:error];
     } 
     else {
+<<<<<<< HEAD
         _syncInProgress = YES;
         [[NSManagedObjectContext MR_contextForCurrentThread] MR_save];
         _syncInProgress = NO;
+=======
+        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+            self.syncInProgress = NO;
+            self.progressBlock = nil;
+            self.progress = 0;
+            
+            [self handleError:error];
+        }];
     }
+}
+
+- (void)syncAll {
+    if ([NSThread isMainThread]) {
+        ALog(@"%@", @"This should NEVER be run on the main thread!!");
+        return;
+    }
+    
+    NSManagedObjectModel *dataModel = [NSManagedObjectModel MR_defaultManagedObjectModel];
+    
+    for (NSEntityDescription *anEntity in dataModel) {
+        NSString *parentEntity = [[anEntity superentity] name];
+        
+        if ([parentEntity isEqualToString:@"FTASyncParent"]) {
+            DLog(@"Requesting sync for entity: %@", anEntity);
+            [self syncEntity:anEntity];
+        }
+    }
+}
+
+- (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress {
+    //Quick sanity check to fail early if a sync is in progress, or cannot be completed
+    if (![self.remoteInterface canSync] || self.syncInProgress) {
+        return;
+    }
+    
+    self.syncInProgress = YES;
+    self.progressBlock = progress;
+    self.progress = 0.0;
+    
+    //Setup background process tags so we can complete on app exit
+    UIBackgroundTaskIdentifier bgTask = 0;
+    if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+        //Create a background task identifier and specify the exception handler
+        bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            DCLog(@"Background sync on exit failed to complete in time limit");
+            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            self.syncInProgress = NO;
+        }];
+    };
+    
+    if (self.progressBlock) {
+        self.progressBlock(0.0, @"Initializing...");
+    }
+    
+    [MagicalRecordHelpers performSaveDataOperationInBackgroundWithBlock:^(NSManagedObjectContext *context) {
+        //TODO: Is there any user setup needed??
+        [self syncAll];
+    }completion:^{
+        if (self.progressBlock)
+            self.progressBlock(1.0, @"Complete");
+        
+        NSAssert([NSThread isMainThread], @"Completion block must be called on main thread");
+        
+        if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            DCLog(@"Completed sync.");
+        }
+        
+        //Use this notification and user defaults key to update an "Last Updated" message in the UI
+        [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"FTASyncLastSyncDate"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"FTASyncDidSync" object:nil];
+        
+        if (completion)
+            completion();
+        
+        self.syncInProgress = NO;
+        self.progressBlock = nil;
+        self.progress = 0;
+    }];
+}
+
+#pragma mark - Error Handling
+
+-(void)handleError:(NSError *)error {
+    NSDictionary *userInfo = [error userInfo];
+    for (NSArray *detailedError in [userInfo allValues])
+    {
+        if ([detailedError isKindOfClass:[NSArray class]])
+        {
+            for (NSError *e in detailedError)
+            {
+                if ([e respondsToSelector:@selector(userInfo)])
+                {
+                    DLog(@"Error Details: %@", [e userInfo]);
+                }
+                else
+                {
+                    DLog(@"Error Details: %@", e);
+                }
+            }
+        }
+        else
+        {
+            DLog(@"Error: %@", detailedError);
+        }
+>>>>>>> 1de9e8e... Moved the sync to a background thread
+    }
+    DLog(@"Error Message: %@", [error localizedDescription]);
+    DLog(@"Error Domain: %@", [error domain]);
+    DLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
 
 @end

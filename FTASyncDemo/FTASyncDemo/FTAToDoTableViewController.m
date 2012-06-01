@@ -121,9 +121,9 @@
 }
 
 - (void)syncToDo {
-    NSLog(@"SYNCING");
+    DCLog(@"SYNCING TODO");
     //[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"Reward" inManagedObjectContext:[NSManagedObjectContext MR_context]]];
-    [[FTASyncHandler sharedInstance] syncAll];
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:nil progressBlock:nil];
 }
 
 #pragma mark - Table view data source
@@ -204,39 +204,40 @@
 
 #pragma mark - Fetched results controller delegate
 
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    [self.tableView beginUpdates];
-}
+//- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+//    [self.tableView beginUpdates];
+//}
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
-    switch (type) {
-        case NSFetchedResultsChangeInsert:
-            NSLog(@"ToDoInsert");
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationTop];
-            break;
-        case NSFetchedResultsChangeDelete:
-            NSLog(@"ToDoDelete");
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
-            break;
-        case NSFetchedResultsChangeMove:
-            NSLog(@"ToDoMove From: %@ To:%@", indexPath, newIndexPath);
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
-            break;
-        case NSFetchedResultsChangeUpdate: {
-            NSLog(@"ToDoUpdate");
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            NSManagedObject *managedObject = [controller objectAtIndexPath:indexPath];
-            cell.textLabel.text = [managedObject valueForKey:@"name"];
-            cell.detailTextLabel.text = [[managedObject valueForKey:@"priority"] stringValue];
-            break;
-        }
-    }
+    [self.tableView reloadData];
+//    switch (type) {
+//        case NSFetchedResultsChangeInsert:
+//            NSLog(@"ToDoInsert");
+//            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationTop];
+//            break;
+//        case NSFetchedResultsChangeDelete:
+//            NSLog(@"ToDoDelete");
+//            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
+//            break;
+//        case NSFetchedResultsChangeMove:
+//            NSLog(@"ToDoMove From: %@ To:%@", indexPath, newIndexPath);
+//            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
+//            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+//            break;
+//        case NSFetchedResultsChangeUpdate: {
+//            NSLog(@"ToDoUpdate");
+//            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+//            NSManagedObject *managedObject = [controller objectAtIndexPath:indexPath];
+//            cell.textLabel.text = [managedObject valueForKey:@"name"];
+//            cell.detailTextLabel.text = [[managedObject valueForKey:@"priority"] stringValue];
+//            break;
+//        }
+//    }
 }
 
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    [self.tableView reloadData];
-    [self.tableView endUpdates];
-}
+//- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+//    //[self.tableView reloadData];
+//    [self.tableView endUpdates];
+//}
 
 @end
