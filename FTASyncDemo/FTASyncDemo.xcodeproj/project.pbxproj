@@ -78,7 +78,7 @@
 		8B7A264115608327006FB602 /* user.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7A263E15608327006FB602 /* user.png */; };
 		8B7A2644156090C8006FB602 /* FTASelectionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A2643156090C8006FB602 /* FTASelectionTableViewController.m */; };
 		8B937B071573E91F00FA3E39 /* FTASetupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B937B061573E91E00FA3E39 /* FTASetupViewController.m */; };
-		8B937B151575E9DF00FA3E39 /* KSReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B937B141575E9DF00FA3E39 /* KSReachability.m */; };
+		8B937B29157AC84C00FA3E39 /* NPReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B937B28157AC84C00FA3E39 /* NPReachability.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,9 +187,8 @@
 		8B7A2643156090C8006FB602 /* FTASelectionTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASelectionTableViewController.m; sourceTree = "<group>"; };
 		8B937B051573E91E00FA3E39 /* FTASetupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASetupViewController.h; sourceTree = "<group>"; };
 		8B937B061573E91E00FA3E39 /* FTASetupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASetupViewController.m; sourceTree = "<group>"; };
-		8B937B121575E9DF00FA3E39 /* ARCSafe_MemMgmt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ARCSafe_MemMgmt.h; path = KSReachability/ARCSafe_MemMgmt.h; sourceTree = "<group>"; };
-		8B937B131575E9DF00FA3E39 /* KSReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSReachability.h; path = KSReachability/KSReachability.h; sourceTree = "<group>"; };
-		8B937B141575E9DF00FA3E39 /* KSReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSReachability.m; path = KSReachability/KSReachability.m; sourceTree = "<group>"; };
+		8B937B27157AC84C00FA3E39 /* NPReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPReachability.h; sourceTree = "<group>"; };
+		8B937B28157AC84C00FA3E39 /* NPReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NPReachability.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -339,7 +338,7 @@
 			children = (
 				8B5AFC35152D137D000AF428 /* FTASync */,
 				8B6D39B8152836E500B296D6 /* MagicalRecord */,
-				8B937B111575E94400FA3E39 /* KSReachability */,
+				8B937B26157AC84C00FA3E39 /* NPReachability */,
 			);
 			path = OpenSource;
 			sourceTree = "<group>";
@@ -429,14 +428,13 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		8B937B111575E94400FA3E39 /* KSReachability */ = {
+		8B937B26157AC84C00FA3E39 /* NPReachability */ = {
 			isa = PBXGroup;
 			children = (
-				8B937B121575E9DF00FA3E39 /* ARCSafe_MemMgmt.h */,
-				8B937B131575E9DF00FA3E39 /* KSReachability.h */,
-				8B937B141575E9DF00FA3E39 /* KSReachability.m */,
+				8B937B27157AC84C00FA3E39 /* NPReachability.h */,
+				8B937B28157AC84C00FA3E39 /* NPReachability.m */,
 			);
-			name = KSReachability;
+			path = NPReachability;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -598,7 +596,7 @@
 				8B7A263A15607DA5006FB602 /* Person.m in Sources */,
 				8B7A2644156090C8006FB602 /* FTASelectionTableViewController.m in Sources */,
 				8B937B071573E91F00FA3E39 /* FTASetupViewController.m in Sources */,
-				8B937B151575E9DF00FA3E39 /* KSReachability.m in Sources */,
+				8B937B29157AC84C00FA3E39 /* NPReachability.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

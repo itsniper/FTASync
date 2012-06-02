@@ -7,25 +7,16 @@
 //
 
 #import "FTAParseSync.h"
+#import <Parse/Parse.h>
+#import "NPReachability.h"
+
 
 @implementation FTAParseSync
-
-@synthesize reachability = _reachability;
-
-#pragma mark - Custom Accessors
-
-- (KSReachability *)reachability {
-    if (!_reachability) {
-        _reachability = [KSReachability reachabilityToHost:nil];
-    }
-    
-    return _reachability;
-}
 
 #pragma - Sync
 
 - (BOOL)canSync {
-    if (!self.reachability.reachable) {
+    if (![[NPReachability sharedInstance] isCurrentlyReachable]) {
         DCLog(@"No network connectivity");
         return NO;
     }
