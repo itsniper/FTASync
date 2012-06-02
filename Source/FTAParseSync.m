@@ -105,10 +105,6 @@
     }];
     
     //Update local objects created via relationship traversal with Parse results
-//    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-//	  [request setEntity:[FTASyncParent entityInManagedObjectContext:];
-//    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 3"]];
-//    NSArray *traversedLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
     NSArray *traversedLocalObjects = [FTASyncParent MR_findByAttribute:@"syncStatus" withValue:[NSNumber numberWithInt:3]];
     for (FTASyncParent *traversedObject in traversedLocalObjects) {
         traversedObject.objectId = traversedObject.remoteObject.objectId;

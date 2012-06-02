@@ -123,7 +123,11 @@
 - (void)syncPerson {
     DCLog(@"SYNCING PERSON");
     //[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"Reward" inManagedObjectContext:[NSManagedObjectContext MR_context]]];
-    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:nil progressBlock:nil];
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+        DCLog(@"Completion Block Called");
+    } progressBlock:^(float progress, NSString *message) {
+        DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
+    }];
 }
 
 #pragma mark - Table view data source
@@ -189,38 +193,39 @@
 
 #pragma mark - Fetched results controller delegate
 
-- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
-    [self.tableView beginUpdates];
-}
+//- (void)controllerWillChangeContent:(NSFetchedResultsController *)controller {
+//    [self.tableView beginUpdates];
+//}
 
 - (void)controller:(NSFetchedResultsController *)controller didChangeObject:(id)anObject atIndexPath:(NSIndexPath *)indexPath forChangeType:(NSFetchedResultsChangeType)type newIndexPath:(NSIndexPath *)newIndexPath {
-    switch (type) {
-        case NSFetchedResultsChangeInsert:
-            NSLog(@"PersonInsert");
-            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationTop];
-            break;
-        case NSFetchedResultsChangeDelete:
-            NSLog(@"PersonDelete");
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
-            break;
-        case NSFetchedResultsChangeMove:
-            NSLog(@"PersonMove From: %@ To:%@", indexPath, newIndexPath);
-            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
-            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
-            break;
-        case NSFetchedResultsChangeUpdate: {
-            NSLog(@"PersonUpdate");
-            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
-            Person *managedObject = [controller objectAtIndexPath:indexPath];
-            cell.textLabel.text = [managedObject valueForKey:@"name"];
-            cell.imageView.image = [UIImage imageWithData:managedObject.photo];
-            break;
-        }
-    }
+    [self.tableView reloadData];
+//    switch (type) {
+//        case NSFetchedResultsChangeInsert:
+//            NSLog(@"PersonInsert");
+//            [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:newIndexPath] withRowAnimation:UITableViewRowAnimationTop];
+//            break;
+//        case NSFetchedResultsChangeDelete:
+//            NSLog(@"PersonDelete");
+//            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
+//            break;
+//        case NSFetchedResultsChangeMove:
+//            NSLog(@"PersonMove From: %@ To:%@", indexPath, newIndexPath);
+//            [self.tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationTop];
+//            [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationTop];
+//            break;
+//        case NSFetchedResultsChangeUpdate: {
+//            NSLog(@"PersonUpdate");
+//            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:indexPath];
+//            Person *managedObject = [controller objectAtIndexPath:indexPath];
+//            cell.textLabel.text = [managedObject valueForKey:@"name"];
+//            cell.imageView.image = [UIImage imageWithData:managedObject.photo];
+//            break;
+//        }
+//    }
 }
 
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
-    [self.tableView endUpdates];
-}
+//- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller {
+//    [self.tableView endUpdates];
+//}
 
 @end

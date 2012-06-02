@@ -105,22 +105,16 @@
 
 #pragma mark - CoreData Maintenance
 
-- (void)contextWasSaved:(NSNotification *)notification {
-    DLog(@"%@", @"contextWasSaved:");
-
-    //TODO: Remove this if all sync happens off the main thread/context
-    if (self.isSyncInProgress) {
-        DLog(@"%@", @"syncInProgress == YES");
+- (void)contextWasSaved:(NSNotification *)notification {    
+    if (![NSThread isMainThread]) {
+        //If this is not on a main thread it is a sync save
         return;
     }
-    DLog(@"%@", @"syncInProgress == NO");
-    //-----------------------------------------------------------------
     
     if (self.isIgnoreContextSave) {
         DLog(@"%@", @"ignoreContextSave == YES");
         return;
     }
-    DLog(@"%@", @"ignoreContextSave == NO");
     
     NSSet *updatedObjects = [[notification userInfo] objectForKey:NSUpdatedObjectsKey];
     NSSet *deletedObjects = [[notification userInfo] objectForKey:NSDeletedObjectsKey];
@@ -133,6 +127,9 @@
             DLog(@"Updated Object: %@", updatedObject);
         }
     }
+    self.ignoreContextSave = YES;
+    [[NSManagedObjectContext MR_defaultContext] MR_save];
+    self.ignoreContextSave = NO;
     
     for (NSManagedObject *deletedObject in deletedObjects) {
         DLog(@"Object was deleted from MOC: %@", deletedObject);
@@ -314,14 +311,30 @@
     }
     
     NSManagedObjectModel *dataModel = [NSManagedObjectModel MR_defaultManagedObjectModel];
+    NSMutableArray *entitiesToSync = [NSMutableArray arrayWithCapacity:1];
     
     for (NSEntityDescription *anEntity in dataModel) {
         NSString *parentEntity = [[anEntity superentity] name];
         
         if ([parentEntity isEqualToString:@"FTASyncParent"]) {
-            DLog(@"Requesting sync for entity: %@", anEntity);
-            [self syncEntity:anEntity];
+            [entitiesToSync addObject:anEntity];
         }
+    }
+    
+    DLog(@"Syncing %i entities", [entitiesToSync count]);
+    float increment = 0.8 / (float)[entitiesToSync count];
+    self.progress = 0.1;
+    if (self.progressBlock) {
+        self.progressBlock(self.progress, @"Starting sync...");
+    }
+    
+    for (NSEntityDescription *anEntity in entitiesToSync) {
+        DLog(@"Requesting sync for entity: %@", anEntity);
+        [self syncEntity:anEntity];
+        
+        self.progress += increment;
+        if (self.progressBlock)
+            self.progressBlock(self.progress, [NSString stringWithFormat:@"Finished sync of %@", [anEntity name]]);
     }
 }
 
@@ -334,6 +347,9 @@
     self.syncInProgress = YES;
     self.progressBlock = progress;
     self.progress = 0.0;
+    if (self.progressBlock) {
+        self.progressBlock(self.progress, @"Initializing...");
+    }
     
     //Setup background process tags so we can complete on app exit
     UIBackgroundTaskIdentifier bgTask = 0;
@@ -346,10 +362,6 @@
         }];
     };
     
-    if (self.progressBlock) {
-        self.progressBlock(0.0, @"Initializing...");
-    }
-    
     [MagicalRecordHelpers performSaveDataOperationInBackgroundWithBlock:^(NSManagedObjectContext *context) {
         //TODO: Is there any user setup needed??
         [self syncAll];
@@ -357,7 +369,9 @@
         if (self.progressBlock)
             self.progressBlock(1.0, @"Complete");
         
-        NSAssert([NSThread isMainThread], @"Completion block must be called on main thread");
+        if (![NSThread isMainThread]) {
+            ALog(@"%@", @"Completion block must be called on main thread");
+        }
         
         if ([[UIDevice currentDevice] isMultitaskingSupported]) {
             [[UIApplication sharedApplication] endBackgroundTask:bgTask];

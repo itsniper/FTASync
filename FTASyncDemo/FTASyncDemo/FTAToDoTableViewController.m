@@ -123,7 +123,11 @@
 - (void)syncToDo {
     DCLog(@"SYNCING TODO");
     //[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"Reward" inManagedObjectContext:[NSManagedObjectContext MR_context]]];
-    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:nil progressBlock:nil];
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+        DCLog(@"Completion Block Called");
+    } progressBlock:^(float progress, NSString *message) {
+        DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
+    }];
 }
 
 #pragma mark - Table view data source
