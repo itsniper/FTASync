@@ -12,3 +12,5 @@ build/
 UserInterfaceState.xcuserstate
 FTASyncDemo.xcodeproj/project.xcworkspace/
 FTASyncDemo.xcodeproj/xcuserdata/
+
+FTASyncDemo/ParseKeys.h

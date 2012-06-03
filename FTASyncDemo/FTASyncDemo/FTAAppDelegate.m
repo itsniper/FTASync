@@ -11,6 +11,7 @@
 #import "FTAPersonTableViewController.h"
 #import <Parse/Parse.h>
 #import "FTASync.h"
+#import "ParseKeys.h"
 
 
 @implementation FTAAppDelegate
@@ -25,9 +26,10 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"DefaultPrefs" ofType:@"plist"]]];
     
     [MagicalRecordHelpers setupAutoMigratingCoreDataStack];
-    
-    [Parse setApplicationId:@"XXXX" 
-                  clientKey:@"XXXX"];
+
+    [Parse setApplicationId:kParseAppId 
+                  clientKey:kParseClientKey];
+    [PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];
     
     //Need to make sure FTASyncHandler gets initialized immediately so it's registered for notifications
     [FTASyncHandler sharedInstance];
