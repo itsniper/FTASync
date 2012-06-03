@@ -101,6 +101,7 @@
             DLog(@"Deleted objects sent to prefs: %@", localDeletedObjects);
         }
     }
+    [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 #pragma mark - Sync Lock
@@ -310,6 +311,7 @@
         
         //Use this notification and user defaults key to update an "Last Updated" message in the UI
         [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"FTASyncLastSyncDate"];
+        [[NSUserDefaults standardUserDefaults] synchronize];
         [[NSNotificationCenter defaultCenter] postNotificationName:@"FTASyncDidSync" object:nil];
         
         if (completion)

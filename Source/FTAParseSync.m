@@ -85,6 +85,7 @@
     NSMutableArray *newDeletedLocalObjects = [[NSMutableArray alloc] initWithArray:deletedFromDefaults];
     [newDeletedLocalObjects removeObjectsInArray:deletedLocalObjects];
     [[NSUserDefaults standardUserDefaults] setObject:newDeletedLocalObjects forKey:defaultsKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
     
     //Update local updated objects with Parse results
     [updatedParseObjects removeObjectsInRange:NSMakeRange(updateCount, deleteCount)];
