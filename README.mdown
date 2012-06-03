@@ -1,10 +1,14 @@
 # FTASync
 
-Allows you to sync CoreData entities with a Parse backend. 
+Allows you to sync CoreData entities with a [Parse](https://www.parse.com/) backend.
 
 # Requires
 
-* [Magical Record](https://github.com/magicalpanda/MagicalRecord) - Easier handling of the CoreData stuff. May remove this at some point.
+It is assumed that you have already installed and setup these:
+
+* [Magical Record](https://github.com/magicalpanda/MagicalRecord) - Easier handling of the CoreData stuff. !!FTASync HAS NOT BEEN TESTED WITH MR 2.0!!
+* [mogenerator] (https://github.com/rentzsch/mogenerator) - If you've never used it you should.
+* [NPReachability] (https://github.com/Abizern/NPReachability) - Used to check for network connectivity pre-sync.
 * [Parse SDK](https://www.parse.com/apps/quickstart)
 
 # Installation
@@ -17,16 +21,32 @@ Allows you to sync CoreData entities with a Parse backend.
     * Int16 syncStatus (Default: 2)
     * Date updatedAt
 3. For each entity that should sync, set the parent entity field to FTASyncParent.
-4. In your XCode Project, add all the .h and .m files from the *Source* folder into your project.
-5. Add *FTASync.h* to your AppDelegate file.
-6. Add `[FTASyncHandler sharedInstance];` to the `- (BOOL)application:didFinishLaunchingWithOptions:' method in your AppDelegate.
+4. Run mogenerator to generate your entity class files.
+5. Add all the .h and .m files from the *Source* folder into your project. (FTASyncParent.h/m will replace the mogenerator generated files)
+6. Add *FTASync.h* to your AppDelegate file.
+7. Add `[FTASyncHandler sharedInstance];` to the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate.
+8. Add `[PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];` to the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate. You can also setup some other ACL if you wish.
+
+It is assumed that you will handle user sign up and login on your own.
 
 # Usage
 
 ## Sync all entities
 
-Simply add *FTASync.h* and call `[[FTASyncHandler sharedInstance] syncAll];`.
+Simply add *FTASync.h* and call `[[FTASyncHandler sharedInstance] syncWithCompletionBlock:nil progressBlock:nil];`.
+
+Optionally you can pass in completion and progress blocks. The signatures are in *FTASyncHandler.h*
 
 ## Sync a specific entity
 
-Simply add *FTASync.h* and call `[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"EntityName" inManagedObjectContext:[NSManagedObjectContext MR_context]]];` replacing "EntityName" with the entity to sync.
+Coming soon!
+
+## Display the "Last Sync" time
+
+There is an `FTASyncLastSyncDate` key added to the user defaults that contains the time of the last successful sync. Each time that value is update an `FTASyncDidSync` notification is posted to the default notification center.
+
+# ToDo
+
+* Update to Magical Record 2.0
+* Support sync of a single entity
+* Add ability to check PFUser for updates on any other entity to save on API calls

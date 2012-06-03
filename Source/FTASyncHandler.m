@@ -5,10 +5,14 @@
 //  Created by Justin Bergen on 3/13/12.
 //  Copyright (c) 2012 Five3 Apps, LLC. All rights reserved.
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copyof this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
-#import "FTASyncHandler.h"
-#import "FTASyncParent.h"
-#import "CoreData+MagicalRecord.h"
+#import "FTASync.h"
 
 #define kFTASyncDeletedObjectAging 30 //TODO: Create a method to clean out deleted objects on Parse after above # of days
 #define kSyncAutomatically  NO //TODO: Create methods to sync automatically after context save
@@ -37,17 +41,6 @@
     return shared;
 }
 
-//May not need these two methods since I'm using dispatch_once()
-/*+ (id)allocWithZone:(NSZone *)zone
-{
-    return [self sharedInstance];
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    return self;
-}*/
-
 #pragma mark - Custom Accessors
 
 - (FTAParseSync *)remoteInterface {
@@ -67,19 +60,17 @@
     }
     
     if (self.isIgnoreContextSave) {
-        DLog(@"%@", @"ignoreContextSave == YES");
+        FSLog(@"%@", @"ignoreContextSave == YES");
         return;
     }
     
     NSSet *updatedObjects = [[notification userInfo] objectForKey:NSUpdatedObjectsKey];
     NSSet *deletedObjects = [[notification userInfo] objectForKey:NSDeletedObjectsKey];
     
-    for (NSManagedObject *updatedObject in updatedObjects) {
-        //NSString *parentEntity = [[[updatedObject entity] superentity] name];
-        
+    for (NSManagedObject *updatedObject in updatedObjects) {        
         if ([[updatedObject class] isSubclassOfClass:[FTASyncParent class]] && [updatedObject valueForKey:@"syncStatus"] == [NSNumber numberWithInt:0]) {
             [updatedObject setValue:[NSNumber numberWithInt:1] forKey:@"syncStatus"];
-            DLog(@"Updated Object: %@", updatedObject);
+            FSLog(@"Updated Object: %@", updatedObject);
         }
     }
     self.ignoreContextSave = YES;
@@ -87,9 +78,7 @@
     self.ignoreContextSave = NO;
     
     for (NSManagedObject *deletedObject in deletedObjects) {
-        DLog(@"Object was deleted from MOC: %@", deletedObject);
-        //NSString *parentEntity = [[[deletedObject entity] superentity] name];
-        
+        FSLog(@"Object was deleted from MOC: %@", deletedObject);        
         if ([[deletedObject class] isSubclassOfClass:[FTASyncParent class]] && [deletedObject valueForKey:@"objectId"] != nil) {
             NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [[deletedObject entity] name]];
             NSArray *deletedFromDefaults = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
@@ -97,8 +86,8 @@
             
             [localDeletedObjects addObject:[deletedObject valueForKey:@"objectId"]];
             [[NSUserDefaults standardUserDefaults] setObject:localDeletedObjects forKey:defaultsKey];
-            DLog(@"Deleted Object: %@", deletedObject);
-            DLog(@"Deleted objects sent to prefs: %@", localDeletedObjects);
+            FSLog(@"Deleted Object: %@", deletedObject);
+            FSLog(@"Deleted objects sent to prefs: %@", localDeletedObjects);
         }
     }
     [[NSUserDefaults standardUserDefaults] synchronize];
@@ -112,13 +101,13 @@
 
 - (void)syncEntity:(NSEntityDescription *)entityDesc {
     if ([NSThread isMainThread]) {
-        ALog(@"%@", @"This should NEVER be run on the main thread!!");
+        FSALog(@"%@", @"This should NEVER be run on the main thread!!");
         return;
     }
     
     NSString *parentEntity = [[entityDesc superentity] name];
     if (![parentEntity isEqualToString:@"FTASyncParent"]) {
-        ALog(@"Requested a sync for an entity (%@) that does not inherit from FTASyncParent!", [entityDesc name]);
+        FSALog(@"Requested a sync for an entity (%@) that does not inherit from FTASyncParent!", [entityDesc name]);
         return;
     }
     
@@ -128,16 +117,16 @@
     
     //Get the time of the most recently sync'd object
     NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
-    DLog(@"Last update: %@", lastUpdate);
+    FSLog(@"Last update: %@", lastUpdate);
     
     //Add new local objects
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = nil OR syncStatus = 2 OR syncStatus = 3"]];
     NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
-    DLog(@"Number of new local objects: %i", [newLocalObjects count]);
+    FSLog(@"Number of new local objects: %i", [newLocalObjects count]);
 #ifdef DEBUG
     for (FTASyncParent *object in newLocalObjects) {
         if (object.syncStatusValue == 3) {
-            DLog(@"!!!!!!!OBJECT WITH SYNC STATUS 3!!!!!! %@", object);
+            FSLog(@"!!!!!!!OBJECT WITH SYNC STATUS 3!!!!!! %@", object);
         }
     }
 #endif
@@ -147,17 +136,17 @@
     
     //Get updated remote objects
     NSMutableArray *remoteObjectsForSync = [NSMutableArray arrayWithArray:[self.remoteInterface getObjectsOfClass:[entityDesc name] updatedSince:lastUpdate]];
-    DLog(@"Number of remote objects: %i", [remoteObjectsForSync count]);
+    FSLog(@"Number of remote objects: %i", [remoteObjectsForSync count]);
 #ifdef DEBUG
     for (PFObject *object in remoteObjectsForSync) {
-        DLog(@"%@", object.updatedAt);
+        FSLog(@"%@", object.updatedAt);
     }   
 #endif
     
     //Remove objects deleted locally from remote sync array (push to remote done in FTAParseSync)
     NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [entityDesc name]];
     NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
-    DLog(@"Deleted objects from prefs: %@", deletedLocalObjects);
+    FSLog(@"Deleted objects from prefs: %@", deletedLocalObjects);
     NSPredicate *deletedLocalInRemotePredicate = [NSPredicate predicateWithFormat: @"NOT (objectId IN %@)", deletedLocalObjects];
     [remoteObjectsForSync filterUsingPredicate:deletedLocalInRemotePredicate];
     
@@ -170,7 +159,7 @@
         newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = NO OR deleted = nil", lastUpdate];
     }
     NSArray *newRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:newRemotePredicate];
-    DLog(@"Number of new remote objects: %i", [newRemoteObjects count]);
+    FSLog(@"Number of new remote objects: %i", [newRemoteObjects count]);
     [remoteObjectsForSync removeObjectsInArray:newRemoteObjects];
     [FTASyncParent FTA_newObjectsForClass:entityDesc withRemoteObjects:newRemoteObjects];
     
@@ -178,16 +167,15 @@
     NSPredicate *deletedRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = YES"];
     NSArray *deletedRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:deletedRemotePredicate];
     [remoteObjectsForSync removeObjectsInArray:deletedRemoteObjects];
-    DLog(@"Number of deleted remote objects: %i", [deletedRemoteObjects count]);
+    FSLog(@"Number of deleted remote objects: %i", [deletedRemoteObjects count]);
     [FTASyncParent FTA_deleteObjectsForClass:entityDesc withRemoteObjects:deletedRemoteObjects];
     
     //Sync objects changed on remote
-    DLog(@"Number of updated remote objects: %i", [remoteObjectsForSync count]);
+    FSLog(@"Number of updated remote objects: %i", [remoteObjectsForSync count]);
     [FTASyncParent FTA_updateObjectsForClass:entityDesc withRemoteObjects:remoteObjectsForSync];
 
-    //TODO: Remove
     if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
-        ALog(@"%@", @"Should not be working with the main context!");
+        FSALog(@"%@", @"Should not be working with the main context!");
     }
     [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
         [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
@@ -201,11 +189,11 @@
     //Sync objects changed locally
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
     NSArray *updatedLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
-    DLog(@"Number of updated local objects: %i", [updatedLocalObjects count]);
+    FSLog(@"Number of updated local objects: %i", [updatedLocalObjects count]);
     [objectsToSync addObjectsFromArray:updatedLocalObjects];
     
     if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
-        DLog(@"NO OBJECTS TO SYNC");
+        FSLog(@"NO OBJECTS TO SYNC");
         if ([deletedRemoteObjects count] > 0) {
             [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
                 [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
@@ -221,7 +209,7 @@
     }
     
     //Push changes to remote server and update local object's metadata
-    DLog(@"Total number of objects to sync: %i", [objectsToSync count]);
+    FSLog(@"Total number of objects to sync: %i", [objectsToSync count]);
     NSError *error = nil;
     BOOL success = [self.remoteInterface putUpdatedObjects:objectsToSync forClass:entityDesc error:&error];
     if (!success) {
@@ -246,13 +234,13 @@
 
 - (void)syncAll {
     if ([NSThread isMainThread]) {
-        ALog(@"%@", @"This should NEVER be run on the main thread!!");
+        FSALog(@"%@", @"This should NEVER be run on the main thread!!");
         return;
     }
     
     NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]] subentities];
     
-    DLog(@"Syncing %i entities", [entitiesToSync count]);
+    FSLog(@"Syncing %i entities", [entitiesToSync count]);
     float increment = 0.8 / (float)[entitiesToSync count];
     self.progress = 0.1;
     if (self.progressBlock) {
@@ -260,7 +248,7 @@
     }
     
     for (NSEntityDescription *anEntity in entitiesToSync) {
-        DLog(@"Requesting sync for entity: %@", anEntity);
+        FSLog(@"Requesting sync for entity: %@", anEntity);
         [self syncEntity:anEntity];
         
         self.progress += increment;
@@ -287,7 +275,7 @@
     if ([[UIDevice currentDevice] isMultitaskingSupported]) {
         //Create a background task identifier and specify the exception handler
         bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            DCLog(@"Background sync on exit failed to complete in time limit");
+            FSCLog(@"Background sync on exit failed to complete in time limit");
             [[UIApplication sharedApplication] endBackgroundTask:bgTask];
             self.syncInProgress = NO;
         }];
@@ -301,12 +289,12 @@
             self.progressBlock(1.0, @"Complete");
         
         if (![NSThread isMainThread]) {
-            ALog(@"%@", @"Completion block must be called on main thread");
+            FSALog(@"%@", @"Completion block must be called on main thread");
         }
         
         if ([[UIDevice currentDevice] isMultitaskingSupported]) {
             [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-            DCLog(@"Completed sync.");
+            FSCLog(@"Completed sync.");
         }
         
         //Use this notification and user defaults key to update an "Last Updated" message in the UI
@@ -335,22 +323,22 @@
             {
                 if ([e respondsToSelector:@selector(userInfo)])
                 {
-                    DLog(@"Error Details: %@", [e userInfo]);
+                    FSLog(@"Error Details: %@", [e userInfo]);
                 }
                 else
                 {
-                    DLog(@"Error Details: %@", e);
+                    FSLog(@"Error Details: %@", e);
                 }
             }
         }
         else
         {
-            DLog(@"Error: %@", detailedError);
+            FSLog(@"Error: %@", detailedError);
         }
     }
-    DLog(@"Error Message: %@", [error localizedDescription]);
-    DLog(@"Error Domain: %@", [error domain]);
-    DLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+    FSLog(@"Error Message: %@", [error localizedDescription]);
+    FSLog(@"Error Domain: %@", [error domain]);
+    FSLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
 
 @end

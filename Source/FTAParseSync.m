@@ -5,8 +5,14 @@
 //  Created by Justin Bergen on 3/16/12.
 //  Copyright (c) 2012 Five3 Apps, LLC. All rights reserved.
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copyof this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
-#import "FTAParseSync.h"
+#import "FTASync.h"
 #import <Parse/Parse.h>
 #import "NPReachability.h"
 
@@ -17,18 +23,19 @@
 
 - (BOOL)canSync {
     if (![[NPReachability sharedInstance] isCurrentlyReachable]) {
-        DCLog(@"No network connectivity");
+        FSCLog(@"No network connectivity");
         return NO;
     }
     
     if (![PFUser currentUser]) {
+        //This can be enabled if you wish to alert the user that they are not signed in
 //        UIAlertView *noLogin = [[UIAlertView alloc] initWithTitle:@"Cannot Sync" 
 //                                                          message:@"You must by logged in to sync" 
 //                                                         delegate:nil 
 //                                                cancelButtonTitle:@"OK" 
 //                                                otherButtonTitles:nil];
 //        [noLogin show];
-        DCLog(@"No Parse user is logged in");
+        FSCLog(@"No Parse user is logged in");
         return NO;
     }
     
@@ -60,25 +67,24 @@
     //Get parse objects for all deleted objects
     NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [entityDesc name]];
     NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
-    DLog(@"Preparing to create PFObjects for deletion: %@", deletedLocalObjects);
+    FSLog(@"Preparing to create PFObjects for deletion: %@", deletedLocalObjects);
     for (NSString *objectId in deletedLocalObjects) {
         PFObject *parseObject = [PFObject objectWithClassName:[entityDesc name]];
         parseObject.objectId = objectId;
-        //[parseObject setValue:[NSNumber numberWithBool:YES] forKey:@"deleted"];
         [parseObject setObject:[NSNumber numberWithInt:1] forKey:@"deleted"];
         [updatedParseObjects addObject:parseObject];
-        DLog(@"Deleting PFObject: %@", parseObject);
+        FSLog(@"Deleting PFObject: %@", parseObject);
     }
     NSUInteger deleteCount = [updatedParseObjects count] - updateCount;
     
     //Update objects on remote
-    DLog(@"Sending objects to Parse: %@", updatedParseObjects);
+    FSLog(@"Sending objects to Parse: %@", updatedParseObjects);
     BOOL success = [PFObject saveAll:updatedParseObjects error:error];
     if (!success) {
-        DLog(@"saveAll failed with:");
+        FSLog(@"saveAll failed with:");
         return NO;
     }
-    DLog(@"After sending objects to Parse: %@", updatedParseObjects);
+    FSLog(@"After sending objects to Parse: %@", updatedParseObjects);
     
     //Update local deleted objects with Parse results
     NSArray *deletedFromDefaults = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
@@ -90,7 +96,7 @@
     //Update local updated objects with Parse results
     [updatedParseObjects removeObjectsInRange:NSMakeRange(updateCount, deleteCount)];
     if ([updatedObjects count] != [updatedParseObjects count]) {
-        ALog(@"%@", @"Local and Parse object arrays are out of sync!");
+        FSALog(@"%@", @"Local and Parse object arrays are out of sync!");
     }
     [updatedObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
         [obj FTA_updateObjectMetadataWithRemoteObject:[updatedParseObjects objectAtIndex:idx]];

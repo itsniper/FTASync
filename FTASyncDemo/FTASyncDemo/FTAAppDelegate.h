@@ -18,6 +18,4 @@
 @property (strong, nonatomic) IBOutlet UINavigationController *todoNavController;
 @property (strong, nonatomic) IBOutlet UINavigationController *setupNavController;
 
-//@property (strong, nonatomic) FTAViewController *viewController;
-
 @end

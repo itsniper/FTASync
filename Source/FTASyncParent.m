@@ -1,4 +1,18 @@
-#import "FTASyncParent.h"
+//
+//  FTASyncParent.m
+//  FTASyncParent
+//
+//  Created by Justin Bergen on 3/16/12.
+//  Copyright (c) 2012 Five3 Apps, LLC. All rights reserved.
+//
+//  Permission is hereby granted, free of charge, to any person obtaining a copyof this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
+
+#import "FTASync.h"
 
 @implementation FTASyncParent
 
@@ -80,7 +94,6 @@
 - (void)FTA_updateRemoteObject:(PFObject *)parseObject {
     NSDictionary *attributes = [[self entity] attributesByName];
     NSDictionary *relationships = [[self entity] relationshipsByName];
-    //PFObject *parseObject = [PFObject objectWithClassName:NSStringFromClass([self class])];
     
     if (self.objectId) {
         parseObject.objectId = self.objectId;
@@ -182,7 +195,6 @@
     for (NSString *relationship in relationships) {
         NSObject *value = [self valueForKey:relationship];
         NSEntityDescription *destEntity = [[relationships objectForKey:relationship] destinationEntity];
-        //TODO: Will the actual classes be preserved through here??
         
         if ([[relationships objectForKey:relationship] isToMany]) {
             //To-many relationship
@@ -206,7 +218,6 @@
                 if ([self respondsToSelector:selector]) {
                     [self performSelector:selector withObject:localObject];
                 } 
-                //[(NSMutableSet *)value removeObject:localObject];
             }
             
             for (PFObject *relatedRemoteObject in relatedRemoteObjects) {
@@ -214,7 +225,7 @@
                 
                 if (!localObject) {
                     //Object on the other side of the relationship doesn't exist
-                    DLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
+                    FSLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
                     localObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject];
                     localObject.syncStatusValue = 0; //Object is not new local nor does it have local changes
                 }
@@ -226,7 +237,6 @@
                 if ([self respondsToSelector:selector]) {
                     [self performSelector:selector withObject:localObject];
                 } 
-                //[(NSMutableSet *)value addObject:localObject];
             }
         }
         else {
@@ -236,7 +246,7 @@
             
             if (!localRelatedObject) {
                 //Object on the other side of the relationship doesn't exist
-                DLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
+                FSLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
                 localRelatedObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject];
                 localRelatedObject.syncStatusValue = 0; //Object is not new local nor does it have local changes
             }
@@ -253,14 +263,14 @@
         self.objectId = parseObject.objectId;
     }
     else if (![[self valueForKey:@"objectId"] isEqualToString:parseObject.objectId]) {
-        ALog(@"%@ and %@ values for objectId do not match!!", [self valueForKey:@"objectId"], [parseObject valueForKey:@"objectId"]);
+        FSALog(@"%@ and %@ values for objectId do not match!!", [self valueForKey:@"objectId"], [parseObject valueForKey:@"objectId"]);
         return;
     }
     
     self.updatedAt = parseObject.updatedAt;
     self.syncStatusValue = 0;
     
-    DLog(@"%@ after updating metadata with Parse object: %@", [[self entity] name], self);
+    FSLog(@"%@ after updating metadata with Parse object: %@", [[self entity] name], self);
 }
 
 #pragma - Batch Updates
@@ -285,7 +295,7 @@
     for (PFObject *remoteObject in parseObjects) {
         FTASyncParent *localObject = [self FTA_localObjectForClass:entityDesc WithRemoteId:remoteObject.objectId];
         if (!localObject) {
-            ALog(@"Could not find local object matching remote object: @%", remoteObject);
+            FSALog(@"Could not find local object matching remote object: @%", remoteObject);
             break;
         }
         
@@ -300,7 +310,7 @@
     for (PFObject *remoteObject in parseObjects) {
         FTASyncParent *localObject = [self FTA_localObjectForClass:entityDesc WithRemoteId:remoteObject.objectId];
         if (!localObject) {
-            DLog(@"Object already removed locally: %@", remoteObject);
+            FSLog(@"Object already removed locally: %@", remoteObject);
         }
         
         [localObject MR_deleteEntity];
