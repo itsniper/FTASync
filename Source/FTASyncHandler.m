@@ -18,55 +18,10 @@
 @implementation FTASyncHandler
 
 @synthesize remoteInterface = _remoteInterface;
-<<<<<<< HEAD
-=======
 @synthesize syncInProgress = _syncInProgress;
 @synthesize progress = _progress;
 @synthesize progressBlock = _progressBlock;
-//@synthesize errorHandler = _errorHandler;
 @synthesize ignoreContextSave = _ignoreContextSave;
-
-//- (id)init {
-//    self = [super init];
-//    if (!self) {
-//        return nil;
-//    }
-//    
-//    //Need to set the errorHandler property so that it can be reused
-//    self.errorHandler = ^(NSError *error, NSManagedObjectContext *context){
-//        [context rollback];
-//        
-//        
-//        NSDictionary *userInfo = [error userInfo];
-//        for (NSArray *detailedError in [userInfo allValues])
-//        {
-//            if ([detailedError isKindOfClass:[NSArray class]])
-//            {
-//                for (NSError *e in detailedError)
-//                {
-//                    if ([e respondsToSelector:@selector(userInfo)])
-//                    {
-//                        DLog(@"Error Details: %@", [e userInfo]);
-//                    }
-//                    else
-//                    {
-//                        DLog(@"Error Details: %@", e);
-//                    }
-//                }
-//            }
-//            else
-//            {
-//                DLog(@"Error: %@", detailedError);
-//            }
-//        }
-//        DLog(@"Error Message: %@", [error localizedDescription]);
-//        DLog(@"Error Domain: %@", [error domain]);
-//        DLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
-//    };
-//    
-//    return self;
-//}
->>>>>>> 1de9e8e... Moved the sync to a background thread
 
 #pragma mark - Singleton
 
@@ -120,9 +75,9 @@
     NSSet *deletedObjects = [[notification userInfo] objectForKey:NSDeletedObjectsKey];
     
     for (NSManagedObject *updatedObject in updatedObjects) {
-        NSString *parentEntity = [[[updatedObject entity] superentity] name];
+        //NSString *parentEntity = [[[updatedObject entity] superentity] name];
         
-        if ([parentEntity isEqualToString:@"FTASyncParent"] && [updatedObject valueForKey:@"syncStatus"] == [NSNumber numberWithInt:0]) {
+        if ([[updatedObject class] isSubclassOfClass:[FTASyncParent class]] && [updatedObject valueForKey:@"syncStatus"] == [NSNumber numberWithInt:0]) {
             [updatedObject setValue:[NSNumber numberWithInt:1] forKey:@"syncStatus"];
             DLog(@"Updated Object: %@", updatedObject);
         }
@@ -133,9 +88,9 @@
     
     for (NSManagedObject *deletedObject in deletedObjects) {
         DLog(@"Object was deleted from MOC: %@", deletedObject);
-        NSString *parentEntity = [[[deletedObject entity] superentity] name];
+        //NSString *parentEntity = [[[deletedObject entity] superentity] name];
         
-        if ([parentEntity isEqualToString:@"FTASyncParent"] && [deletedObject valueForKey:@"objectId"] != nil) {
+        if ([[deletedObject class] isSubclassOfClass:[FTASyncParent class]] && [deletedObject valueForKey:@"objectId"] != nil) {
             NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [[deletedObject entity] name]];
             NSArray *deletedFromDefaults = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
             NSMutableArray *localDeletedObjects = [[NSMutableArray alloc] initWithArray:deletedFromDefaults];
@@ -228,11 +183,7 @@
     //Sync objects changed on remote
     DLog(@"Number of updated remote objects: %i", [remoteObjectsForSync count]);
     [FTASyncParent FTA_updateObjectsForClass:entityDesc withRemoteObjects:remoteObjectsForSync];
-<<<<<<< HEAD
-    _syncInProgress = YES;
-    [[NSManagedObjectContext MR_contextForCurrentThread] MR_save];
-    _syncInProgress = NO;
-=======
+
     //TODO: Remove
     if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
         ALog(@"%@", @"Should not be working with the main context!");
@@ -245,7 +196,6 @@
         
         [self handleError:error];
     }];
->>>>>>> 1de9e8e... Moved the sync to a background thread
     
     //Sync objects changed locally
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
@@ -256,11 +206,6 @@
     if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
         DLog(@"NO OBJECTS TO SYNC");
         if ([deletedRemoteObjects count] > 0) {
-<<<<<<< HEAD
-            _syncInProgress = YES;
-            [[NSManagedObjectContext MR_contextForCurrentThread] MR_save];
-            _syncInProgress = NO;
-=======
             [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
                 [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
                 self.syncInProgress = NO;
@@ -269,7 +214,6 @@
                 
                 [self handleError:error];
             }];
->>>>>>> 1de9e8e... Moved the sync to a background thread
         }
         
         return;
@@ -288,11 +232,6 @@
         [self handleError:error];
     } 
     else {
-<<<<<<< HEAD
-        _syncInProgress = YES;
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_save];
-        _syncInProgress = NO;
-=======
         [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
             self.syncInProgress = NO;
@@ -310,16 +249,7 @@
         return;
     }
     
-    NSManagedObjectModel *dataModel = [NSManagedObjectModel MR_defaultManagedObjectModel];
-    NSMutableArray *entitiesToSync = [NSMutableArray arrayWithCapacity:1];
-    
-    for (NSEntityDescription *anEntity in dataModel) {
-        NSString *parentEntity = [[anEntity superentity] name];
-        
-        if ([parentEntity isEqualToString:@"FTASyncParent"]) {
-            [entitiesToSync addObject:anEntity];
-        }
-    }
+    NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]] subentities];
     
     DLog(@"Syncing %i entities", [entitiesToSync count]);
     float increment = 0.8 / (float)[entitiesToSync count];
@@ -415,7 +345,6 @@
         {
             DLog(@"Error: %@", detailedError);
         }
->>>>>>> 1de9e8e... Moved the sync to a background thread
     }
     DLog(@"Error Message: %@", [error localizedDescription]);
     DLog(@"Error Domain: %@", [error domain]);

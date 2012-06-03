@@ -12,7 +12,6 @@
 
 typedef void (^FTASyncProgressBlock)(float progress, NSString* message);
 typedef void (^FTACompletionBlock)(void);
-//typedef void (^FTASyncErrorHandler)(NSError *error, NSManagedObjectContext *context);
 
 
 @interface FTASyncHandler : NSObject {
@@ -23,7 +22,6 @@ typedef void (^FTACompletionBlock)(void);
 @property (atomic, getter = isSyncInProgress) BOOL syncInProgress;
 @property (atomic) float progress;
 @property (atomic, copy) FTASyncProgressBlock progressBlock;
-//@property (copy) FTASyncErrorHandler errorHandler;
 @property (nonatomic, getter = isIgnoreContextSave) BOOL ignoreContextSave;
 
 +(FTASyncHandler *)sharedInstance;
