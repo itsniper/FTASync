@@ -26,7 +26,7 @@
     [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"DefaultPrefs" ofType:@"plist"]]];
     
     [MagicalRecordHelpers setupAutoMigratingCoreDataStack];
-
+    
     [Parse setApplicationId:kParseAppId 
                   clientKey:kParseClientKey];
     [PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];

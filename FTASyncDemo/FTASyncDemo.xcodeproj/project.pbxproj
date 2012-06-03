@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		8B345364157C2B4200725E14 /* FTASetupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B345363157C2B4200725E14 /* FTASetupViewController.m */; };
 		8B5AFC50152D1797000AF428 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC4F152D1797000AF428 /* Parse.framework */; };
 		8B5AFC52152D17C6000AF428 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC51152D17C6000AF428 /* AudioToolbox.framework */; };
 		8B5AFC54152D17D1000AF428 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC53152D17D1000AF428 /* CFNetwork.framework */; };
@@ -76,7 +77,6 @@
 		8B7A264015608327006FB602 /* setup.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7A263D15608327006FB602 /* setup.png */; };
 		8B7A264115608327006FB602 /* user.png in Resources */ = {isa = PBXBuildFile; fileRef = 8B7A263E15608327006FB602 /* user.png */; };
 		8B7A2644156090C8006FB602 /* FTASelectionTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B7A2643156090C8006FB602 /* FTASelectionTableViewController.m */; };
-		8B937B071573E91F00FA3E39 /* FTASetupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B937B061573E91E00FA3E39 /* FTASetupViewController.m */; };
 		8B937B29157AC84C00FA3E39 /* NPReachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B937B28157AC84C00FA3E39 /* NPReachability.m */; };
 		8B937B2D157BDDF800FA3E39 /* FTASyncParent.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B937B2C157BDDF800FA3E39 /* FTASyncParent.m */; };
 /* End PBXBuildFile section */
@@ -92,6 +92,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8B345362157C2B4200725E14 /* FTASetupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASetupViewController.h; sourceTree = "<group>"; };
+		8B345363157C2B4200725E14 /* FTASetupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASetupViewController.m; sourceTree = "<group>"; };
 		8B5AFC4F152D1797000AF428 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		8B5AFC51152D17C6000AF428 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		8B5AFC53152D17D1000AF428 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
@@ -183,8 +185,6 @@
 		8B7A263E15608327006FB602 /* user.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = user.png; sourceTree = "<group>"; };
 		8B7A2642156090C7006FB602 /* FTASelectionTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASelectionTableViewController.h; sourceTree = "<group>"; };
 		8B7A2643156090C8006FB602 /* FTASelectionTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASelectionTableViewController.m; sourceTree = "<group>"; };
-		8B937B051573E91E00FA3E39 /* FTASetupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASetupViewController.h; sourceTree = "<group>"; };
-		8B937B061573E91E00FA3E39 /* FTASetupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASetupViewController.m; sourceTree = "<group>"; };
 		8B937B27157AC84C00FA3E39 /* NPReachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NPReachability.h; sourceTree = "<group>"; };
 		8B937B28157AC84C00FA3E39 /* NPReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NPReachability.m; sourceTree = "<group>"; };
 		8B937B2B157BDDF800FA3E39 /* FTASyncParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FTASyncParent.h; path = ../../../Source/FTASyncParent.h; sourceTree = "<group>"; };
@@ -297,6 +297,8 @@
 				8B7A263015607CCE006FB602 /* FTAPersonDetailViewController.h */,
 				8B7A263115607CCF006FB602 /* FTAPersonDetailViewController.m */,
 				8B7A263215607CCF006FB602 /* FTAPersonDetailViewController.xib */,
+				8B345362157C2B4200725E14 /* FTASetupViewController.h */,
+				8B345363157C2B4200725E14 /* FTASetupViewController.m */,
 				8B7A263B15608327006FB602 /* Resources */,
 				8B6D398315282F1800B296D6 /* Supporting Files */,
 			);
@@ -596,9 +598,9 @@
 				8B7A263715607D98006FB602 /* _Person.m in Sources */,
 				8B7A263A15607DA5006FB602 /* Person.m in Sources */,
 				8B7A2644156090C8006FB602 /* FTASelectionTableViewController.m in Sources */,
-				8B937B071573E91F00FA3E39 /* FTASetupViewController.m in Sources */,
 				8B937B29157AC84C00FA3E39 /* NPReachability.m in Sources */,
 				8B937B2D157BDDF800FA3E39 /* FTASyncParent.m in Sources */,
+				8B345364157C2B4200725E14 /* FTASetupViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
