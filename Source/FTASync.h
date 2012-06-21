@@ -15,22 +15,24 @@
 #import "CoreData+MagicalRecord.h"
 #import <CoreData/CoreData.h>
 
+//#define FS_ENABLE_SYNC_LOGGING 0
+
 #ifndef FS_ENABLE_SYNC_LOGGING
-#ifdef DEBUG
-#define FS_ENABLE_SYNC_LOGGING 1
-#else
-#define FS_ENABLE_SYNC_LOGGING 0
-#endif
+  #ifdef DEBUG
+    #define FS_ENABLE_SYNC_LOGGING 1
+  #else
+    #define FS_ENABLE_SYNC_LOGGING 0
+  #endif
 #endif
 
-#ifdef FS_ENABLE_SYNC_LOGGING
-#define FSLog(...) NSLog(@"%s [%d]: (%p) %@", __PRETTY_FUNCTION__, __LINE__, self, [NSString stringWithFormat:__VA_ARGS__])
-#define FSCLog(...) NSLog(@"%@", [NSString stringWithFormat:__VA_ARGS__])
-#define FSALog(...) {NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__]);[[NSAssertionHandler currentHandler] handleFailureInFunction:[NSString stringWithCString:__PRETTY_FUNCTION__ encoding:NSUTF8StringEncoding] file:[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lineNumber:__LINE__ description:__VA_ARGS__];}
+#if FS_ENABLE_SYNC_LOGGING
+  #define FSLog(...) NSLog(@"%s [%d]: (%p) %@", __PRETTY_FUNCTION__, __LINE__, self, [NSString stringWithFormat:__VA_ARGS__])
+  #define FSCLog(...) NSLog(@"%@", [NSString stringWithFormat:__VA_ARGS__])
+  #define FSALog(...) {NSLog(@"%s(%p) %@", __PRETTY_FUNCTION__, self, [NSString stringWithFormat:__VA_ARGS__]);[[NSAssertionHandler currentHandler] handleFailureInFunction:[NSString stringWithCString:__PRETTY_FUNCTION__ encoding:NSUTF8StringEncoding] file:[NSString stringWithCString:__FILE__ encoding:NSUTF8StringEncoding] lineNumber:__LINE__ description:__VA_ARGS__];}
 #else
-#define FSDLog(...) do { } while (0)
-#define FSDCLog(...) do { } while (0)
-#define FSALog(...) NSLog(@"%s [%d]: (%p) %@", __PRETTY_FUNCTION__, __LINE__, self, [NSString stringWithFormat:__VA_ARGS__])
+  #define FSLog(...) do { } while (0)
+  #define FSCLog(...) do { } while (0)
+  #define FSALog(...) NSLog(@"%s [%d]: (%p) %@", __PRETTY_FUNCTION__, __LINE__, self, [NSString stringWithFormat:__VA_ARGS__])
 #endif
 
 #import "FTASyncParent.h"

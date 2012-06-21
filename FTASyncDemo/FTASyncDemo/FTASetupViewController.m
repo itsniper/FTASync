@@ -5,6 +5,12 @@
 //  Created by Justin Bergen on 5/28/12.
 //  Copyright (c) 2012 Five3 Apps. All rights reserved.
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copyof this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+//
 
 #import "FTASetupViewController.h"
 #import "FTASyncParent.h"
@@ -88,10 +94,34 @@
 }
 
 - (void)resetData {
+    //Clear out CoreData
     [FTASyncParent MR_truncateAllInContext:[NSManagedObjectContext MR_defaultContext]];
     [FTASyncHandler sharedInstance].ignoreContextSave = YES;
     [[NSManagedObjectContext MR_defaultContext] MR_save];
     [FTASyncHandler sharedInstance].ignoreContextSave = NO;
+    
+    //Clear out pending local deletions
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSArray *keys = [[[defaults dictionaryRepresentation] allKeys] copy];
+    for(NSString *key in keys) {
+        if([key hasPrefix:@"FTASyncDeleted"]) {
+            [defaults removeObjectForKey:key];
+        }
+    }
+    [defaults removeObjectForKey:@"FTASyncLastSyncDate"];
+    [defaults synchronize];
+    
+    //Clean up metadata
+    NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]] subentities];
+    for (NSEntityDescription *anEntity in entitiesToSync) {
+        [FTASyncHandler setMetadataValue:[NSMutableDictionary dictionary] forKey:nil forEntity:[anEntity name] inContext:[NSManagedObjectContext MR_defaultContext]];
+    }
+    
+    //TODO: Remove
+    NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
+    FSLog(@"METADATA after clear: %@", metadata);
 }
 
 #pragma mark - PFLogInViewControllerDelegate
@@ -99,8 +129,11 @@
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
     [self.tabBarController dismissModalViewControllerAnimated:YES];
     DCLog(@"Login Success!");
-    //[[FTASyncHandler sharedInstance] syncAll];
-    
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+        DCLog(@"Completion Block Called");
+    } progressBlock:^(float progress, NSString *message) {
+        DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
+    }];
 }
 
 - (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController {
@@ -117,7 +150,11 @@
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
     DCLog(@"Signup Success!");
     [self.tabBarController dismissModalViewControllerAnimated:YES];
-    [[FTASyncHandler sharedInstance] syncAll];
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+        DCLog(@"Completion Block Called");
+    } progressBlock:^(float progress, NSString *message) {
+        DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
+    }];
 }
 
 - (void)signUpViewControllerDidCancelSignUp:(PFSignUpViewController *)signUpController {

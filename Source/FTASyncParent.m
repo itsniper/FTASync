@@ -19,7 +19,29 @@
 @synthesize remoteObject = _remoteObject;
 @synthesize traversing = _traversing;
 
-#pragma - Custom Accessors
+#pragma mark - Overridden Methods
+
+- (void)awakeFromInsert {
+    if ([self managedObjectContext] == [NSManagedObjectContext MR_defaultContext]) {
+        [self setupRelationshipObservation];
+    }
+}
+
+- (void)awakeFromFetch {
+    if ([self managedObjectContext] == [NSManagedObjectContext MR_defaultContext]) {
+        [self setupRelationshipObservation];
+    }
+}
+
+- (void)willTurnIntoFault {
+    [super willTurnIntoFault];
+    
+    if ([self managedObjectContext] == [NSManagedObjectContext MR_defaultContext]) {
+        [self teardownRelationshipObservation];
+    }
+}
+
+#pragma mark - Custom Accessors
 
 - (PFObject *)remoteObject {
     //Need this property so that the same PFObject can be used multiple places when I have a new local object and
@@ -38,7 +60,90 @@
     return _remoteObject;
 }
 
-#pragma - Helpers
+#pragma mark - KVO
+
+- (void)setupRelationshipObservation {
+    NSDictionary *relationships = [[self entity] relationshipsByName];
+    for (NSString *relationship in relationships) {
+        [self addObserver:self forKeyPath:relationship options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:nil];
+    }
+}
+
+- (void)teardownRelationshipObservation {
+    NSDictionary *relationships = [[self entity] relationshipsByName];
+    for (NSString *relationship in relationships) {
+        [self removeObserver:self forKeyPath:relationship];
+    }
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath 
+					  ofObject:(id)object 
+						change:(NSDictionary *)change 
+					   context:(void *)context {
+    if (![NSThread isMainThread] || [[FTASyncHandler sharedInstance] isSyncInProgress]) {
+        //If this is not on a main thread it is a sync save
+        return;
+    }
+    if ([[FTASyncHandler sharedInstance] isIgnoreContextSave]) {
+        FSCLog(@"ignoreContextSave == YES");
+        return;
+    }
+    //TODO: A temporary solution. Why does the ignoreContextSave not work??
+    if (![self managedObjectContext]) {
+        FSCLog(@"Missing context, likly an ignoreContextSave");
+        return;
+    }
+    
+    //Do not handle new objects
+    if (self.syncStatus == nil || self.syncStatusValue == 2 || self.syncStatusValue == 3) {
+        FSLog(@"New object (%i), skipping ...", self.syncStatusValue);
+        FSLog(@"%@", self);
+        return;
+    }
+    
+    FSLog(@"Object for %@.%@ was: %@ Now is: %@", [[self entity] name], keyPath, [change objectForKey:NSKeyValueChangeOldKey], [change objectForKey:NSKeyValueChangeNewKey]);
+    
+    int changeKindKey = [[change objectForKey:NSKeyValueChangeKindKey] intValue];
+    NSString *metadataKey = [NSString stringWithFormat:@"%@.%@", self.objectId, keyPath];
+    
+    if (changeKindKey == NSKeyValueChangeSetting ) {
+        FSLog(@"Changing a to-one relationship: %@", metadataKey);
+        [FTASyncHandler setMetadataValue:[NSNumber numberWithBool:YES] forKey:metadataKey forEntity:NSStringFromClass([self class]) inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    }
+    else if (changeKindKey == NSKeyValueChangeInsertion || changeKindKey == NSKeyValueChangeRemoval) {
+        FSLog(@"Changing a to-many relationship (insert): %@", metadataKey);
+        NSMutableArray *currentChanges = [[FTASyncHandler getMetadataForKey:metadataKey forEntity:NSStringFromClass([self class]) inContext:[NSManagedObjectContext MR_contextForCurrentThread]] mutableCopy];
+        
+        //Get the objectId for the inserted/removed related object
+        NSString *changedObjectId = nil;
+        if (changeKindKey == NSKeyValueChangeInsertion) {
+            changedObjectId = [[[change objectForKey:NSKeyValueChangeNewKey] anyObject] objectId];
+        }
+        else {
+            changedObjectId = [[[change objectForKey:NSKeyValueChangeOldKey] anyObject] objectId];
+        }
+        
+        if (!changedObjectId) {
+            //Relationships to new objects will not have an objectId yet (don't need to track)
+            return;
+        }
+        
+        //If needed add related object to the change list
+        if (currentChanges == nil) {
+            currentChanges = [NSMutableArray arrayWithObject:changedObjectId];
+        }
+        else {
+            if ([currentChanges containsObject:changedObjectId]) {
+                return;
+            }
+            
+            [currentChanges addObject:changedObjectId];
+        }
+        [FTASyncHandler setMetadataValue:currentChanges forKey:metadataKey forEntity:NSStringFromClass([self class]) inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    }
+}
+
+#pragma mark - Helpers
 
 + (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -73,7 +178,61 @@
     return [[results objectAtIndex:0] valueForKey:@"updatedAt"];
 }
 
-#pragma - Object Conversion
+- (BOOL)shouldUseRemoteObject:(PFObject *)remoteObject
+               insteadOfLocal:(FTASyncParent *)localObject
+                    forToMany:(BOOL)isToMany
+                 relationship:(NSString *)relationship {
+    FSLog(@"Should use remote: %@ or local: %@ for relationship: %@", remoteObject.objectId, localObject.objectId, relationship);
+    //BOOL if we are checking a to-one relationship, or NSArray if it is a to-many relationship
+    id localChanges = [FTASyncHandler getMetadataForKey:[NSString stringWithFormat:@"%@.%@", self.objectId, relationship] 
+                                                    forEntity:NSStringFromClass([self class]) 
+                                                    inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    FSLog(@"Local changes: %@", localChanges);
+    
+    if([localObject.objectId isEqualToString:remoteObject.objectId]) {
+        FSCLog(@"Related objects match");
+        return NO;
+    }
+    else if((localObject != nil && localObject.syncStatus == nil) || localObject.syncStatusValue == 2 || localObject.syncStatusValue ==3) {
+        //Related object is new locally
+        FSCLog(@"New local related object");
+        return NO;
+    }
+    else if(localChanges == nil) {
+        //No local change, so use remote
+        FSCLog(@"No local changes, use remote related object");
+        return YES;
+    }
+    else if (isToMany && remoteObject != nil && ![localChanges containsObject:remoteObject.objectId]) {
+        //No local change, so use remote
+        FSCLog(@"No local changes, use remote related object");
+        return YES;
+    }
+    else if (isToMany && localObject != nil && ![localChanges containsObject:localObject.objectId]) {
+        //No local change, so use remote
+        FSCLog(@"No local changes, use remote related object");
+        return YES;
+    }
+    else {
+        PFQuery *query = [PFQuery queryWithClassName:NSStringFromClass([localObject class])];
+        //query.cachePolicy = kPFCachePolicyCacheElseNetwork;
+        //TODO: Handle error
+        PFObject *remoteForLocalRelatedObject = [query getObjectWithId:localObject.objectId];
+        
+        if ([[remoteForLocalRelatedObject valueForKey:@"deleted"] boolValue]) {
+            //Do nothing and relationship will get set to remote
+            FSCLog(@"Remote related object is deleted");
+        }
+        else {
+            FSCLog(@"Local change trumps remote");
+            return NO;
+        }
+    }
+    
+    return YES;
+}
+
+#pragma mark - Object Conversion
 
 + (FTASyncParent *)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithRemoteObject:(PFObject *)parseObject {
     //Make sure a local object doesn't already exist from traversing a relationship
@@ -176,18 +335,20 @@
     NSDictionary *relationships = [[self entity] relationshipsByName];
     
     //Set all the attributes
-    for (NSString *attribute in attributes) {
-        NSString *className = [[attributes valueForKey:attribute] attributeValueClassName];
-        
-        if ([className isEqualToString:@"NSData"]) {
-            PFFile* remoteFile = [parseObject objectForKey:attribute];
-            [self setValue:[NSData dataWithData:[remoteFile getData]] forKey:attribute];
-            continue;
-        }
-        
-        if (![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
-            //TODO: Catch NSUndefinedKeyException if key does not exist on PFObject
-            [self setValue:[parseObject valueForKey:attribute] forKey:attribute];
+    if (self.syncStatusValue != 1) { //Local changes take priority
+        for (NSString *attribute in attributes) {
+            NSString *className = [[attributes valueForKey:attribute] attributeValueClassName];
+            
+            if ([className isEqualToString:@"NSData"]) {
+                PFFile* remoteFile = [parseObject objectForKey:attribute];
+                [self setValue:[NSData dataWithData:[remoteFile getData]] forKey:attribute];
+                continue;
+            }
+            
+            if (![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
+                //TODO: Catch NSUndefinedKeyException if key does not exist on PFObject
+                [self setValue:[parseObject valueForKey:attribute] forKey:attribute];
+            }
         }
     }
     
@@ -199,7 +360,7 @@
         if ([[relationships objectForKey:relationship] isToMany]) {
             //To-many relationship
             NSMutableArray *relatedLocalObjects = [NSMutableArray arrayWithArray:[(NSSet *)value allObjects]];
-            NSArray *relatedRemoteObjects = [parseObject objectForKey:relationship];
+            NSMutableArray *relatedRemoteObjects = [NSMutableArray arrayWithArray:[parseObject objectForKey:relationship]];
             
             //Empty relationships in a PFObject will return an NSNull object
             if ([relatedRemoteObjects isKindOfClass:[NSNull class]]) {
@@ -213,52 +374,91 @@
             }
             NSArray *localObjectsForRemoteIds = [FTASyncParent FTA_localObjectsForClass:destEntity WithRemoteIds:remoteObjectIds];
             [relatedLocalObjects removeObjectsInArray:localObjectsForRemoteIds];
-            for (NSManagedObject *localObject in relatedLocalObjects) {
+            for (FTASyncParent *localObject in relatedLocalObjects) {
+                if (![self shouldUseRemoteObject:nil insteadOfLocal:localObject forToMany:YES relationship:relationship]) {
+                    FSCLog(@"Keeping local related object");
+                    continue;
+                }
                 SEL selector = NSSelectorFromString([NSString stringWithFormat:@"remove%@Object:", [destEntity name]]);
                 if ([self respondsToSelector:selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                     [self performSelector:selector withObject:localObject];
+#pragma clang diagnostic pop
                 } 
             }
             
+            //Now add any remotely added objects to the relationship
+            [relatedRemoteObjects removeObjectsInArray:localObjectsForRemoteIds];
             for (PFObject *relatedRemoteObject in relatedRemoteObjects) {
                 FTASyncParent *localObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId];
                 
                 if (!localObject) {
-                    //Object on the other side of the relationship doesn't exist
+                    //Related object doesn't exist locally
+                    NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [destEntity name]];
+                    NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
+                    if ([deletedLocalObjects containsObject:relatedRemoteObject.objectId]) {
+                        FSCLog(@"Related object deleted locally");
+                        continue;
+                    }
+                    
                     FSLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
                     localObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject];
                     localObject.syncStatusValue = 0; //Object is not new local nor does it have local changes
                 }
-                else if ([(NSMutableSet *)value containsObject:localObject]) {
+                else if (![self shouldUseRemoteObject:relatedRemoteObject insteadOfLocal:nil forToMany:YES relationship:relationship]) {
+                    FSCLog(@"Using local related object");
                     continue;
                 }
                 
                 SEL selector = NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", [destEntity name]]);
                 if ([self respondsToSelector:selector]) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                     [self performSelector:selector withObject:localObject];
-                } 
+#pragma clang diagnostic pop
+                }
             }
         }
         else {
             //To-one relationship
             PFObject *relatedRemoteObject = [parseObject objectForKey:relationship];
             FTASyncParent *localRelatedObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId];
+            FTASyncParent *currentLocalRelatedObject = [self valueForKey:relationship];
             
             if (!localRelatedObject) {
-                //Object on the other side of the relationship doesn't exist
+                //Related object doesn't exist locally
+                NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [destEntity name]];
+                NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
+                if ([deletedLocalObjects containsObject:relatedRemoteObject.objectId]) {
+                    FSCLog(@"Related object deleted locally");
+                    continue;
+                }
+                
                 FSLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
                 localRelatedObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject];
-                localRelatedObject.syncStatusValue = 0; //Object is not new local nor does it have local changes
+                localRelatedObject.syncStatusValue = 0;
+            }
+            else if(![self shouldUseRemoteObject:relatedRemoteObject insteadOfLocal:currentLocalRelatedObject forToMany:NO relationship:relationship]) {
+                continue;
             }
             
             [self setValue:localRelatedObject forKey:relationship];
         }
     }
     
-    [self FTA_updateObjectMetadataWithRemoteObject:parseObject];
+    if (self.syncStatusValue == 2) { 
+        //This is a new object from remote so reset syncStatus
+        [self FTA_updateObjectMetadataWithRemoteObject:parseObject andResetSyncStatus:YES];
+    }
+    else {
+        //This object maybe be dirty locally so don't reset the syncStatus. This will get done
+        //   in FTAParseSync after self gets pushed to remote.
+        [self FTA_updateObjectMetadataWithRemoteObject:parseObject andResetSyncStatus:NO];
+    }
 }
 
-- (void)FTA_updateObjectMetadataWithRemoteObject:(PFObject *)parseObject {
+- (void)FTA_updateObjectMetadataWithRemoteObject:(PFObject *)parseObject andResetSyncStatus:(BOOL)resetStatus {
     if (!self.objectId) {
         self.objectId = parseObject.objectId;
     }
@@ -268,12 +468,15 @@
     }
     
     self.updatedAt = parseObject.updatedAt;
-    self.syncStatusValue = 0;
+    
+    if (resetStatus) {
+        self.syncStatusValue = 0;
+    }
     
     FSLog(@"%@ after updating metadata with Parse object: %@", [[self entity] name], self);
 }
 
-#pragma - Batch Updates
+#pragma mark - Batch Updates
 
 + (void)FTA_newObjectsForClass:(NSEntityDescription *)entityDesc withRemoteObjects:(NSArray *)parseObjects {
     NSMutableDictionary *newLocalObjects = [[NSMutableDictionary alloc] initWithCapacity:[parseObjects count]];
@@ -296,13 +499,11 @@
         FTASyncParent *localObject = [self FTA_localObjectForClass:entityDesc WithRemoteId:remoteObject.objectId];
         if (!localObject) {
             FSALog(@"Could not find local object matching remote object: @%", remoteObject);
-            break;
+            localObject = [FTASyncParent FTA_newObjectForClass:entityDesc WithRemoteObject:remoteObject];
+            //break;
         }
         
-        //Local changes take priority over remote changes
-        if (localObject.syncStatusValue != 1) {
-            [localObject FTA_updateObjectWithRemoteObject:remoteObject];
-        }
+        [localObject FTA_updateObjectWithRemoteObject:remoteObject];
     }
 }
 

@@ -93,9 +93,49 @@
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-#pragma mark - Sync Lock
-//TODO: Include code to lock and unlock sync on the remote server. Probably an attribute of the parent PFUser.
+#pragma mark - Metadata
 
++ (id)getMetadataForKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context {
+    NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
+    
+    NSDictionary *entityMetadata = [metadata objectForKey:entityName];
+    if (!entityMetadata) {
+        return nil;
+    }
+    
+    if (!key) {
+        return entityMetadata;
+    }
+    
+    return [entityMetadata objectForKey:key];
+}
+
++ (void)setMetadataValue:(id)value forKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context {
+    NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    NSMutableDictionary *metadata = [[coordinator metadataForPersistentStore:store] mutableCopy];
+    
+    if (!key) {
+        [metadata setValue:value forKey:entityName];
+        [coordinator setMetadata:metadata forPersistentStore:store];
+        return;
+    }
+    
+    NSMutableDictionary *entityMetadata = [[metadata valueForKey:entityName] mutableCopy];
+    if (!entityMetadata) {
+        entityMetadata = [NSMutableDictionary dictionary];
+        [metadata setObject:entityMetadata forKey:entityName];
+    }
+    
+    [entityMetadata setValue:value forKey:key];
+    [metadata setObject:entityMetadata forKey:entityName];
+    [coordinator setMetadata:metadata forPersistentStore:store];
+}
+
+#pragma mark - Sync Lock
+//TODO: Possibly include code to lock and unlock sync on the remote server. Probably an attribute of the parent PFUser.
 
 #pragma mark - Sync
 
@@ -153,7 +193,7 @@
     //Add new remote objects
     NSPredicate *newRemotePredicate = nil;
     if (lastUpdate) {
-        newRemotePredicate = [NSPredicate predicateWithFormat:@"createdAt > %@", lastUpdate];
+        newRemotePredicate = [NSPredicate predicateWithFormat:@"createdAt > %@ AND (deleted = NO OR deleted = nil)", lastUpdate];
     }
     else {
         newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = NO OR deleted = nil", lastUpdate];
@@ -255,6 +295,17 @@
         if (self.progressBlock)
             self.progressBlock(self.progress, [NSString stringWithFormat:@"Finished sync of %@", [anEntity name]]);
     }
+    
+    //Since there is no rollback on the metadata this must not be cleared out until we know a full sync was successful
+    for (NSEntityDescription *anEntity in entitiesToSync) {
+        [FTASyncHandler setMetadataValue:[NSMutableDictionary dictionary] forKey:nil forEntity:[anEntity name] inContext:[NSManagedObjectContext MR_defaultContext]];
+    }
+    
+    //TODO: Remove
+    NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
+    FSLog(@"METADATA after clear: %@", metadata);
 }
 
 - (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress {

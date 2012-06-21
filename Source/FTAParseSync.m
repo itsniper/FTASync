@@ -44,6 +44,9 @@
 
 - (NSArray *)getObjectsOfClass:(NSString *)className updatedSince:(NSDate *)lastUpdate {
     PFQuery *query = [PFQuery queryWithClassName:className];
+    query.limit = 1000;
+    //Cache the query in case we need one of the objects for merging later
+    query.cachePolicy = kPFCachePolicyNetworkOnly;
     
     if (lastUpdate) {
         [query whereKey:@"updatedAt" greaterThan:lastUpdate];
@@ -99,7 +102,7 @@
         FSALog(@"%@", @"Local and Parse object arrays are out of sync!");
     }
     [updatedObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-        [obj FTA_updateObjectMetadataWithRemoteObject:[updatedParseObjects objectAtIndex:idx]];
+        [obj FTA_updateObjectMetadataWithRemoteObject:[updatedParseObjects objectAtIndex:idx] andResetSyncStatus:YES];
     }];
     
     //Update local objects created via relationship traversal with Parse results

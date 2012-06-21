@@ -14,11 +14,15 @@
     <entity name="ToDoItem" representedClassName="ToDoItem" parentEntity="FTASyncParent">
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="priority" optional="YES" attributeType="Integer 16" maxValueString="10" defaultValueString="1"/>
-        <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="toDoItem" inverseEntity="Person"/>
+        <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="toDoItem" inverseEntity="Person">
+            <userInfo>
+                <entry key="isDirty" value="NO"/>
+            </userInfo>
+        </relationship>
     </entity>
     <elements>
         <element name="FTASyncParent" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="ToDoItem" positionX="160" positionY="384" width="128" height="75"/>
         <element name="Person" positionX="333" positionY="387" width="128" height="90"/>
+        <element name="ToDoItem" positionX="160" positionY="384" width="128" height="90"/>
     </elements>
 </model>

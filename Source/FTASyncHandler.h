@@ -32,6 +32,9 @@ typedef void (^FTACompletionBlock)(void);
 
 - (void)contextWasSaved:(NSNotification *)notification;
 
++ (NSString *)getMetadataForKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
++ (void)setMetadataValue:(id)value forKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
+
 - (void)syncAll;
 - (void)syncEntity:(NSEntityDescription *)entityName;
 - (void)syncAll;
