@@ -2,6 +2,10 @@
 
 Allows you to sync CoreData entities with a [Parse](https://www.parse.com/) backend.
 
+This is a new project and I can't guarantee that it's been thoroughly tested yet. So do your own due diligence before putting this in a production app! There are a few known issues that still need addressed. They are listed below.
+
+Because I am still doing testing there is still a bunch of debug logging in place. If you don't want to see all of that, you can turn it off in *FTASync.h*.
+
 # Requires
 
 It is assumed that you have already installed and setup these:
@@ -39,14 +43,33 @@ Optionally you can pass in completion and progress blocks. The signatures are in
 
 ## Sync a specific entity
 
-Coming soon!
+TBD
 
 ## Display the "Last Sync" time
 
-There is an `FTASyncLastSyncDate` key added to the user defaults that contains the time of the last successful sync. Each time that value is update an `FTASyncDidSync` notification is posted to the default notification center.
+There is an `FTASyncLastSyncDate` key added to the user defaults that contains the time of the last successful sync. Each time that value is updated an `FTASyncDidSync` notification is posted to the default notification center.
+
+# Known Issues/Limitations
+
+* Queries are limited to a return of 1000 objects by Parse
+* When running a sync after creating 2 new and related objects, a private PFObject method seems to fall into an infinite loop. Working with Parse on this.
 
 # ToDo
 
 * Update to Magical Record 2.0
 * Support sync of a single entity
 * Add ability to check PFUser for updates on any other entity to save on API calls
+* PFQuery is limited to 1000 returned objects, so support pagination beyond that
+* Write unit tests
+
+# License
+
+I am making this source code available for free under the MIT license. For the full license details see *LICENSE.txt*
+
+Also, I am making the source code for a sample ToDo app (FTASyncDemo) available for free under the MIT license. This license grants you the right to do anything you like with the source code. However, you are asked not to re-submit the app as-is to Apple for App Store review. I have worked to create this sample app so you can learn how to utilize FTASync in your own app. So please, don't be a dick and re-submit it as your own to Apple. However, feel free to pull bits and pieces out and use them however you wish :).
+
+# Acknowledgements
+
+Thanks to all the folks at the Colorado Springs, CO NSCoderNight for the code reviews and ideas. Special thanks to [Tom Harrington](https://github.com/atomicbird) for his debugging and architectural help!
+
+Big thanks also to [Duane Fields](https://github.com/duanefields) for providing code that I used to handle the overall sync management and threading!
