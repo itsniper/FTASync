@@ -318,7 +318,11 @@
             //To-one relationship
             FTASyncParent *relatedObject = (FTASyncParent *) value;
             PFObject *relatedRemoteObject = nil;
-            if (!relatedObject.objectId) {
+            
+            if (!relatedObject) {
+                continue;
+            }
+            else if (!relatedObject.objectId) {
                 relatedRemoteObject = relatedObject.remoteObject;
                 relatedObject.syncStatusValue = 3;
             }
@@ -426,7 +430,7 @@
             FTASyncParent *localRelatedObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId];
             FTASyncParent *currentLocalRelatedObject = [self valueForKey:relationship];
             
-            if (!localRelatedObject) {
+            if (!localRelatedObject && relatedRemoteObject) {
                 //Related object doesn't exist locally
                 NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [destEntity name]];
                 NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
