@@ -224,6 +224,7 @@
         self.progress = 0;
         
         [self handleError:error];
+        return;
     }];
     
     //Sync objects changed locally
@@ -242,6 +243,7 @@
                 self.progress = 0;
                 
                 [self handleError:error];
+                return;
             }];
         }
         
@@ -259,6 +261,7 @@
         self.progress = 0;
         
         [self handleError:error];
+        return;
     } 
     else {
         [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
@@ -268,6 +271,7 @@
             self.progress = 0;
             
             [self handleError:error];
+            return;
         }];
     }
 }
@@ -291,6 +295,11 @@
         FSLog(@"Requesting sync for entity: %@", anEntity);
         [self syncEntity:anEntity];
         
+        if (!self.syncInProgress) {
+            //Sync had an issue somewhere, so halt
+            return;
+        }
+        
         self.progress += increment;
         if (self.progressBlock)
             self.progressBlock(self.progress, [NSString stringWithFormat:@"Finished sync of %@", [anEntity name]]);
@@ -301,16 +310,20 @@
         [FTASyncHandler setMetadataValue:[NSMutableDictionary dictionary] forKey:nil forEntity:[anEntity name] inContext:[NSManagedObjectContext MR_defaultContext]];
     }
     
-    //TODO: Remove
+#ifdef DEBUG
     NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
     id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
+#endif
 }
 
 - (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress {
     //Quick sanity check to fail early if a sync is in progress, or cannot be completed
     if (![self.remoteInterface canSync] || self.syncInProgress) {
+        if (completion)
+            completion();
+        
         return;
     }
     
@@ -322,13 +335,17 @@
     }
     
     //Setup background process tags so we can complete on app exit
-    UIBackgroundTaskIdentifier bgTask = 0;
+    __block UIBackgroundTaskIdentifier bgTask = 0;
     if ([[UIDevice currentDevice] isMultitaskingSupported]) {
         //Create a background task identifier and specify the exception handler
         bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            FSCLog(@"Background sync on exit failed to complete in time limit");
-            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            NSLog(@"Background sync on exit failed to complete in time limit");
+            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
             self.syncInProgress = NO;
+            self.progressBlock = nil;
+            self.progress = 0;
+            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
         }];
     };
     
@@ -343,11 +360,6 @@
             FSALog(@"%@", @"Completion block must be called on main thread");
         }
         
-        if ([[UIDevice currentDevice] isMultitaskingSupported]) {
-            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
-            FSCLog(@"Completed sync.");
-        }
-        
         //Use this notification and user defaults key to update an "Last Updated" message in the UI
         [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"FTASyncLastSyncDate"];
         [[NSUserDefaults standardUserDefaults] synchronize];
@@ -359,6 +371,13 @@
         self.syncInProgress = NO;
         self.progressBlock = nil;
         self.progress = 0;
+        
+        //End background task
+        if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+            FSCLog(@"Completed sync.");
+            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
+        }
     }];
 }
 
@@ -374,22 +393,22 @@
             {
                 if ([e respondsToSelector:@selector(userInfo)])
                 {
-                    FSLog(@"Error Details: %@", [e userInfo]);
+                    NSLog(@"Error Details: %@", [e userInfo]);
                 }
                 else
                 {
-                    FSLog(@"Error Details: %@", e);
+                    NSLog(@"Error Details: %@", e);
                 }
             }
         }
         else
         {
-            FSLog(@"Error: %@", detailedError);
+            NSLog(@"Error: %@", detailedError);
         }
     }
-    FSLog(@"Error Message: %@", [error localizedDescription]);
-    FSLog(@"Error Domain: %@", [error domain]);
-    FSLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+    NSLog(@"Error Message: %@", [error localizedDescription]);
+    NSLog(@"Error Domain: %@", [error domain]);
+    NSLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
 
 @end
