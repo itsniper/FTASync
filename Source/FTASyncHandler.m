@@ -363,7 +363,9 @@
         //Use this notification and user defaults key to update an "Last Updated" message in the UI
         [[NSUserDefaults standardUserDefaults] setObject:[NSDate date] forKey:@"FTASyncLastSyncDate"];
         [[NSUserDefaults standardUserDefaults] synchronize];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"FTASyncDidSync" object:nil];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [[NSNotificationCenter defaultCenter] postNotificationName:@"FTASyncDidSync" object:nil];
+        });
         
         if (completion)
             completion();
