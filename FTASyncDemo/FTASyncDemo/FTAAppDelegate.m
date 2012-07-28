@@ -16,6 +16,7 @@
 #import "FTAToDoTableViewController.h"
 #import "FTAPersonTableViewController.h"
 #import <Parse/Parse.h>
+//#import <Crashlytics/Crashlytics.h>
 #import "FTASync.h"
 #import "ParseKeys.h"
 
@@ -36,6 +37,8 @@
     [Parse setApplicationId:kParseAppId 
                   clientKey:kParseClientKey];
     [PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];
+    
+    //[Crashlytics startWithAPIKey:kCrashlyticsKey];
     
     //Need to make sure FTASyncHandler gets initialized immediately so it's registered for notifications
     [FTASyncHandler sharedInstance];
