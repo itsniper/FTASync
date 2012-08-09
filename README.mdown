@@ -14,6 +14,7 @@ It is assumed that you have already installed and setup these:
 * [mogenerator] (https://github.com/rentzsch/mogenerator) - If you've never used it you should.
 * [NPReachability] (https://github.com/Abizern/NPReachability) - Used to check for network connectivity pre-sync.
 * [Parse SDK](https://www.parse.com/apps/quickstart)
+* (Optional) [Crashlytics](http://www.crashlytics.com/)
 
 # Installation
 
@@ -28,8 +29,13 @@ It is assumed that you have already installed and setup these:
 4. Run mogenerator to generate your entity class files.
 5. Add all the .h and .m files from the *Source* folder into your project. (FTASyncParent.h/m will replace the mogenerator generated files)
 6. Add *FTASync.h* to your AppDelegate file.
-7. Add `[FTASyncHandler sharedInstance];` to the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate.
-8. Add `[PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];` to the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate. You can also setup some other ACL if you wish.
+7. Create a file with the name *ParseKeys.h* with these two lines:
+    * `#define kParseAppId @"<Your Parse App ID>"`
+    * `#define kParseClientKey @"<Your Parse Client Key>"`
+    * (Optional) `#define kCrashlyticsKey @"<Your Crashlytics Key>"`
+8. Add `[FTASyncHandler sharedInstance];` to the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate.
+9. Add `[PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];` to the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate. You can also setup some other ACL if you wish.
+10. (Optional) Uncomment out `//[Crashlytics startWithAPIKey:kCrashlyticsKey];` in the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate.
 
 It is assumed that you will handle user sign up and login on your own.
 
@@ -43,7 +49,7 @@ Optionally you can pass in completion and progress blocks. The signatures are in
 
 ## Sync a specific entity
 
-TBD
+Not supported yet.
 
 ## Display the "Last Sync" time
 
@@ -52,7 +58,6 @@ There is an `FTASyncLastSyncDate` key added to the user defaults that contains t
 # Known Issues/Limitations
 
 * Queries are limited to a return of 1000 objects by Parse
-* When running a sync after creating 2 new and related objects, a private PFObject method seems to fall into an infinite loop. Working with Parse on this.
 
 # ToDo
 
