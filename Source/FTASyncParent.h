@@ -19,6 +19,7 @@
 
 @property (strong, nonatomic) PFObject *remoteObject;
 @property (nonatomic, getter = isTraversing) BOOL traversing;
+@property (nonatomic, getter = isFromRelationship) BOOL fromRelationship;
 
 - (void)setupRelationshipObservation;
 - (void)teardownRelationshipObservation;

@@ -110,6 +110,7 @@
     for (FTASyncParent *traversedObject in traversedLocalObjects) {
         traversedObject.objectId = traversedObject.remoteObject.objectId;
         traversedObject.syncStatusValue = 2;
+        FSLog(@"Traversed object after updating ID and syncStatus: %@", traversedObject);
     }
     
     return YES;

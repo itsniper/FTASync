@@ -18,6 +18,7 @@
 
 @synthesize remoteObject = _remoteObject;
 @synthesize traversing = _traversing;
+@synthesize fromRelationship = _fromRelationship;
 
 #pragma mark - Overridden Methods
 
@@ -189,7 +190,11 @@
                                                     inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     FSLog(@"Local changes: %@", localChanges);
     
-    if([localObject.objectId isEqualToString:remoteObject.objectId]) {
+    if (self.syncStatusValue == 2 || self.syncStatusValue == 3) {
+        FSCLog(@"Parent object is new");
+        return NO;
+    }
+    else if([localObject.objectId isEqualToString:remoteObject.objectId]) {
         FSCLog(@"Related objects match");
         return NO;
     }
@@ -288,9 +293,14 @@
     }
     
     //Set all the relationships
+    if (self.isFromRelationship) {
+        //Parse does not do a traversal check ... LAME!! So if we push relationships in both directions
+        //   Parse will throw an Exception and crash the app. If we are coming from other entity via
+        //   relationship, then skip this object's relationships.
+        return;
+    }
     for (NSString *relationship in relationships) {
         NSObject *value = [self valueForKey:relationship];
-        //TODO: Will the actual classes be preserved through here??
         
         if ([[relationships objectForKey:relationship] isToMany]) {
             //To-many relationship            
@@ -302,7 +312,9 @@
                 //TODO: Update Parse SDK and use the new PFRelation
                 PFObject *relatedRemoteObject = nil;
                 if (!relatedObject.objectId) {
+                    relatedObject.fromRelationship = YES;
                     relatedRemoteObject = relatedObject.remoteObject;
+                    relatedObject.fromRelationship = NO;
                     relatedObject.syncStatusValue = 3;
                 }
                 else {
@@ -323,7 +335,9 @@
                 continue;
             }
             else if (!relatedObject.objectId) {
+                relatedObject.fromRelationship = YES;
                 relatedRemoteObject = relatedObject.remoteObject;
+                relatedObject.fromRelationship = NO;
                 relatedObject.syncStatusValue = 3;
             }
             else {
