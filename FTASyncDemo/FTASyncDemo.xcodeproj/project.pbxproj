@@ -708,7 +708,7 @@
 		8B6D39AC15282F1800B296D6 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Justin Bergen (R5573PNUK8)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
@@ -717,7 +717,7 @@
 				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
 				INFOPLIST_FILE = "FTASyncDemo/FTASyncDemo-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "69CAB4E2-FBFC-4C22-87FD-7992D705F7E2";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
