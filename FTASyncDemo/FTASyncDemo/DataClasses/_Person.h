@@ -57,6 +57,7 @@ extern const struct PersonFetchedProperties {
 
 
 
+
 @end
 
 @interface _Person (CoreDataGeneratedAccessors)
@@ -71,14 +72,14 @@ extern const struct PersonFetchedProperties {
 @interface _Person (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveName;
-- (void)setPrimitiveName:(NSString*)value;
+- (NSString *)primitiveName;
+- (void)setPrimitiveName:(NSString *)value;
 
 
 
 
-- (NSData*)primitivePhoto;
-- (void)setPrimitivePhoto:(NSData*)value;
+- (NSData *)primitivePhoto;
+- (void)setPrimitivePhoto:(NSData *)value;
 
 
 
