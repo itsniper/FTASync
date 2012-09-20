@@ -3,6 +3,28 @@
     <entity name="AbstractPerson" representedClassName="AbstractPerson" isAbstract="YES" parentEntity="FTASyncParent" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="CDPerson" representedClassName="Person" parentEntity="AbstractPerson" syncable="YES">
+        <attribute name="photo" optional="YES" attributeType="Binary" defaultValueString="defaultPerson">
+            <userInfo/>
+        </attribute>
+        <relationship name="toDoItem" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="CDToDoItem" inverseName="person" inverseEntity="CDToDoItem">
+            <userInfo/>
+        </relationship>
+    </entity>
+    <entity name="CDToDoItem" representedClassName="ToDoItem" parentEntity="FTASyncParent">
+        <attribute name="name" optional="YES" attributeType="String">
+            <userInfo/>
+        </attribute>
+        <attribute name="priority" optional="YES" attributeType="Integer 16" maxValueString="10" defaultValueString="1">
+            <userInfo/>
+        </attribute>
+        <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="CDPerson" inverseName="toDoItem" inverseEntity="CDPerson">
+            <userInfo>
+                <entry key="isDirty" value="NO"/>
+            </userInfo>
+        </relationship>
+        <userInfo/>
+    </entity>
     <entity name="FTASyncParent" representedClassName="FTASyncParent" isAbstract="YES">
         <attribute name="createdHere" optional="YES" attributeType="Boolean" defaultValueString="YES">
             <userInfo/>
@@ -18,32 +40,10 @@
         </attribute>
         <userInfo/>
     </entity>
-    <entity name="Person" representedClassName="Person" parentEntity="AbstractPerson" syncable="YES">
-        <attribute name="photo" optional="YES" attributeType="Binary" defaultValueString="defaultPerson">
-            <userInfo/>
-        </attribute>
-        <relationship name="toDoItem" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ToDoItem" inverseName="person" inverseEntity="ToDoItem">
-            <userInfo/>
-        </relationship>
-    </entity>
-    <entity name="ToDoItem" representedClassName="ToDoItem" parentEntity="FTASyncParent">
-        <attribute name="name" optional="YES" attributeType="String">
-            <userInfo/>
-        </attribute>
-        <attribute name="priority" optional="YES" attributeType="Integer 16" maxValueString="10" defaultValueString="1">
-            <userInfo/>
-        </attribute>
-        <relationship name="person" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="Person" inverseName="toDoItem" inverseEntity="Person">
-            <userInfo>
-                <entry key="isDirty" value="NO"/>
-            </userInfo>
-        </relationship>
-        <userInfo/>
-    </entity>
     <elements>
         <element name="FTASyncParent" positionX="160" positionY="192" width="128" height="105"/>
-        <element name="Person" positionX="333" positionY="387" width="128" height="73"/>
-        <element name="ToDoItem" positionX="160" positionY="384" width="128" height="90"/>
+        <element name="CDPerson" positionX="333" positionY="387" width="128" height="73"/>
+        <element name="CDToDoItem" positionX="160" positionY="384" width="128" height="88"/>
         <element name="AbstractPerson" positionX="358" positionY="261" width="128" height="58"/>
     </elements>
 </model>
