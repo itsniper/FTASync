@@ -139,14 +139,19 @@
 
 #pragma mark - Sync
 
+
+- (NSArray *)entitiesToSync {
+    NSEntityDescription *parent = [FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    return [self allDescedents:parent];
+}
+
 - (void)syncEntity:(NSEntityDescription *)entityDesc {
     if ([NSThread isMainThread]) {
         FSALog(@"%@", @"This should NEVER be run on the main thread!!");
         return;
     }
     
-    NSString *parentEntity = [[entityDesc superentity] name];
-    if (![parentEntity isEqualToString:@"FTASyncParent"]) {
+    if (![self isDescendantOfFTASyncParent:entityDesc]) {
         FSALog(@"Requested a sync for an entity (%@) that does not inherit from FTASyncParent!", [entityDesc name]);
         return;
     }
@@ -282,7 +287,7 @@
         return;
     }
     
-    NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]] subentities];
+    NSArray *entitiesToSync = [self entitiesToSync];
     
     FSLog(@"Syncing %i entities", [entitiesToSync count]);
     float increment = 0.8 / (float)[entitiesToSync count];
@@ -317,6 +322,7 @@
     FSLog(@"METADATA after clear: %@", metadata);
 #endif
 }
+
 
 - (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress {
     //Quick sanity check to fail early if a sync is in progress, or cannot be completed
@@ -412,5 +418,26 @@
     NSLog(@"Error Domain: %@", [error domain]);
     NSLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
+
+
+
+#pragma mark - Ancestry
+
+- (NSArray *)allDescedents:(NSEntityDescription *)parent {
+    NSMutableArray *children = [NSMutableArray array];
+    for (NSEntityDescription *child in [parent subentities]) {
+        if (![child isAbstract]) {
+            [children addObject:child];
+        }
+        [children addObjectsFromArray:[self allDescedents:child]];
+    }
+    return children;
+}
+
+- (BOOL)isDescendantOfFTASyncParent:(NSEntityDescription *)entityDesc {
+    NSEntityDescription *parent = [FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    return [entityDesc isKindOfEntity:parent];
+}
+
 
 @end
