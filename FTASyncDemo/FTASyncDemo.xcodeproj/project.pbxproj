@@ -21,6 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		496E58F5160ABFFE00BC00B5 /* _AbstractPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = 496E58F2160ABFFE00BC00B5 /* _AbstractPerson.m */; };
+		496E58F6160ABFFE00BC00B5 /* AbstractPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = 496E58F4160ABFFE00BC00B5 /* AbstractPerson.m */; };
 		8B22B7E915C2DFC800F01B27 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B22B7E815C2DFC800F01B27 /* Crashlytics.framework */; };
 		8B345364157C2B4200725E14 /* FTASetupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B345363157C2B4200725E14 /* FTASetupViewController.m */; };
 		8B5AFC50152D1797000AF428 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC4F152D1797000AF428 /* Parse.framework */; };
@@ -93,6 +95,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		496E58EF160ABEC300BC00B5 /* FTASyncDemo3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = file; path = FTASyncDemo3.xcdatamodel; sourceTree = "<group>"; };
+		496E58F1160ABFFE00BC00B5 /* _AbstractPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _AbstractPerson.h; sourceTree = "<group>"; };
+		496E58F2160ABFFE00BC00B5 /* _AbstractPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _AbstractPerson.m; sourceTree = "<group>"; };
+		496E58F3160ABFFE00BC00B5 /* AbstractPerson.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AbstractPerson.h; sourceTree = "<group>"; };
+		496E58F4160ABFFE00BC00B5 /* AbstractPerson.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AbstractPerson.m; sourceTree = "<group>"; };
 		8B22B7E815C2DFC800F01B27 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		8B345362157C2B4200725E14 /* FTASetupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASetupViewController.h; sourceTree = "<group>"; };
 		8B345363157C2B4200725E14 /* FTASetupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASetupViewController.m; sourceTree = "<group>"; };
@@ -408,6 +415,10 @@
 		8B6D39EB1528373F00B296D6 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				496E58F1160ABFFE00BC00B5 /* _AbstractPerson.h */,
+				496E58F2160ABFFE00BC00B5 /* _AbstractPerson.m */,
+				496E58F3160ABFFE00BC00B5 /* AbstractPerson.h */,
+				496E58F4160ABFFE00BC00B5 /* AbstractPerson.m */,
 				8B6D39EC1528379F00B296D6 /* FTASyncDemo.xcdatamodeld */,
 				8B5AFC6A152D2EED000AF428 /* _FTASyncParent.h */,
 				8B5AFC6B152D2EED000AF428 /* _FTASyncParent.m */,
@@ -578,7 +589,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd FTASyncDemo\nmogenerator -m DataClasses/FTASyncDemo.xcdatamodeld/FTASyncDemo.xcdatamodel/ --output-dir DataClasses/ --template-var arc=true\nrm DataClasses/FTASyncParent.*";
+			shellScript = "cd FTASyncDemo\nmogenerator -m DataClasses/FTASyncDemo.xcdatamodeld/FTASyncDemo3.xcdatamodel/ --output-dir DataClasses/ --template-var arc=true\nrm DataClasses/FTASyncParent.*";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -619,6 +630,8 @@
 				8B937B29157AC84C00FA3E39 /* NPReachability.m in Sources */,
 				8B937B2D157BDDF800FA3E39 /* FTASyncParent.m in Sources */,
 				8B345364157C2B4200725E14 /* FTASetupViewController.m in Sources */,
+				496E58F5160ABFFE00BC00B5 /* _AbstractPerson.m in Sources */,
+				496E58F6160ABFFE00BC00B5 /* AbstractPerson.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -832,11 +845,12 @@
 		8B6D39EC1528379F00B296D6 /* FTASyncDemo.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				496E58EF160ABEC300BC00B5 /* FTASyncDemo3.xcdatamodel */,
 				8B5AFC5F152D1BC4000AF428 /* FTASyncDemo1.xcdatamodel */,
 				8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */,
 				8B7A262615607515006FB602 /* FTASyncDemo2.xcdatamodel */,
 			);
-			currentVersion = 8B6D39ED1528379F00B296D6 /* FTASyncDemo.xcdatamodel */;
+			currentVersion = 496E58EF160ABEC300BC00B5 /* FTASyncDemo3.xcdatamodel */;
 			path = FTASyncDemo.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
