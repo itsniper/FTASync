@@ -94,21 +94,21 @@ const struct FTASyncParentFetchedProperties FTASyncParentFetchedProperties = {
 
 
 
-- (short)syncStatusValue {
+- (int16_t)syncStatusValue {
 	NSNumber *result = [self syncStatus];
 	return [result shortValue];
 }
 
-- (void)setSyncStatusValue:(short)value_ {
+- (void)setSyncStatusValue:(int16_t)value_ {
 	[self setSyncStatus:[NSNumber numberWithShort:value_]];
 }
 
-- (short)primitiveSyncStatusValue {
+- (int16_t)primitiveSyncStatusValue {
 	NSNumber *result = [self primitiveSyncStatus];
 	return [result shortValue];
 }
 
-- (void)setPrimitiveSyncStatusValue:(short)value_ {
+- (void)setPrimitiveSyncStatusValue:(int16_t)value_ {
 	[self setPrimitiveSyncStatus:[NSNumber numberWithShort:value_]];
 }
 
@@ -117,6 +117,7 @@ const struct FTASyncParentFetchedProperties FTASyncParentFetchedProperties = {
 
 
 @dynamic updatedAt;
+
 
 
 

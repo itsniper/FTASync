@@ -578,7 +578,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd FTASyncDemo\nmogenerator -m DataClasses/FTASyncDemo.xcdatamodeld/FTASyncDemo.xcdatamodel/ --output-dir DataClasses/ --template-var arc=true";
+			shellScript = "cd FTASyncDemo\nmogenerator -m DataClasses/FTASyncDemo.xcdatamodeld/FTASyncDemo.xcdatamodel/ --output-dir DataClasses/ --template-var arc=true\nrm DataClasses/FTASyncParent.*";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -63,21 +63,21 @@ const struct ToDoItemFetchedProperties ToDoItemFetchedProperties = {
 
 
 
-- (short)priorityValue {
+- (int16_t)priorityValue {
 	NSNumber *result = [self priority];
 	return [result shortValue];
 }
 
-- (void)setPriorityValue:(short)value_ {
+- (void)setPriorityValue:(int16_t)value_ {
 	[self setPriority:[NSNumber numberWithShort:value_]];
 }
 
-- (short)primitivePriorityValue {
+- (int16_t)primitivePriorityValue {
 	NSNumber *result = [self primitivePriority];
 	return [result shortValue];
 }
 
-- (void)setPrimitivePriorityValue:(short)value_ {
+- (void)setPrimitivePriorityValue:(int16_t)value_ {
 	[self setPrimitivePriority:[NSNumber numberWithShort:value_]];
 }
 
@@ -88,6 +88,7 @@ const struct ToDoItemFetchedProperties ToDoItemFetchedProperties = {
 @dynamic person;
 
 	
+
 
 
 

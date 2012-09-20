@@ -58,9 +58,9 @@ extern const struct FTASyncParentFetchedProperties {
 @property (nonatomic, strong) NSNumber *syncStatus;
 
 
-@property short syncStatusValue;
-- (short)syncStatusValue;
-- (void)setSyncStatusValue:(short)value_;
+@property int16_t syncStatusValue;
+- (int16_t)syncStatusValue;
+- (void)setSyncStatusValue:(int16_t)value_;
 
 //- (BOOL)validateSyncStatus:(id*)value_ error:(NSError**)error_;
 
@@ -76,6 +76,7 @@ extern const struct FTASyncParentFetchedProperties {
 
 
 
+
 @end
 
 @interface _FTASyncParent (CoreDataGeneratedAccessors)
@@ -85,8 +86,8 @@ extern const struct FTASyncParentFetchedProperties {
 @interface _FTASyncParent (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSNumber*)primitiveCreatedHere;
-- (void)setPrimitiveCreatedHere:(NSNumber*)value;
+- (NSNumber *)primitiveCreatedHere;
+- (void)setPrimitiveCreatedHere:(NSNumber *)value;
 
 - (BOOL)primitiveCreatedHereValue;
 - (void)setPrimitiveCreatedHereValue:(BOOL)value_;
@@ -94,23 +95,23 @@ extern const struct FTASyncParentFetchedProperties {
 
 
 
-- (NSString*)primitiveObjectId;
-- (void)setPrimitiveObjectId:(NSString*)value;
+- (NSString *)primitiveObjectId;
+- (void)setPrimitiveObjectId:(NSString *)value;
 
 
 
 
-- (NSNumber*)primitiveSyncStatus;
-- (void)setPrimitiveSyncStatus:(NSNumber*)value;
+- (NSNumber *)primitiveSyncStatus;
+- (void)setPrimitiveSyncStatus:(NSNumber *)value;
 
-- (short)primitiveSyncStatusValue;
-- (void)setPrimitiveSyncStatusValue:(short)value_;
-
-
+- (int16_t)primitiveSyncStatusValue;
+- (void)setPrimitiveSyncStatusValue:(int16_t)value_;
 
 
-- (NSDate*)primitiveUpdatedAt;
-- (void)setPrimitiveUpdatedAt:(NSDate*)value;
+
+
+- (NSDate *)primitiveUpdatedAt;
+- (void)setPrimitiveUpdatedAt:(NSDate *)value;
 
 
 
