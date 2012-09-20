@@ -4,7 +4,6 @@
 #import "_Person.h"
 
 const struct PersonAttributes PersonAttributes = {
-	.name = @"name",
 	.photo = @"photo",
 };
 
@@ -22,16 +21,16 @@ const struct PersonFetchedProperties PersonFetchedProperties = {
 
 + (id)insertInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
-	return [NSEntityDescription insertNewObjectForEntityForName:@"Person" inManagedObjectContext:moc_];
+	return [NSEntityDescription insertNewObjectForEntityForName:@"CDPerson" inManagedObjectContext:moc_];
 }
 
 + (NSString*)entityName {
-	return @"Person";
+	return @"CDPerson";
 }
 
 + (NSEntityDescription*)entityInManagedObjectContext:(NSManagedObjectContext*)moc_ {
 	NSParameterAssert(moc_);
-	return [NSEntityDescription entityForName:@"Person" inManagedObjectContext:moc_];
+	return [NSEntityDescription entityForName:@"CDPerson" inManagedObjectContext:moc_];
 }
 
 - (PersonID*)objectID {
@@ -44,13 +43,6 @@ const struct PersonFetchedProperties PersonFetchedProperties = {
 
 	return keyPaths;
 }
-
-
-
-
-@dynamic name;
-
-
 
 
 
@@ -74,6 +66,7 @@ const struct PersonFetchedProperties PersonFetchedProperties = {
 	return result;
 }
 	
+
 
 
 

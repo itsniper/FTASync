@@ -97,7 +97,7 @@
 
 + (id)getMetadataForKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context {
     NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
-    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     
     NSDictionary *entityMetadata = [metadata objectForKey:entityName];
@@ -114,7 +114,7 @@
 
 + (void)setMetadataValue:(id)value forKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context {
     NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
-    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
     NSMutableDictionary *metadata = [[coordinator metadataForPersistentStore:store] mutableCopy];
     
     if (!key) {
@@ -139,14 +139,19 @@
 
 #pragma mark - Sync
 
+
+- (NSArray *)entitiesToSync {
+    NSEntityDescription *parent = [FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    return [self allDescedents:parent];
+}
+
 - (void)syncEntity:(NSEntityDescription *)entityDesc {
     if ([NSThread isMainThread]) {
         FSALog(@"%@", @"This should NEVER be run on the main thread!!");
         return;
     }
     
-    NSString *parentEntity = [[entityDesc superentity] name];
-    if (![parentEntity isEqualToString:@"FTASyncParent"]) {
+    if (![self isDescendantOfFTASyncParent:entityDesc]) {
         FSALog(@"Requested a sync for an entity (%@) that does not inherit from FTASyncParent!", [entityDesc name]);
         return;
     }
@@ -217,7 +222,7 @@
     if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
         FSALog(@"%@", @"Should not be working with the main context!");
     }
-    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
         [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
         self.syncInProgress = NO;
         self.progressBlock = nil;
@@ -236,7 +241,7 @@
     if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
         FSLog(@"NO OBJECTS TO SYNC");
         if ([deletedRemoteObjects count] > 0) {
-            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
                 [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
                 self.syncInProgress = NO;
                 self.progressBlock = nil;
@@ -264,7 +269,7 @@
         return;
     } 
     else {
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
             self.syncInProgress = NO;
             self.progressBlock = nil;
@@ -282,7 +287,7 @@
         return;
     }
     
-    NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]] subentities];
+    NSArray *entitiesToSync = [self entitiesToSync];
     
     FSLog(@"Syncing %i entities", [entitiesToSync count]);
     float increment = 0.8 / (float)[entitiesToSync count];
@@ -312,11 +317,12 @@
     
 #ifdef DEBUG
     NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
-    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
 #endif
 }
+
 
 - (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress {
     //Quick sanity check to fail early if a sync is in progress, or cannot be completed
@@ -349,7 +355,7 @@
         }];
     };
     
-    [MagicalRecordHelpers performSaveDataOperationInBackgroundWithBlock:^(NSManagedObjectContext *context) {
+    [MagicalRecord saveInBackgroundWithBlock:^(NSManagedObjectContext *context) {
         //TODO: Is there any user setup needed??
         [self syncAll];
     }completion:^{
@@ -412,5 +418,26 @@
     NSLog(@"Error Domain: %@", [error domain]);
     NSLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
+
+
+
+#pragma mark - Ancestry
+
+- (NSArray *)allDescedents:(NSEntityDescription *)parent {
+    NSMutableArray *children = [NSMutableArray array];
+    for (NSEntityDescription *child in [parent subentities]) {
+        if (![child isAbstract]) {
+            [children addObject:child];
+        }
+        [children addObjectsFromArray:[self allDescedents:child]];
+    }
+    return children;
+}
+
+- (BOOL)isDescendantOfFTASyncParent:(NSEntityDescription *)entityDesc {
+    NSEntityDescription *parent = [FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    return [entityDesc isKindOfEntity:parent];
+}
+
 
 @end

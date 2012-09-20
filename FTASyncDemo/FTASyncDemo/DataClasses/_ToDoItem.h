@@ -44,9 +44,9 @@ extern const struct ToDoItemFetchedProperties {
 @property (nonatomic, strong) NSNumber *priority;
 
 
-@property short priorityValue;
-- (short)priorityValue;
-- (void)setPriorityValue:(short)value_;
+@property int16_t priorityValue;
+- (int16_t)priorityValue;
+- (void)setPriorityValue:(int16_t)value_;
 
 //- (BOOL)validatePriority:(id*)value_ error:(NSError**)error_;
 
@@ -61,6 +61,7 @@ extern const struct ToDoItemFetchedProperties {
 
 
 
+
 @end
 
 @interface _ToDoItem (CoreDataGeneratedAccessors)
@@ -70,17 +71,17 @@ extern const struct ToDoItemFetchedProperties {
 @interface _ToDoItem (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString*)primitiveName;
-- (void)setPrimitiveName:(NSString*)value;
+- (NSString *)primitiveName;
+- (void)setPrimitiveName:(NSString *)value;
 
 
 
 
-- (NSNumber*)primitivePriority;
-- (void)setPrimitivePriority:(NSNumber*)value;
+- (NSNumber *)primitivePriority;
+- (void)setPrimitivePriority:(NSNumber *)value;
 
-- (short)primitivePriorityValue;
-- (void)setPrimitivePriorityValue:(short)value_;
+- (int16_t)primitivePriorityValue;
+- (void)setPrimitivePriorityValue:(int16_t)value_;
 
 
 

@@ -8,7 +8,7 @@
 
 #import "NSObject+MagicalDataImport.h"
 #import "NSManagedObject+MagicalDataImport.h"
-#import "MagicalRecordHelpers.h"
+#import "MagicalRecord.h"
 #import "CoreData+MagicalRecord.h"
 
 NSUInteger const kMagicalRecordImportMaximumAttributeFailoverDepth = 10;
@@ -17,10 +17,6 @@ NSUInteger const kMagicalRecordImportMaximumAttributeFailoverDepth = 10;
 @implementation NSObject (MagicalRecord_DataImport)
 
 //#warning If you implement valueForUndefinedKey: in any NSObject in your code, this may be the problem if something broke
-//TODO: This method needs to be:
-// 1) Renamed to MR_valueForUndefinedKey:
-// 2) swizzled in and out only when importing data.
-// This will be done in a really short update...stay tuned
 - (id) MR_valueForUndefinedKey:(NSString *)key
 {
     return nil;
@@ -33,7 +29,7 @@ NSUInteger const kMagicalRecordImportMaximumAttributeFailoverDepth = 10;
     
     id value = [self valueForKeyPath:lookupKey];
     
-    for (int i = 1; i < kMagicalRecordImportMaximumAttributeFailoverDepth && value == nil; i++)
+    for (NSUInteger i = 1; i < kMagicalRecordImportMaximumAttributeFailoverDepth && value == nil; i++)
     {
         attributeName = [NSString stringWithFormat:@"%@.%d", kMagicalRecordImportAttributeKeyMapKey, i];
         lookupKey = [[attributeInfo userInfo] valueForKey:attributeName];

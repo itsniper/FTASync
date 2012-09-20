@@ -32,7 +32,7 @@
 {
     [[NSUserDefaults standardUserDefaults] registerDefaults:[NSDictionary dictionaryWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"DefaultPrefs" ofType:@"plist"]]];
     
-    [MagicalRecordHelpers setupAutoMigratingCoreDataStack];
+    [MagicalRecord setupAutoMigratingCoreDataStack];
     
     [Parse setApplicationId:kParseAppId 
                   clientKey:kParseClientKey];
@@ -92,7 +92,7 @@
      Save data if appropriate.
      See also applicationDidEnterBackground:.
      */
-    [MagicalRecordHelpers cleanUp];
+    [MagicalRecord cleanUp];
 }
 
 @end
