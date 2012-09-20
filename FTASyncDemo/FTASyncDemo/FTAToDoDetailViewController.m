@@ -34,7 +34,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        self.editingContext = [NSManagedObjectContext MR_contextThatNotifiesDefaultContextOnMainThread];
+        self.editingContext = [NSManagedObjectContext MR_contextThatPushesChangesToDefaultContext];
     }
     return self;
 }

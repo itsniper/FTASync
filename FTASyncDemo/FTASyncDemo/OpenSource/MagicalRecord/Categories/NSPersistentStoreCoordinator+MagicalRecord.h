@@ -5,7 +5,7 @@
 //  Copyright 2010 Magical Panda Software, LLC All rights reserved.
 //
 
-#import "MagicalRecordHelpers.h"
+#import "MagicalRecord.h"
 #import "NSPersistentStore+MagicalRecord.h"
 
 extern NSString * const kMagicalRecordPSCDidCompleteiCloudSetupNotification;
@@ -29,6 +29,7 @@ extern NSString * const kMagicalRecordPSCDidCompleteiCloudSetupNotification;
 - (NSPersistentStore *) MR_addInMemoryStore;
 - (NSPersistentStore *) MR_addAutoMigratingSqliteStoreNamed:(NSString *) storeFileName;
 - (NSPersistentStore *) MR_addSqliteStoreNamed:(id)storeFileName withOptions:(__autoreleasing NSDictionary *)options;
+
 - (void) MR_addiCloudContainerID:(NSString *)containerID contentNameKey:(NSString *)contentNameKey localStoreNamed:(NSString *)localStoreName cloudStorePathComponent:(NSString *)subPathComponent;
 - (void) MR_addiCloudContainerID:(NSString *)containerID contentNameKey:(NSString *)contentNameKey localStoreNamed:(NSString *)localStoreName cloudStorePathComponent:(NSString *)subPathComponent completion:(void(^)(void))completionBlock;
 
