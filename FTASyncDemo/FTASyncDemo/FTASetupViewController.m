@@ -119,7 +119,7 @@
     
     //TODO: Remove
     NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
-    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
 }

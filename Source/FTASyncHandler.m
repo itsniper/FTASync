@@ -115,7 +115,7 @@
 
 + (id)getMetadataForKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context {
     NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
-    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     
     NSDictionary *entityMetadata = [metadata objectForKey:entityName];
@@ -132,7 +132,7 @@
 
 + (void)setMetadataValue:(id)value forKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context {
     NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
-    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
     NSMutableDictionary *metadata = [[coordinator metadataForPersistentStore:store] mutableCopy];
     
     if (!key) {
@@ -239,7 +239,7 @@
     if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
         FSALog(@"%@", @"Should not be working with the main context!");
     }
-    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
         [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
         self.syncInProgress = NO;
         self.progressBlock = nil;
@@ -258,7 +258,7 @@
     if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
         FSLog(@"NO OBJECTS TO SYNC");
         if ([deletedRemoteObjects count] > 0) {
-            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
                 [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
                 self.syncInProgress = NO;
                 self.progressBlock = nil;
@@ -286,7 +286,7 @@
         return;
     } 
     else {
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveWithErrorHandler:^(NSError *error){
+        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
             self.syncInProgress = NO;
             self.progressBlock = nil;
@@ -334,7 +334,7 @@
     
 #ifdef DEBUG
     NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
-    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
 #endif
@@ -373,7 +373,7 @@
         }];
     };
     
-    [MagicalRecordHelpers performSaveDataOperationInBackgroundWithBlock:^(NSManagedObjectContext *context) {
+    [MagicalRecord saveInBackgroundWithBlock:^(NSManagedObjectContext *context) {
         //TODO: Is there any user setup needed??
         [self syncAll];
     }completion:^{
@@ -478,7 +478,7 @@
     
 #ifdef DEBUG
     NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
-    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
 #endif
@@ -519,7 +519,7 @@
     };
     
     __block BOOL didFail = NO;
-    [MagicalRecordHelpers performSaveDataOperationInBackgroundWithBlock:^(NSManagedObjectContext *context) {
+    [MagicalRecord saveInBackgroundWithBlock:^(NSManagedObjectContext *context) {
         didFail = ![self resetAllSyncStatusAndDeleteRemote:delete inContext:context];
     }completion:^{
         if (self.progressBlock)
