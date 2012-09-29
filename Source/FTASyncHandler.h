@@ -16,6 +16,7 @@
 
 typedef void (^FTASyncProgressBlock)(float progress, NSString* message);
 typedef void (^FTACompletionBlock)(void);
+typedef void (^FTABoolCompletionBlock)(BOOL success, NSError* error);
 
 
 @interface FTASyncHandler : NSObject {
@@ -32,5 +33,6 @@ typedef void (^FTACompletionBlock)(void);
 
 - (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
 
+- (void)resetAllSyncStatusAndDeleteRemote:(BOOL)delete withCompletionBlock:(FTABoolCompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
 
 @end

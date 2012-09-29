@@ -2,9 +2,9 @@
 
 Allows you to sync CoreData entities with a [Parse](https://www.parse.com/) backend.
 
-This is a new project and I can't guarantee that it's been thoroughly tested yet. So do your own due diligence before putting this in a production app! There are a few known issues that still need addressed. They are listed below.
+As with any open source code, do your own due diligence before putting this in a production app! There are a few known issues that still need addressed. They are listed below.
 
-Because I am still doing testing there is still a bunch of debug logging in place. If you don't want to see all of that, you can turn it off in *FTASync.h*.
+Because sync and conflict resolution is very complex, there is bunch of debug logging in place. If you don't want to see all of that, you can turn it off in *FTASync.h*.
 
 # Requires
 
@@ -55,6 +55,16 @@ Not supported yet.
 
 There is an `FTASyncLastSyncDate` key added to the user defaults that contains the time of the last successful sync. Each time that value is updated an `FTASyncDidSync` notification is posted to the default notification center.
 
+## Reset sync
+
+To reset all local objects to "new" objects call `[[FTASyncHandler sharedInstance] resetAllSyncStatusAndDeleteRemote:YES withCompletionBlock:nil progressBlock:nil];`
+
+Optionally you can pass in completion and progress blocks. The signatures are in *FTASyncHandler.h*
+
+If you want to completely reset a user's Parse account, then pass `YES` for the first parameter and all remote objects will be deleted. Calling a sync after doing this will complete a full sync reset on the remote, forcing it to match the local data. Or, you can then delete all local data for a complete data reset.
+
+NOTE: If you call this and pass `NO` as the first parameter, and then sync to the same Parse account, you will get duplicate objects!
+
 # Known Issues/Limitations
 
 * Queries are limited to a return of 1000 objects by Parse
@@ -66,6 +76,10 @@ There is an `FTASyncLastSyncDate` key added to the user defaults that contains t
 * Add ability to check PFUser for updates on any other entity to save on API calls
 * PFQuery is limited to 1000 returned objects, so support pagination beyond that
 * Write unit tests
+
+# Apps Using FTASync
+
+[Our List](http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=548960426&mt=8) by Five3 Apps
 
 # License
 

@@ -29,6 +29,8 @@
 - (void)syncEntity:(NSEntityDescription *)entityName;
 - (void)syncAll;
 
+- (BOOL)resetAllSyncStatusAndDeleteRemote:(BOOL)delete inContext:(NSManagedObjectContext *)context;
+
 - (void)handleError:(NSError *)error;
 
 @end
@@ -355,6 +357,8 @@
         //Create a background task identifier and specify the exception handler
         bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
             NSLog(@"Background sync on exit failed to complete in time limit");
+            //TODO: This is the wrong context since this code will be running on main thread. Is there a way to get
+            //   access to the context running [self syncAll] below??
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
             self.syncInProgress = NO;
             self.progressBlock = nil;
@@ -392,6 +396,146 @@
         //End background task
         if ([[UIDevice currentDevice] isMultitaskingSupported]) {
             FSCLog(@"Completed sync.");
+            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
+        }
+    }];
+}
+
+- (BOOL)resetAllSyncStatusAndDeleteRemote:(BOOL)delete inContext:(NSManagedObjectContext *)context {
+    NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:context] subentities];
+    
+    FSLog(@"Resetting %i entities", [entitiesToSync count]);
+    float increment = 0.8 / (float)[entitiesToSync count];
+    self.progress = 0.1;
+    if (self.progressBlock) {
+        self.progressBlock(self.progress, @"Starting data reset...");
+    }
+    
+    for (NSEntityDescription *anEntity in entitiesToSync) {
+        NSFetchRequest *request = [[NSFetchRequest alloc] init];
+        [request setEntity:anEntity];
+        NSArray *allLocalObjects = [NSManagedObject MR_executeFetchRequest:request inContext:context];
+        
+        for (FTASyncParent *object in allLocalObjects) {
+            object.createdHereValue = YES;
+            object.objectId = nil;
+            object.syncStatusValue = 2;
+            object.updatedAt = nil;
+        }
+        
+        //Clear out any deleted objects in User Defaults
+        NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [anEntity name]];
+        [[NSUserDefaults standardUserDefaults] removeObjectForKey:defaultsKey];
+        
+        if (!delete) {
+            self.progress += increment;
+            if (self.progressBlock)
+                self.progressBlock(self.progress, [NSString stringWithFormat:@"Finished reset of %@", [anEntity name]]);
+            continue;
+        }
+        
+        PFQuery *query = [PFQuery queryWithClassName:anEntity.name];
+        NSError *error = nil;
+        NSArray *allRemoteObjects = [query findObjects:&error];
+        if (error) {
+            NSLog(@"Query for all remote objects failed with: %@", error);
+            [context rollback];
+            self.syncInProgress = NO;
+            self.progressBlock = nil;
+            self.progress = 0;
+            [self handleError:error];
+            return NO;
+        }
+        
+        for (PFObject *object in allRemoteObjects) {
+            BOOL success = [object delete:&error];
+            if (!success) {
+                NSLog(@"Deletion of object with ID %@ failed with: %@", object.objectId, error);
+                [context rollback];
+                self.syncInProgress = NO;
+                self.progressBlock = nil;
+                self.progress = 0;
+                [self handleError:error];
+                return NO;
+            }
+        }
+        
+        self.progress += increment;
+        if (self.progressBlock)
+            self.progressBlock(self.progress, [NSString stringWithFormat:@"Finished reset of %@", [anEntity name]]);
+    }
+    
+    //Since there is no rollback on the metadata this must not be cleared out until we know a full sync was successful
+    for (NSEntityDescription *anEntity in entitiesToSync) {
+        [FTASyncHandler setMetadataValue:[NSMutableDictionary dictionary] forKey:nil forEntity:[anEntity name] inContext:context];
+    }
+    
+#ifdef DEBUG
+    NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
+    id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecordHelpers defaultStoreName]]];
+    NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
+    FSLog(@"METADATA after clear: %@", metadata);
+#endif
+    
+    return YES;
+}
+
+- (void)resetAllSyncStatusAndDeleteRemote:(BOOL)delete withCompletionBlock:(FTABoolCompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress {
+    if (![self.remoteInterface canSync] || self.syncInProgress) {
+        if (completion)
+            completion(NO, nil);
+        
+        return;
+    }
+    
+    self.syncInProgress = YES;
+    self.progressBlock = progress;
+    self.progress = 0.0;
+    if (self.progressBlock) {
+        self.progressBlock(self.progress, @"Initializing...");
+    }
+    
+    //Setup background process tags so we can complete on app exit
+    __block UIBackgroundTaskIdentifier bgTask = 0;
+    if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+        //Create a background task identifier and specify the exception handler
+        bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+            NSLog(@"Background data reset on exit failed to complete in time limit");
+            //TODO: This is the wrong context since this code will be running on main thread. Is there a way to get
+            //   access to the context running in performSaveData... below??
+            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+            self.syncInProgress = NO;
+            self.progressBlock = nil;
+            self.progress = 0;
+            [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+            bgTask = UIBackgroundTaskInvalid;
+        }];
+    };
+    
+    __block BOOL didFail = NO;
+    [MagicalRecordHelpers performSaveDataOperationInBackgroundWithBlock:^(NSManagedObjectContext *context) {
+        didFail = ![self resetAllSyncStatusAndDeleteRemote:delete inContext:context];
+    }completion:^{
+        if (self.progressBlock)
+            self.progressBlock(1.0, @"Complete");
+        
+        if (![NSThread isMainThread]) {
+            FSALog(@"%@", @"Completion block must be called on main thread");
+        }
+                
+        if (completion && !didFail)
+            completion(YES, nil);
+        else if (completion && didFail)
+            completion(NO, nil);
+        
+        self.syncInProgress = NO;
+        self.progressBlock = nil;
+        self.progress = 0;
+        
+        //End background task
+        if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+            FSCLog(@"Completed data reset sync.");
             [[UIApplication sharedApplication] endBackgroundTask:bgTask];
             bgTask = UIBackgroundTaskInvalid;
         }
