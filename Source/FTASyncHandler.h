@@ -22,24 +22,15 @@ typedef void (^FTACompletionBlock)(void);
     
 }
 
-@property (strong, nonatomic) FTAParseSync *remoteInterface;
 @property (atomic, getter = isSyncInProgress) BOOL syncInProgress;
-@property (atomic) float progress;
-@property (atomic, copy) FTASyncProgressBlock progressBlock;
 @property (nonatomic, getter = isIgnoreContextSave) BOOL ignoreContextSave;
 
-+(FTASyncHandler *)sharedInstance;
-
-- (void)contextWasSaved:(NSNotification *)notification;
++ (FTASyncHandler *)sharedInstance;
 
 + (NSString *)getMetadataForKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 + (void)setMetadataValue:(id)value forKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 
-- (void)syncAll;
-- (void)syncEntity:(NSEntityDescription *)entityName;
-- (void)syncAll;
 - (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
 
--(void)handleError:(NSError *)error;
 
 @end

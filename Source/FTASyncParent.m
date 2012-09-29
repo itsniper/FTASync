@@ -14,6 +14,24 @@
 
 #import "FTASync.h"
 
+
+@interface FTASyncParent ()
+
+@property (nonatomic, getter = isTraversing) BOOL traversing;
+@property (nonatomic, getter = isFromRelationship) BOOL fromRelationship;
+
+- (void)setupRelationshipObservation;
+- (void)teardownRelationshipObservation;
+
+- (BOOL)shouldUseRemoteObject:(PFObject *)remoteObject insteadOfLocal:(FTASyncParent *)localObject forToMany:(BOOL)isToMany relationship:(NSString *)relationship;
+
+- (void)updateRemoteObject:(PFObject *)parseObject;
+- (void)updateObjectWithRemoteObject:(PFObject *)parseObject;
+
+
+@end
+
+
 @implementation FTASyncParent
 
 @synthesize remoteObject = _remoteObject;
@@ -54,7 +72,7 @@
     if (!_remoteObject || self.objectId) {
         _remoteObject = [PFObject objectWithClassName:NSStringFromClass([self class])];
         self.traversing = YES;
-        [self FTA_updateRemoteObject:self.remoteObject];
+        [self updateRemoteObject:self.remoteObject];
         self.traversing = NO;
     }
     
@@ -255,7 +273,7 @@
     return newObject;
 }
 
-- (void)FTA_updateRemoteObject:(PFObject *)parseObject {
+- (void)updateRemoteObject:(PFObject *)parseObject {
     NSDictionary *attributes = [[self entity] attributesByName];
     NSDictionary *relationships = [[self entity] relationshipsByName];
     
@@ -348,7 +366,7 @@
     }
 }
 
-- (void)FTA_updateObjectWithRemoteObject:(PFObject *)parseObject {
+- (void)updateObjectWithRemoteObject:(PFObject *)parseObject {
     NSDictionary *attributes = [[self entity] attributesByName];
     NSDictionary *relationships = [[self entity] relationshipsByName];
     
@@ -508,7 +526,7 @@
     //Now that all objects are created locally, we can update attributes and relationships
     for (PFObject *newRemoteObject in parseObjects) {
         FTASyncParent *localObject = [newLocalObjects objectForKey:newRemoteObject.objectId];
-        [localObject FTA_updateObjectWithRemoteObject:newRemoteObject];
+        [localObject updateObjectWithRemoteObject:newRemoteObject];
     }
 }
 
@@ -521,7 +539,7 @@
             //break;
         }
         
-        [localObject FTA_updateObjectWithRemoteObject:remoteObject];
+        [localObject updateObjectWithRemoteObject:remoteObject];
     }
 }
 

@@ -18,6 +18,21 @@
 #define kSyncAutomatically  NO //TODO: Create methods to sync automatically after context save
 #define kAutoSyncDelay 30
 
+@interface FTASyncHandler ()
+
+@property (strong, nonatomic) FTAParseSync *remoteInterface;
+@property (atomic) float progress;
+@property (atomic, copy) FTASyncProgressBlock progressBlock;
+
+- (void)contextWasSaved:(NSNotification *)notification;
+
+- (void)syncEntity:(NSEntityDescription *)entityName;
+- (void)syncAll;
+
+- (void)handleError:(NSError *)error;
+
+@end
+
 
 @implementation FTASyncHandler
 
