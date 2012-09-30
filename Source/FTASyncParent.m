@@ -23,6 +23,8 @@
 - (void)setupRelationshipObservation;
 - (void)teardownRelationshipObservation;
 
+- (NSString *)parseClassname;
+- (NSString *)localEntityName;
 - (BOOL)shouldUseRemoteObject:(PFObject *)remoteObject insteadOfLocal:(FTASyncParent *)localObject forToMany:(BOOL)isToMany relationship:(NSString *)relationship;
 
 + (NSArray *)allDecendentsOfEntity:(NSEntityDescription *)entity;
@@ -72,7 +74,7 @@
     }
     
     if (!_remoteObject || self.objectId) {
-        _remoteObject = [PFObject objectWithClassName:NSStringFromClass([self class])];
+        _remoteObject = [PFObject objectWithClassName:[self parseClassname]];
         self.traversing = YES;
         [self updateRemoteObject:self.remoteObject];
         self.traversing = NO;
@@ -122,18 +124,18 @@
         return;
     }
     
-    FSLog(@"Object for %@.%@ was: %@ Now is: %@", [[self entity] name], keyPath, [change objectForKey:NSKeyValueChangeOldKey], [change objectForKey:NSKeyValueChangeNewKey]);
+    FSLog(@"Object for %@.%@ was: %@ Now is: %@", [self localEntityName], keyPath, [change objectForKey:NSKeyValueChangeOldKey], [change objectForKey:NSKeyValueChangeNewKey]);
     
     int changeKindKey = [[change objectForKey:NSKeyValueChangeKindKey] intValue];
     NSString *metadataKey = [NSString stringWithFormat:@"%@.%@", self.objectId, keyPath];
     
     if (changeKindKey == NSKeyValueChangeSetting ) {
         FSLog(@"Changing a to-one relationship: %@", metadataKey);
-        [FTASyncHandler setMetadataValue:[NSNumber numberWithBool:YES] forKey:metadataKey forEntity:NSStringFromClass([self class]) inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+        [FTASyncHandler setMetadataValue:[NSNumber numberWithBool:YES] forKey:metadataKey forEntity:[self localEntityName] inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     }
     else if (changeKindKey == NSKeyValueChangeInsertion || changeKindKey == NSKeyValueChangeRemoval) {
         FSLog(@"Changing a to-many relationship (insert): %@", metadataKey);
-        NSMutableArray *currentChanges = [[FTASyncHandler getMetadataForKey:metadataKey forEntity:NSStringFromClass([self class]) inContext:[NSManagedObjectContext MR_contextForCurrentThread]] mutableCopy];
+        NSMutableArray *currentChanges = [[FTASyncHandler getMetadataForKey:metadataKey forEntity:[self localEntityName] inContext:[NSManagedObjectContext MR_contextForCurrentThread]] mutableCopy];
         
         //Get the objectId for the inserted/removed related object
         NSString *changedObjectId = nil;
@@ -160,11 +162,19 @@
             
             [currentChanges addObject:changedObjectId];
         }
-        [FTASyncHandler setMetadataValue:currentChanges forKey:metadataKey forEntity:NSStringFromClass([self class]) inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+        [FTASyncHandler setMetadataValue:currentChanges forKey:metadataKey forEntity:[self localEntityName] inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     }
 }
 
 #pragma mark - Helpers
+
+- (NSString *)parseClassname {
+    return [self localEntityName];
+}
+
+- (NSString *)localEntityName {
+    return [[self entity] name];
+}
 
 + (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
@@ -206,7 +216,7 @@
     FSLog(@"Should use remote: %@ or local: %@ for relationship: %@", remoteObject.objectId, localObject.objectId, relationship);
     //BOOL if we are checking a to-one relationship, or NSArray if it is a to-many relationship
     id localChanges = [FTASyncHandler getMetadataForKey:[NSString stringWithFormat:@"%@.%@", self.objectId, relationship] 
-                                                    forEntity:NSStringFromClass([self class]) 
+                                                    forEntity:[self localEntityName]
                                                     inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     FSLog(@"Local changes: %@", localChanges);
     
@@ -239,7 +249,7 @@
         return YES;
     }
     else {
-        PFQuery *query = [PFQuery queryWithClassName:NSStringFromClass([localObject class])];
+        PFQuery *query = [PFQuery queryWithClassName:[localObject parseClassname]];
         //query.cachePolicy = kPFCachePolicyCacheElseNetwork;
         //TODO: Handle error
         PFObject *remoteForLocalRelatedObject = [query getObjectWithId:localObject.objectId];
@@ -365,7 +375,7 @@
                     relatedObject.syncStatusValue = 3;
                 }
                 else {
-                    relatedRemoteObject = [PFObject objectWithoutDataWithClassName:NSStringFromClass([relatedObject class]) objectId:relatedObject.objectId];
+                    relatedRemoteObject = [PFObject objectWithoutDataWithClassName:[relatedObject parseClassname] objectId:relatedObject.objectId];
                 }
                 
                 [objectArray addObject:relatedRemoteObject];
@@ -388,7 +398,7 @@
                 relatedObject.syncStatusValue = 3;
             }
             else {
-                relatedRemoteObject = [PFObject objectWithoutDataWithClassName:NSStringFromClass([relatedObject class]) objectId:relatedObject.objectId];
+                relatedRemoteObject = [PFObject objectWithoutDataWithClassName:[relatedObject parseClassname] objectId:relatedObject.objectId];
             }
             [parseObject setObject:relatedRemoteObject forKey:relationship];
         }
@@ -538,7 +548,7 @@
         self.syncStatusValue = 0;
     }
     
-    FSLog(@"%@ after updating metadata with Parse object: %@", [[self entity] name], self);
+    FSLog(@"%@ after updating metadata with Parse object: %@", [self parseClassname], self);
 }
 
 #pragma mark - Batch Updates
