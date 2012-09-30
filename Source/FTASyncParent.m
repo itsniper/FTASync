@@ -25,6 +25,8 @@
 
 - (BOOL)shouldUseRemoteObject:(PFObject *)remoteObject insteadOfLocal:(FTASyncParent *)localObject forToMany:(BOOL)isToMany relationship:(NSString *)relationship;
 
++ (NSArray *)allDecendentsOfEntity:(NSEntityDescription *)entity;
+
 - (void)updateRemoteObject:(PFObject *)parseObject;
 - (void)updateObjectWithRemoteObject:(PFObject *)parseObject;
 
@@ -253,6 +255,33 @@
     }
     
     return YES;
+}
+
+#pragma mark - Ancestry
+
++ (NSArray *)allDescedents {
+    NSMutableArray *children = [NSMutableArray array];
+    NSEntityDescription *parentEntity = [self entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    [children addObjectsFromArray:[FTASyncParent allDecendentsOfEntity:parentEntity]];
+    
+    return children;
+}
+
++ (NSArray *)allDecendentsOfEntity:(NSEntityDescription *)entity {
+    NSMutableArray *children = [NSMutableArray array];
+    for (NSEntityDescription *child in [entity subentities]) {
+        if (![child isAbstract]) {
+            [children addObject:child];
+        }
+        [children addObjectsFromArray:[FTASyncParent allDecendentsOfEntity:child]];
+    }
+    
+    return children;
+}
+
++ (BOOL)isParentOfEntity:(NSEntityDescription *)entityDesc {
+    NSEntityDescription *parent = [FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    return [entityDesc isKindOfEntity:parent];
 }
 
 #pragma mark - Object Conversion

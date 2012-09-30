@@ -26,6 +26,7 @@
 
 - (void)contextWasSaved:(NSNotification *)notification;
 
+- (NSArray *)entitiesToSync;
 - (void)syncEntity:(NSEntityDescription *)entityName;
 - (void)syncAll;
 
@@ -156,14 +157,18 @@
 
 #pragma mark - Sync
 
+
+- (NSArray *)entitiesToSync {
+    return [FTASyncParent allDescedents];
+}
+
 - (void)syncEntity:(NSEntityDescription *)entityDesc {
     if ([NSThread isMainThread]) {
         FSALog(@"%@", @"This should NEVER be run on the main thread!!");
         return;
     }
     
-    NSString *parentEntity = [[entityDesc superentity] name];
-    if (![parentEntity isEqualToString:@"FTASyncParent"]) {
+    if (![FTASyncParent isParentOfEntity:entityDesc]) {
         FSALog(@"Requested a sync for an entity (%@) that does not inherit from FTASyncParent!", [entityDesc name]);
         return;
     }
@@ -299,7 +304,7 @@
         return;
     }
     
-    NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]] subentities];
+    NSArray *entitiesToSync = [self entitiesToSync];
     
     FSLog(@"Syncing %i entities", [entitiesToSync count]);
     float increment = 0.8 / (float)[entitiesToSync count];
