@@ -34,7 +34,6 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        self.editingContext = [NSManagedObjectContext MR_contextThatPushesChangesToDefaultContext];
     }
     return self;
 }
@@ -93,6 +92,14 @@
 
 #pragma mark - Custom Accessors
 
+- (NSManagedObjectContext *)editingContext {
+    if (!_editingContext) {
+        _editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+    }
+    
+    return _editingContext;
+}
+
 - (void)setCurrentToDo:(ToDoItem *)aToDo {
     if (!aToDo) {
         self.title = @"Add ToDo Item";
@@ -148,6 +155,7 @@
 - (IBAction)cancelToDo:(id)sender {
     [self becomeFirstResponder];
     [self.editingContext reset];
+    self.editingContext = nil;
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -155,7 +163,8 @@
     self.currentToDo.name = self.todoName.text;
     self.currentToDo.priority = [NSNumber numberWithInt:[self.priorityValue.text intValue]];
         
-    [self.editingContext MR_save];
+    [self.editingContext MR_saveNestedContexts];
+    self.editingContext = nil;
     //TODO: Handle the error
     
     [self.navigationController popViewControllerAnimated:YES];

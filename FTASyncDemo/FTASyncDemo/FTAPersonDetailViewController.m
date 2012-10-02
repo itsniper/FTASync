@@ -29,7 +29,6 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         // Custom initialization
-        self.editingContext = [NSManagedObjectContext MR_contextThatPushesChangesToDefaultContext];
     }
     return self;
 }
@@ -79,6 +78,14 @@
 
 #pragma mark - Custom Accessors
 
+- (NSManagedObjectContext *)editingContext {
+    if (!_editingContext) {
+        _editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+    }
+    
+    return _editingContext;
+}
+
 - (void)setCurrentPerson:(Person *)aPerson {
     if (!aPerson) {
         self.title = @"Add Person";
@@ -100,11 +107,13 @@
 - (void)updateInterfaceForCurrentPerson {
     self.userPic.image = [UIImage imageWithData:[self.currentPerson photo]];
     self.personName.text = [self.currentPerson valueForKey:@"name"];
+    DLog(@"Current person: %@", self.currentPerson);
 }
 
 - (IBAction)cancelPerson:(id)sender {
     [self becomeFirstResponder];
     [self.editingContext reset];
+    self.editingContext = nil;
     [self.navigationController popViewControllerAnimated:YES];
 }
 
@@ -112,7 +121,8 @@
     self.currentPerson.photo = UIImagePNGRepresentation(self.userPic.image);
     self.currentPerson.name = self.personName.text;
     
-    [self.editingContext MR_save];
+    [self.editingContext MR_saveNestedContexts];
+    self.editingContext = nil;
     //TODO: Handle the error
     
     [self.navigationController popViewControllerAnimated:YES];
