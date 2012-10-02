@@ -221,31 +221,31 @@
     FSLog(@"Local changes: %@", localChanges);
     
     if (self.syncStatusValue == 2 || self.syncStatusValue == 3) {
-        FSCLog(@"Parent object is new");
+        FSLog(@"Parent object is new");
         return NO;
     }
     else if([localObject.objectId isEqualToString:remoteObject.objectId]) {
-        FSCLog(@"Related objects match");
+        FSLog(@"Related objects match");
         return NO;
     }
     else if((localObject != nil && localObject.syncStatus == nil) || localObject.syncStatusValue == 2 || localObject.syncStatusValue ==3) {
         //Related object is new locally
-        FSCLog(@"New local related object");
+        FSLog(@"New local related object");
         return NO;
     }
     else if(localChanges == nil) {
         //No local change, so use remote
-        FSCLog(@"No local changes, use remote related object");
+        FSLog(@"No local changes, use remote related object");
         return YES;
     }
     else if (isToMany && remoteObject != nil && ![localChanges containsObject:remoteObject.objectId]) {
         //No local change, so use remote
-        FSCLog(@"No local changes, use remote related object");
+        FSLog(@"No local changes, use remote related object");
         return YES;
     }
     else if (isToMany && localObject != nil && ![localChanges containsObject:localObject.objectId]) {
         //No local change, so use remote
-        FSCLog(@"No local changes, use remote related object");
+        FSLog(@"No local changes, use remote related object");
         return YES;
     }
     else {
@@ -256,10 +256,10 @@
         
         if ([[remoteForLocalRelatedObject valueForKey:@"deleted"] boolValue]) {
             //Do nothing and relationship will get set to remote
-            FSCLog(@"Remote related object is deleted");
+            FSLog(@"Remote related object is deleted");
         }
         else {
-            FSCLog(@"Local change trumps remote");
+            FSLog(@"Local change trumps remote");
             return NO;
         }
     }
@@ -447,24 +447,31 @@
             for (PFObject *remoteObject in relatedRemoteObjects) {
                 [remoteObjectIds addObject:remoteObject.objectId];
             }
+            FSLog(@"Remote Object IDs: %@", remoteObjectIds);
             NSArray *localObjectsForRemoteIds = [FTASyncParent FTA_localObjectsForClass:destEntity WithRemoteIds:remoteObjectIds];
+            FSLog(@"Local objects for remote IDs: %@", localObjectsForRemoteIds);
             [relatedLocalObjects removeObjectsInArray:localObjectsForRemoteIds];
+            FSLog(@"Walking through removing objects: %@", relatedLocalObjects);
             for (FTASyncParent *localObject in relatedLocalObjects) {
                 if (![self shouldUseRemoteObject:nil insteadOfLocal:localObject forToMany:YES relationship:relationship]) {
-                    FSCLog(@"Keeping local related object");
+                    FSLog(@"Keeping local related object");
                     continue;
                 }
-                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"remove%@Object:", [destEntity name]]);
+                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"remove%@Object:", relationship]);
                 if ([self respondsToSelector:selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                     [self performSelector:selector withObject:localObject];
 #pragma clang diagnostic pop
-                } 
+                }
+                else {
+                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], selector);
+                }
             }
             
             //Now add any remotely added objects to the relationship
             [relatedRemoteObjects removeObjectsInArray:localObjectsForRemoteIds];
+            FSLog(@"Walking through adding objects: %@", relatedRemoteObjects);
             for (PFObject *relatedRemoteObject in relatedRemoteObjects) {
                 FTASyncParent *localObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId];
                 
@@ -486,12 +493,15 @@
                     continue;
                 }
                 
-                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", [destEntity name]]);
+                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", relationship]);
                 if ([self respondsToSelector:selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
                     [self performSelector:selector withObject:localObject];
 #pragma clang diagnostic pop
+                }
+                else {
+                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], selector);
                 }
             }
         }
