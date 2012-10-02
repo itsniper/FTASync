@@ -1,6 +1,6 @@
 # FTASync
 
-Allows you to sync CoreData entities with a [Parse](https://www.parse.com/) backend.
+Allows you to sync CoreData entities with a [Parse](https://www.parse.com/) backend. FTASync supports relationships (many-to-many have not been tested), conflict resolution (last in wins), custom data class names, and multiple levels of inheritance. For conflict resolution each relationship is in it's own conflict domain, but all entity attributes are currently in a single conflict domain. 
 
 As with any open source code, do your own due diligence before putting this in a production app! There are a few known issues that still need addressed. They are listed below.
 
