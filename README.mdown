@@ -10,7 +10,7 @@ Because sync and conflict resolution is very complex, there is bunch of debug lo
 
 It is assumed that you have already installed and setup these:
 
-* [Magical Record](https://github.com/magicalpanda/MagicalRecord) - Easier handling of the CoreData stuff. !!FTASync HAS NOT BEEN TESTED WITH MR 2.0!!
+* [Magical Record](https://github.com/magicalpanda/MagicalRecord) - Easier handling of the CoreData stuff. (Note: FTASync uses MR 2.0 and will not work with earlier versions)
 * [mogenerator] (https://github.com/rentzsch/mogenerator) - If you've never used it you should.
 * [NPReachability] (https://github.com/Abizern/NPReachability) - Used to check for network connectivity pre-sync.
 * [Parse SDK](https://www.parse.com/apps/quickstart)
@@ -71,7 +71,6 @@ NOTE: If you call this and pass `NO` as the first parameter, and then sync to th
 
 # ToDo
 
-* Update to Magical Record 2.0
 * Support sync of a single entity
 * Add ability to check PFUser for updates on any other entity to save on API calls
 * PFQuery is limited to 1000 returned objects, so support pagination beyond that
