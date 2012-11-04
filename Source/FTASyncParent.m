@@ -493,11 +493,14 @@
                     continue;
                 }
                 
-                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", relationship]);
+                //SEL selector = NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", [destEntity name]]);
+                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@Set", relationship]);
                 if ([self respondsToSelector:selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                    [self performSelector:selector withObject:localObject];
+                    //[self performSelector:selector withObject:localObject];
+                    NSMutableOrderedSet *theSet = [self performSelector:selector];
+                    [theSet addObject:localObject];
 #pragma clang diagnostic pop
                 }
                 else {
@@ -583,7 +586,7 @@
     for (PFObject *remoteObject in parseObjects) {
         FTASyncParent *localObject = [self FTA_localObjectForClass:entityDesc WithRemoteId:remoteObject.objectId];
         if (!localObject) {
-            FSALog(@"Could not find local object matching remote object: @%", remoteObject);
+            FSALog(@"Could not find local object matching remote object: %@", remoteObject);
             localObject = [FTASyncParent FTA_newObjectForClass:entityDesc WithRemoteObject:remoteObject];
             //break;
         }
