@@ -457,15 +457,17 @@
                     FSLog(@"Keeping local related object");
                     continue;
                 }
-                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"remove%@Object:", relationship]);
+                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@Set", relationship]);
                 if ([self respondsToSelector:selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                    [self performSelector:selector withObject:localObject];
+                    NSMutableOrderedSet *theSet = [self performSelector:selector];
+                    [theSet removeObject:localObject];
 #pragma clang diagnostic pop
                 }
                 else {
-                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], selector);
+                    NSString *selString = NSStringFromSelector(selector);
+                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], selString);
                 }
             }
             
@@ -504,7 +506,8 @@
 #pragma clang diagnostic pop
                 }
                 else {
-                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], selector);
+                    NSString *selString = NSStringFromSelector(selector);
+                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], selString);
                 }
             }
         }
