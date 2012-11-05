@@ -1,0 +1,55 @@
+# Testing
+
+Testing FTASync will require 2 separate devices and/or simulators. My typical test devices are an iPod Touch and the simulator. This test process is not exhaustive, but does cover a range of conflict resolution scenarios. I find that drawing it out on a whiteboard where I can record pass/fail/values works the best. See *TestingDiagram.png* for a photo of my testing board.
+
+For each step in the process there is a list of objects and their state. The format of each ToDoItem object is `<Object Name> <Priority> <First initial of person>`. On newly created objects there is an additional value which is the last 3 chars of the objectId created by Parse. When there is a change made to an object, the change is indicated by `<old value> -> <new value>`. For the Parse states, the bottom rows indicate the objectIds found in the toDoItem relationship for each person.
+
+NOTE: Your objectIds will be different. The ones here are just examples from my Parse app.
+
+## Testing Process
+
+1. Sync both devices to this state
+	* Persons
+	    * Justin (*sGD)
+	    * Laura (*EEd)
+	* ToDoItems
+	    * Sweep Kitchen 1 L (*YOU)
+	    * Do Laundry 2 L (*9og)
+	    * Mow Lawn 4 J (*0G7)
+	    * Wash Car 5 J (*TeY)
+2. Make the following changes on Device 1
+    * Add: Wash Dishes 3 L (*vUr)
+    * Change: Do Laundry 2 L -> J
+    * Delete: Sweep Kitchen
+    * Change: Wash Car 5 -> 7 J
+3. Sync Device 1 and verify state on Device 1 and Parse
+    * Do Laundry 2 J
+    * Wash Dishes 3 L
+    * Mow Lawn 4 J
+    * Wash Car 7 J
+    * Justin [*TeY, *0G7, *9og]
+    * Laura [*vUr]
+4. Make the following changes on Device 2
+    * Add: Change Oil 6 J (*JaW)
+    * Change: Wash Car 5 J -> L
+    * Delete: Mow Lawn
+    * Add: Braxton (*Mic)
+    * Add: Clean Room 8 B (*g7n)
+5. Sync Device 2 and verify state on Device 2 and Parse
+    * Do Laundry 2 J
+    * Wash Dishes 3 L
+    * Wash Car 5 L
+    * Change Oil 6 J
+    * Clean Room 8 B
+    * Justin [*9og, *JaW]
+    * Laura [*vUr, *TeY]
+    * Braxton [*g7n]
+6. Sync Device 1 and verify state on Device 1 and Parse (same as prev state)
+    * Do Laundry 2 J
+    * Wash Dishes 3 L
+    * Wash Car 5 L
+    * Change Oil 6 J
+    * Clean Room 8 B
+    * Justin [*9og, *JaW]
+    * Laura [*vUr, *TeY]
+    * Braxton [*g7n]

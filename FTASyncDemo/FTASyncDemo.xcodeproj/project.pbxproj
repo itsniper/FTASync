@@ -583,7 +583,7 @@
 		8B6D396F15282F1700B296D6 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0450;
 				ORGANIZATIONNAME = "Five3 Apps";
 			};
 			buildConfigurationList = 8B6D397215282F1700B296D6 /* Build configuration list for PBXProject "FTASyncDemo" */;

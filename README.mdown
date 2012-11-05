@@ -76,9 +76,16 @@ NOTE: If you call this and pass `NO` as the first parameter, and then sync to th
 * PFQuery is limited to 1000 returned objects, so support pagination beyond that
 * Write unit tests
 
+# Pull Requests
+
+I appreciate any pull requests, and will try my best to keep them merged into the main project. However, it makes my life much easier if they are tested! Testing sync code is not easy, especially with relationships and conflict resolution. To make things a little easier for you, I have included my test process (see *TestProcess.mdown* and *TestDiagram.png*). There is also a lot of logging in the code to make tracking down bugs easier. As mentioned above, this can be turned off in *FTASync.h*.
+
+
 # Apps Using FTASync
 
 [Our List](http://itunes.apple.com/WebObjects/MZStore.woa/wa/viewSoftware?id=548960426&mt=8) by Five3 Apps
+
+If you use FTASync in an app I'd love to hear about it, and add it to this list if you wish.
 
 # License
 
