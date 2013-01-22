@@ -373,7 +373,7 @@
     if ([[UIDevice currentDevice] isMultitaskingSupported]) {
         //Create a background task identifier and specify the exception handler
         bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            DDLogWarn(@"Background sync on exit failed to complete in time limit");
+            MRLog(@"Background sync on exit failed to complete in time limit");
             //TODO: This is the wrong context since this code will be running on main thread. Is there a way to get
             //   access to the context running [self syncAll] below??
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
@@ -456,7 +456,7 @@
         NSError *error = nil;
         NSArray *allRemoteObjects = [query findObjects:&error];
         if (error) {
-            DDLogError(@"Query for all remote objects failed with: %@", error);
+            MRLog(@"Query for all remote objects failed with: %@", error);
             [context rollback];
             self.syncInProgress = NO;
             self.progressBlock = nil;
@@ -468,7 +468,7 @@
         for (PFObject *object in allRemoteObjects) {
             BOOL success = [object delete:&error];
             if (!success) {
-                DDLogError(@"Deletion of object with ID %@ failed with: %@", object.objectId, error);
+                MRLog(@"Deletion of object with ID %@ failed with: %@", object.objectId, error);
                 [context rollback];
                 self.syncInProgress = NO;
                 self.progressBlock = nil;
@@ -520,7 +520,7 @@
     if ([[UIDevice currentDevice] isMultitaskingSupported]) {
         //Create a background task identifier and specify the exception handler
         bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            DDLogError(@"Background data reset on exit failed to complete in time limit");
+            MRLog(@"Background data reset on exit failed to complete in time limit");
             //TODO: This is the wrong context since this code will be running on main thread. Is there a way to get
             //   access to the context running in performSaveData... below??
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
@@ -573,22 +573,22 @@
             {
                 if ([e respondsToSelector:@selector(userInfo)])
                 {
-                    DDLogError(@"Error Details: %@", [e userInfo]);
+                    MRLog(@"Error Details: %@", [e userInfo]);
                 }
                 else
                 {
-                    DDLogError(@"Error Details: %@", e);
+                    MRLog(@"Error Details: %@", e);
                 }
             }
         }
         else
         {
-            DDLogError(@"Error: %@", detailedError);
+            MRLog(@"Error: %@", detailedError);
         }
     }
-    DDLogError(@"Error Message: %@", [error localizedDescription]);
-    DDLogError(@"Error Domain: %@", [error domain]);
-    DDLogError(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+    MRLog(@"Error Message: %@", [error localizedDescription]);
+    MRLog(@"Error Domain: %@", [error domain]);
+    MRLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
 
 @end
