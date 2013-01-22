@@ -274,7 +274,7 @@
 
 #pragma mark - Ancestry
 
-+ (NSArray *)allDescedents {
++ (NSArray *)allDescendants {
     NSMutableArray *children = [NSMutableArray array];
     NSEntityDescription *parentEntity = [self entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     [children addObjectsFromArray:[FTASyncParent allDecendentsOfEntity:parentEntity]];
