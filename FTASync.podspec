@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.homepage     = "https://github.com/itsniper/FTASync"
 
   s.license      = { :type => 'Custom', :file => 'LICENSE.txt' }
-  s.author       = { "Justin Bergen",  "Andy Bennett" => "andy@steamshift.net" }
+  s.author       = { "Andy Bennett" => "andy@steamshift.net" }
 
   s.source       = { :git => "https://github.com/akbsteam/FTASync.git" }
   s.platform     = :ios
