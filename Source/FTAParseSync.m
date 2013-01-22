@@ -27,6 +27,8 @@
         return NO;
     }
     
+
+    /*
     if (![PFUser currentUser]) {
         //This can be enabled if you wish to alert the user that they are not signed in
 //        UIAlertView *noLogin = [[UIAlertView alloc] initWithTitle:@"Cannot Sync" 
@@ -38,6 +40,7 @@
         FSCLog(@"No Parse user is logged in");
         return NO;
     }
+     */
     
     return YES;
 }

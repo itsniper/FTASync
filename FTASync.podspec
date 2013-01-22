@@ -20,4 +20,5 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Source', 'Source/*.{h,m}'
   s.dependency 'Parse', '>= 1.1.25'
+  s.dependency 'CocoaLumberjack', '>= 1.6'
 end

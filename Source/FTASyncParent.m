@@ -176,6 +176,11 @@
     return [[self entity] name];
 }
 
++ (BOOL)readOnly
+{
+	return NO;
+}
+
 + (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:entityDesc];
@@ -457,17 +462,15 @@
                     FSLog(@"Keeping local related object");
                     continue;
                 }
-                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@Set", relationship]);
+                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"remove%@Object:", relationship]);
                 if ([self respondsToSelector:selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                    NSMutableOrderedSet *theSet = [self performSelector:selector];
-                    [theSet removeObject:localObject];
+                    [self performSelector:selector withObject:localObject];
 #pragma clang diagnostic pop
                 }
                 else {
-                    NSString *selString = NSStringFromSelector(selector);
-                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], selString);
+                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], NSStringFromSelector(selector));
                 }
             }
             
@@ -495,19 +498,15 @@
                     continue;
                 }
                 
-                //SEL selector = NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", [destEntity name]]);
-                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"%@Set", relationship]);
+                SEL selector = NSSelectorFromString([NSString stringWithFormat:@"add%@Object:", relationship]);
                 if ([self respondsToSelector:selector]) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-                    //[self performSelector:selector withObject:localObject];
-                    NSMutableOrderedSet *theSet = [self performSelector:selector];
-                    [theSet addObject:localObject];
+                    [self performSelector:selector withObject:localObject];
 #pragma clang diagnostic pop
                 }
                 else {
-                    NSString *selString = NSStringFromSelector(selector);
-                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], selString);
+                    FSALog(@"%@ entity does not respond to selector: %@", [[self entity] name], NSStringFromSelector(selector));
                 }
             }
         }

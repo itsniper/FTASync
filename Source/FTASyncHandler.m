@@ -159,7 +159,7 @@
 
 
 - (NSArray *)entitiesToSync {
-    return [FTASyncParent allDescedents];
+    return [FTASyncParent allDescendants];
 }
 
 - (void)syncEntity:(NSEntityDescription *)entityDesc {
@@ -173,6 +173,8 @@
         return;
     }
     
+    Class managedObjectClass = NSClassFromString([entityDesc managedObjectClassName]);
+    
     NSMutableArray *objectsToSync = [[NSMutableArray alloc] initWithCapacity:1];
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:entityDesc];
@@ -181,19 +183,21 @@
     NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
     FSLog(@"Last update: %@", lastUpdate);
     
-    //Add new local objects
-    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = nil OR syncStatus = 2 OR syncStatus = 3"]];
-    NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
-    FSLog(@"Number of new local objects: %i", [newLocalObjects count]);
-#ifdef DEBUG
-    for (FTASyncParent *object in newLocalObjects) {
-        if (object.syncStatusValue == 3) {
-            FSLog(@"!!!!!!!OBJECT WITH SYNC STATUS 3!!!!!! %@", object);
+    if (![managedObjectClass readOnly]) {
+        //Add new local objects
+        [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = nil OR syncStatus = 2 OR syncStatus = 3"]];
+        NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
+        FSLog(@"Number of new local objects: %i", [newLocalObjects count]);
+    #ifdef DEBUG
+        for (FTASyncParent *object in newLocalObjects) {
+            if (object.syncStatusValue == 3) {
+                FSLog(@"!!!!!!!OBJECT WITH SYNC STATUS 3!!!!!! %@", object);
+            }
         }
-    }
-#endif
-    if ([newLocalObjects count] > 0) {
-        [objectsToSync addObjectsFromArray:newLocalObjects];
+    #endif
+        if ([newLocalObjects count] > 0) {
+            [objectsToSync addObjectsFromArray:newLocalObjects];
+        }
     }
     
     //Get updated remote objects
@@ -205,12 +209,15 @@
     }   
 #endif
     
-    //Remove objects deleted locally from remote sync array (push to remote done in FTAParseSync)
-    NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [entityDesc name]];
-    NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
-    FSLog(@"Deleted objects from prefs: %@", deletedLocalObjects);
-    NSPredicate *deletedLocalInRemotePredicate = [NSPredicate predicateWithFormat: @"NOT (objectId IN %@)", deletedLocalObjects];
-    [remoteObjectsForSync filterUsingPredicate:deletedLocalInRemotePredicate];
+    NSArray *deletedLocalObjects;
+    if (![managedObjectClass readOnly]) {
+        //Remove objects deleted locally from remote sync array (push to remote done in FTAParseSync)
+        NSString *defaultsKey = [NSString stringWithFormat:@"FTASyncDeleted%@", [entityDesc name]];
+        deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
+        FSLog(@"Deleted objects from prefs: %@", deletedLocalObjects);
+        NSPredicate *deletedLocalInRemotePredicate = [NSPredicate predicateWithFormat: @"NOT (objectId IN %@)", deletedLocalObjects];
+        [remoteObjectsForSync filterUsingPredicate:deletedLocalInRemotePredicate];
+    }
     
     //Add new remote objects
     NSPredicate *newRemotePredicate = nil;
@@ -249,27 +256,29 @@
         return;
     }];
     
-    //Sync objects changed locally
-    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
-    NSArray *updatedLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
-    FSLog(@"Number of updated local objects: %i", [updatedLocalObjects count]);
-    [objectsToSync addObjectsFromArray:updatedLocalObjects];
-    
-    if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
-        FSLog(@"NO OBJECTS TO SYNC");
-        if ([deletedRemoteObjects count] > 0) {
-            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
-                [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-                self.syncInProgress = NO;
-                self.progressBlock = nil;
-                self.progress = 0;
-                
-                [self handleError:error];
-                return;
-            }];
-        }
+    if (![managedObjectClass readOnly]) {
+        //Sync objects changed locally
+        [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
+        NSArray *updatedLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
+        FSLog(@"Number of updated local objects: %i", [updatedLocalObjects count]);
+        [objectsToSync addObjectsFromArray:updatedLocalObjects];
         
-        return;
+        if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
+            FSLog(@"NO OBJECTS TO SYNC");
+            if ([deletedRemoteObjects count] > 0) {
+                [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
+                    [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+                    self.syncInProgress = NO;
+                    self.progressBlock = nil;
+                    self.progress = 0;
+                    
+                    [self handleError:error];
+                    return;
+                }];
+            }
+            
+            return;
+        }
     }
     
     //Push changes to remote server and update local object's metadata
@@ -319,7 +328,8 @@
         
         if (!self.syncInProgress) {
             //Sync had an issue somewhere, so halt
-            return;
+            // return;
+            continue;
         }
         
         self.progress += increment;
@@ -335,8 +345,10 @@
 #ifdef DEBUG
     NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
     id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
+
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
+    #pragma unused (metadata)
 #endif
 }
 
@@ -361,7 +373,7 @@
     if ([[UIDevice currentDevice] isMultitaskingSupported]) {
         //Create a background task identifier and specify the exception handler
         bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            NSLog(@"Background sync on exit failed to complete in time limit");
+            DDLogWarn(@"Background sync on exit failed to complete in time limit");
             //TODO: This is the wrong context since this code will be running on main thread. Is there a way to get
             //   access to the context running [self syncAll] below??
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
@@ -444,7 +456,7 @@
         NSError *error = nil;
         NSArray *allRemoteObjects = [query findObjects:&error];
         if (error) {
-            NSLog(@"Query for all remote objects failed with: %@", error);
+            DDLogError(@"Query for all remote objects failed with: %@", error);
             [context rollback];
             self.syncInProgress = NO;
             self.progressBlock = nil;
@@ -456,7 +468,7 @@
         for (PFObject *object in allRemoteObjects) {
             BOOL success = [object delete:&error];
             if (!success) {
-                NSLog(@"Deletion of object with ID %@ failed with: %@", object.objectId, error);
+                DDLogError(@"Deletion of object with ID %@ failed with: %@", object.objectId, error);
                 [context rollback];
                 self.syncInProgress = NO;
                 self.progressBlock = nil;
@@ -479,8 +491,10 @@
 #ifdef DEBUG
     NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
     id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
+
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
+    #pragma unused (metadata)
 #endif
     
     return YES;
@@ -506,7 +520,7 @@
     if ([[UIDevice currentDevice] isMultitaskingSupported]) {
         //Create a background task identifier and specify the exception handler
         bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-            NSLog(@"Background data reset on exit failed to complete in time limit");
+            DDLogError(@"Background data reset on exit failed to complete in time limit");
             //TODO: This is the wrong context since this code will be running on main thread. Is there a way to get
             //   access to the context running in performSaveData... below??
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
@@ -559,22 +573,22 @@
             {
                 if ([e respondsToSelector:@selector(userInfo)])
                 {
-                    NSLog(@"Error Details: %@", [e userInfo]);
+                    DDLogError(@"Error Details: %@", [e userInfo]);
                 }
                 else
                 {
-                    NSLog(@"Error Details: %@", e);
+                    DDLogError(@"Error Details: %@", e);
                 }
             }
         }
         else
         {
-            NSLog(@"Error: %@", detailedError);
+            DDLogError(@"Error: %@", detailedError);
         }
     }
-    NSLog(@"Error Message: %@", [error localizedDescription]);
-    NSLog(@"Error Domain: %@", [error domain]);
-    NSLog(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
+    DDLogError(@"Error Message: %@", [error localizedDescription]);
+    DDLogError(@"Error Domain: %@", [error domain]);
+    DDLogError(@"Recovery Suggestion: %@", [error localizedRecoverySuggestion]);
 }
 
 @end

@@ -19,6 +19,8 @@
 
 @property (strong, nonatomic) PFObject *remoteObject;
 
++ (BOOL)readOnly;
+
 + (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId;
 + (NSArray *)FTA_localObjectsForClass:(NSEntityDescription *)entityDesc WithRemoteIds:(NSArray *)objectIds;
 + (NSDate *)FTA_lastUpdateForClass:(NSEntityDescription *)entityDesc;
