@@ -14,7 +14,6 @@
 
 #import "FTASync.h"
 
-
 @interface FTASyncParent ()
 
 @property (nonatomic, getter = isTraversing) BOOL traversing;
@@ -80,7 +79,15 @@
         self.traversing = NO;
     }
     
+    if (![[self class] readOnly])
+        [_remoteObject setValue:[PFUser currentUser] forKey:@"user"];
+    
     return _remoteObject;
+}
+
++ (BOOL)readOnly
+{
+    return NO;
 }
 
 #pragma mark - KVO
@@ -99,9 +106,9 @@
     }
 }
 
-- (void)observeValueForKeyPath:(NSString *)keyPath 
-					  ofObject:(id)object 
-						change:(NSDictionary *)change 
+- (void)observeValueForKeyPath:(NSString *)keyPath
+					  ofObject:(id)object
+						change:(NSDictionary *)change
 					   context:(void *)context {
     if (![NSThread isMainThread] || [[FTASyncHandler sharedInstance] isSyncInProgress]) {
         //If this is not on a main thread it is a sync save
@@ -113,7 +120,7 @@
     }
     //TODO: A temporary solution. Why does the ignoreContextSave not work??
     if (![self managedObjectContext]) {
-        FSCLog(@"Missing context, likly an ignoreContextSave");
+        FSCLog(@"Missing context, likely an ignoreContextSave");
         return;
     }
     
@@ -176,11 +183,6 @@
     return [[self entity] name];
 }
 
-+ (BOOL)readOnly
-{
-	return NO;
-}
-
 + (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId {
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:entityDesc];
@@ -220,9 +222,9 @@
                  relationship:(NSString *)relationship {
     FSLog(@"Should use remote: %@ or local: %@ for relationship: %@", remoteObject.objectId, localObject.objectId, relationship);
     //BOOL if we are checking a to-one relationship, or NSArray if it is a to-many relationship
-    id localChanges = [FTASyncHandler getMetadataForKey:[NSString stringWithFormat:@"%@.%@", self.objectId, relationship] 
-                                                    forEntity:[self localEntityName]
-                                                    inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    id localChanges = [FTASyncHandler getMetadataForKey:[NSString stringWithFormat:@"%@.%@", self.objectId, relationship]
+                                              forEntity:[self localEntityName]
+                                              inContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     FSLog(@"Local changes: %@", localChanges);
     
     if (self.syncStatusValue == 2 || self.syncStatusValue == 3) {
@@ -279,7 +281,17 @@
     NSEntityDescription *parentEntity = [self entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
     [children addObjectsFromArray:[FTASyncParent allDecendentsOfEntity:parentEntity]];
     
-    return children;
+    NSMutableArray *childrenToo = [NSMutableArray array];
+    for (NSEntityDescription *obj in children) {
+        Class myClass = NSClassFromString([obj managedObjectClassName]);
+        
+        if (![PFUser currentUser] && ![myClass readOnly])
+            continue;
+        
+        [childrenToo addObject:obj];
+    }
+    
+    return childrenToo;
 }
 
 + (NSArray *)allDecendentsOfEntity:(NSEntityDescription *)entity {
@@ -364,29 +376,58 @@
     for (NSString *relationship in relationships) {
         NSObject *value = [self valueForKey:relationship];
         
-        if ([[relationships objectForKey:relationship] isToMany]) {
-            //To-many relationship            
-            NSSet *relatedObjects = (NSSet *)value;
-            NSMutableArray *objectArray = [[NSMutableArray alloc] initWithCapacity:[relatedObjects count]];
+        NSRelationshipDescription *relationshipDescription = [relationships objectForKey:relationship];
+        
+        if ([relationshipDescription isToMany]) {
+            // To-many relationship
             
-            //Build an array of PFObject pointers or new PFObjects
-            for (FTASyncParent *relatedObject in relatedObjects) {
-                //TODO: Update Parse SDK and use the new PFRelation
-                PFObject *relatedRemoteObject = nil;
-                if (!relatedObject.objectId) {
-                    relatedObject.fromRelationship = YES;
-                    relatedRemoteObject = relatedObject.remoteObject;
-                    relatedObject.fromRelationship = NO;
-                    relatedObject.syncStatusValue = 3;
-                }
-                else {
-                    relatedRemoteObject = [PFObject objectWithoutDataWithClassName:[relatedObject parseClassname] objectId:relatedObject.objectId];
+            NSSet *relatedObjects = (NSSet *)value;
+            
+            // AKB: add mechanism for using PFRelation if n:n
+            // many-to-many relationship
+            if ([[relationshipDescription inverseRelationship] isToMany]) {
+                
+                PFRelation *relation = [parseObject relationforKey:relationship]; // AKB: add
+                
+                //Build an array of PFObject pointers or new PFObjects
+                for (FTASyncParent *relatedObject in relatedObjects) {
+                    //TODO: Update Parse SDK and use the new PFRelation
+                    PFObject *relatedRemoteObject = nil;
+                    if (!relatedObject.objectId) {
+                        relatedObject.fromRelationship = YES;
+                        relatedRemoteObject = relatedObject.remoteObject;
+                        relatedObject.fromRelationship = NO;
+                        relatedObject.syncStatusValue = 3;
+                    }
+                    else {
+                        relatedRemoteObject = [PFObject objectWithoutDataWithClassName:[relatedObject parseClassname] objectId:relatedObject.objectId];
+                    }
+                    
+                    [relation addObject:relatedRemoteObject]; // AKB: add
                 }
                 
-                [objectArray addObject:relatedRemoteObject];
+            } else {
+                NSMutableArray *objectArray = [[NSMutableArray alloc] initWithCapacity:[relatedObjects count]];
+                
+                //Build an array of PFObject pointers or new PFObjects
+                for (FTASyncParent *relatedObject in relatedObjects) {
+                    //TODO: Update Parse SDK and use the new PFRelation
+                    PFObject *relatedRemoteObject = nil;
+                    if (!relatedObject.objectId) {
+                        relatedObject.fromRelationship = YES;
+                        relatedRemoteObject = relatedObject.remoteObject;
+                        relatedObject.fromRelationship = NO;
+                        relatedObject.syncStatusValue = 3;
+                    }
+                    else {
+                        relatedRemoteObject = [PFObject objectWithoutDataWithClassName:[relatedObject parseClassname] objectId:relatedObject.objectId];
+                    }
+                    
+                    [objectArray addObject:relatedRemoteObject];
+                }
+                
+                [parseObject setObject:objectArray forKey:relationship];
             }
-            
-            [parseObject setObject:objectArray forKey:relationship];
         }
         else {
             //To-one relationship
@@ -405,6 +446,7 @@
             else {
                 relatedRemoteObject = [PFObject objectWithoutDataWithClassName:[relatedObject parseClassname] objectId:relatedObject.objectId];
             }
+            
             [parseObject setObject:relatedRemoteObject forKey:relationship];
         }
     }
@@ -437,10 +479,24 @@
         NSObject *value = [self valueForKey:relationship];
         NSEntityDescription *destEntity = [[relationships objectForKey:relationship] destinationEntity];
         
-        if ([[relationships objectForKey:relationship] isToMany]) {
-            //To-many relationship
+        NSRelationshipDescription *relationshipDescription = [relationships objectForKey:relationship];
+        
+        if ([relationshipDescription isToMany]) {
+            // To-many relationship
+            
             NSMutableArray *relatedLocalObjects = [NSMutableArray arrayWithArray:[(NSSet *)value allObjects]];
-            NSMutableArray *relatedRemoteObjects = [NSMutableArray arrayWithArray:[parseObject objectForKey:relationship]];
+            NSMutableArray *relatedRemoteObjects = nil;
+            
+            if ([[relationshipDescription inverseRelationship] isToMany]) {
+                // AKB: if many-to-many use PFRelation
+                PFRelation *relation = [parseObject relationforKey:relationship];
+                PFQuery *query = [relation query];
+                
+                relatedRemoteObjects = [NSMutableArray arrayWithArray:[query findObjects]];
+                
+            } else {
+                relatedRemoteObjects = [NSMutableArray arrayWithArray:[parseObject objectForKey:relationship]];
+            }
             
             //Empty relationships in a PFObject will return an NSNull object
             if ([relatedRemoteObjects isKindOfClass:[NSNull class]]) {
@@ -511,8 +567,8 @@
             }
         }
         else {
-            //To-one relationship
             PFObject *relatedRemoteObject = [parseObject objectForKey:relationship];
+            
             FTASyncParent *localRelatedObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId];
             FTASyncParent *currentLocalRelatedObject = [self valueForKey:relationship];
             
@@ -537,7 +593,7 @@
         }
     }
     
-    if (self.syncStatusValue == 2) { 
+    if (self.syncStatusValue == 2) {
         //This is a new object from remote so reset syncStatus
         [self FTA_updateObjectMetadataWithRemoteObject:parseObject andResetSyncStatus:YES];
     }
