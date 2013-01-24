@@ -8,7 +8,7 @@
 #
 Pod::Spec.new do |s|
   s.name         = "FTASync"
-  s.version      = "0.0.1"
+  s.version      = "0.0.2"
   s.summary      = "Allows you to sync CoreData entities with a Parse backend."
   s.homepage     = "https://github.com/itsniper/FTASync"
 
@@ -20,5 +20,5 @@ Pod::Spec.new do |s|
 
   s.source_files = 'Source', 'Source/*.{h,m}'
   s.dependency 'Parse', '>= 1.1.25'
-  s.dependency 'MagicalRecord', '>= 2.0.7'
+  s.dependency 'MagicalRecord', '>= 2.1.0'
 end
