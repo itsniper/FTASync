@@ -242,15 +242,13 @@
     //Sync objects changed on remote
     FSLog(@"Number of updated remote objects: %i", [remoteObjectsForSync count]);
     [FTASyncParent FTA_updateObjectsForClass:entityDesc withRemoteObjects:remoteObjectsForSync];
-
+    
     if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
         FSALog(@"%@", @"Should not be working with the main context!");
     }
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveInBackgroundErrorHandler:^(NSError *error){
-        if (error) {
+    
+    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
+        if (!success && error) {
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
             self.syncInProgress = NO;
             self.progressBlock = nil;
@@ -260,7 +258,6 @@
             return;
         }
     }];
-#pragma clang diagnostic pop
     
     if (![managedObjectClass readOnly]) {
         //Sync objects changed locally
@@ -272,10 +269,8 @@
         if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
             FSLog(@"NO OBJECTS TO SYNC");
             if ([deletedRemoteObjects count] > 0) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveInBackgroundErrorHandler:^(NSError *error){
-                    if (error) {
+                [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
+                    if (!success && error) {
                         [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
                         self.syncInProgress = NO;
                         self.progressBlock = nil;
@@ -285,7 +280,6 @@
                         return;
                     }
                 }];
-#pragma clang diagnostic pop
             }
             
             return;
@@ -294,22 +288,22 @@
     
     //Push changes to remote server and update local object's metadata
     FSLog(@"Total number of objects to sync: %i", [objectsToSync count]);
-    NSError *error = nil;
-    BOOL success = [self.remoteInterface putUpdatedObjects:objectsToSync forClass:entityDesc error:&error];
-    if (!success) {
-        [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-        self.syncInProgress = NO;
-        self.progressBlock = nil;
-        self.progress = 0;
-        
-        [self handleError:error];
-        return;
-    } 
-    else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveInBackgroundErrorHandler:^(NSError *error){
-            if (error) {
+    if ([objectsToSync count] > 0)
+    {
+        NSError *error = nil;
+        BOOL success = [self.remoteInterface putUpdatedObjects:objectsToSync forClass:entityDesc error:&error];
+        if (!success) {
+            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+            self.syncInProgress = NO;
+            self.progressBlock = nil;
+            self.progress = 0;
+            
+            [self handleError:error];
+            return;
+        }
+    } else {
+        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
+            if (!success && error) {
                 [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
                 self.syncInProgress = NO;
                 self.progressBlock = nil;
@@ -320,7 +314,6 @@
             }
         }];
     }
-#pragma clang diagnostic pop
 }
 
 - (void)syncAll {
@@ -360,10 +353,10 @@
 #ifdef DEBUG
     NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
     id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
-
+    
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
-    #pragma unused (metadata)
+#pragma unused (metadata)
 #endif
 }
 
@@ -432,7 +425,7 @@
             [[UIApplication sharedApplication] endBackgroundTask:bgTask];
             bgTask = UIBackgroundTaskInvalid;
         }
-
+        
     }];
 }
 
@@ -508,10 +501,10 @@
 #ifdef DEBUG
     NSPersistentStoreCoordinator *coordinator = [context persistentStoreCoordinator];
     id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
-
+    
     NSDictionary *metadata = [coordinator metadataForPersistentStore:store];
     FSLog(@"METADATA after clear: %@", metadata);
-    #pragma unused (metadata)
+#pragma unused (metadata)
 #endif
     
     return YES;
