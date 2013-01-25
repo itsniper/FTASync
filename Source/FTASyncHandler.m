@@ -249,17 +249,16 @@
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    
-    
-    
     [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveInBackgroundErrorHandler:^(NSError *error){
-        [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-        self.syncInProgress = NO;
-        self.progressBlock = nil;
-        self.progress = 0;
-        
-        [self handleError:error];
-        return;
+        if (error) {
+            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+            self.syncInProgress = NO;
+            self.progressBlock = nil;
+            self.progress = 0;
+            
+            [self handleError:error];
+            return;
+        }
     }];
 #pragma clang diagnostic pop
     
@@ -276,13 +275,15 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
                 [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveInBackgroundErrorHandler:^(NSError *error){
-                    [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-                    self.syncInProgress = NO;
-                    self.progressBlock = nil;
-                    self.progress = 0;
-                    
-                    [self handleError:error];
-                    return;
+                    if (error) {
+                        [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+                        self.syncInProgress = NO;
+                        self.progressBlock = nil;
+                        self.progress = 0;
+                        
+                        [self handleError:error];
+                        return;
+                    }
                 }];
 #pragma clang diagnostic pop
             }
@@ -308,13 +309,15 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
         [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveInBackgroundErrorHandler:^(NSError *error){
-            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-            self.syncInProgress = NO;
-            self.progressBlock = nil;
-            self.progress = 0;
-            
-            [self handleError:error];
-            return;
+            if (error) {
+                [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+                self.syncInProgress = NO;
+                self.progressBlock = nil;
+                self.progress = 0;
+                
+                [self handleError:error];
+                return;
+            }
         }];
     }
 #pragma clang diagnostic pop
@@ -341,8 +344,7 @@
         
         if (!self.syncInProgress) {
             //Sync had an issue somewhere, so halt
-            // return;
-            continue;
+            return;
         }
         
         self.progress += increment;
