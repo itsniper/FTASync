@@ -39,7 +39,7 @@
 {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
     // Release any cached data, images, etc that aren't in use.
 }
 
@@ -55,8 +55,8 @@
 
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(syncPerson)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addPerson)];
-    
-    self.title = NSLocalizedString(@"People", @"");    
+
+    self.title = NSLocalizedString(@"People", @"");
     self.tableView.backgroundColor = [UIColor lightGrayColor];
 }
 
@@ -70,7 +70,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
     //Remove blank cells at the bottom of the table view
     if ([[self.fetchedResultsController sections] count] < 9) {
         UIView *footer =
@@ -106,7 +106,7 @@
     if (!_fetchedResultsController ) {
         _fetchedResultsController = [Person MR_fetchAllGroupedBy:nil withPredicate:nil sortedBy:@"name" ascending:YES delegate:self];
     }
-    
+
     return _fetchedResultsController;
 }
 
@@ -114,7 +114,7 @@
     if (!_detailViewController) {
         _detailViewController = [[FTAPersonDetailViewController alloc] initWithNibName:@"FTAPersonDetailViewController" bundle:nil];
     }
-    
+
     return _detailViewController;
 }
 
@@ -130,6 +130,7 @@
     DCLog(@"SYNCING PERSON");
     //[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"Reward" inManagedObjectContext:[NSManagedObjectContext MR_context]]];
     [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+        [[NSManagedObjectContext MR_defaultContext] MR_save];
         DCLog(@"Completion Block Called");
     } progressBlock:^(float progress, NSString *message) {
         DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
@@ -154,18 +155,18 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"PersonTableViewCell";
-    
+
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
-    
+
     // Configure the cell...
     Person *managedObject = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    
+
     cell.textLabel.text = [managedObject valueForKey:@"name"];
     cell.imageView.image = [UIImage imageWithData:managedObject.photo];
-    
+
     return cell;
 }
 
@@ -182,10 +183,10 @@
         [[self.fetchedResultsController objectAtIndexPath:indexPath] MR_deleteEntity];
         [[NSManagedObjectContext MR_defaultContext] MR_save];
         //TODO: Handle the error
-    }   
+    }
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+    }
 }
 
 #pragma mark - Table view delegate

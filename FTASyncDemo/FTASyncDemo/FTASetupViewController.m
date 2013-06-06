@@ -33,7 +33,7 @@
 {
     // Releases the view if it doesn't have a superview.
     [super didReceiveMemoryWarning];
-    
+
     // Release any cached data, images, etc that aren't in use.
 }
 
@@ -57,14 +57,14 @@
 - (void)viewDidUnload
 {
     [super viewDidUnload];
-    
+
     self.syncButton = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
+
     if ([PFUser currentUser]) {
         [self.syncButton setTitle:@"Log out of sync" forState:UIControlStateNormal];
         //self.syncButton.titleLabel.text = @"Log out of sync";
@@ -99,7 +99,7 @@
     [FTASyncHandler sharedInstance].ignoreContextSave = YES;
     [[NSManagedObjectContext MR_defaultContext] MR_save];
     [FTASyncHandler sharedInstance].ignoreContextSave = NO;
-    
+
     //Clear out pending local deletions
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSArray *keys = [[[defaults dictionaryRepresentation] allKeys] copy];
@@ -110,13 +110,13 @@
     }
     [defaults removeObjectForKey:@"FTASyncLastSyncDate"];
     [defaults synchronize];
-    
+
     //Clean up metadata
     NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]] subentities];
     for (NSEntityDescription *anEntity in entitiesToSync) {
         [FTASyncHandler setMetadataValue:[NSMutableDictionary dictionary] forKey:nil forEntity:[anEntity name] inContext:[NSManagedObjectContext MR_defaultContext]];
     }
-    
+
     //TODO: Remove
     NSPersistentStoreCoordinator *coordinator = [[NSManagedObjectContext MR_defaultContext] persistentStoreCoordinator];
     id store = [coordinator persistentStoreForURL:[NSPersistentStore MR_urlForStoreName:[MagicalRecord defaultStoreName]]];
@@ -130,6 +130,7 @@
     [self.tabBarController dismissModalViewControllerAnimated:YES];
     DCLog(@"Login Success!");
     [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+        [[NSManagedObjectContext MR_defaultContext] MR_save];
         DCLog(@"Completion Block Called");
     } progressBlock:^(float progress, NSString *message) {
         DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
@@ -151,6 +152,7 @@
     DCLog(@"Signup Success!");
     [self.tabBarController dismissModalViewControllerAnimated:YES];
     [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+        [[NSManagedObjectContext MR_defaultContext] MR_save];
         DCLog(@"Completion Block Called");
     } progressBlock:^(float progress, NSString *message) {
         DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
