@@ -92,7 +92,7 @@
         }
     }
     self.ignoreContextSave = YES;
-    [[NSManagedObjectContext MR_defaultContext] MR_save];
+    [[NSManagedObjectContext MR_defaultContext] MR_saveToPersistentStoreAndWait];
     self.ignoreContextSave = NO;
     
     for (NSManagedObject *deletedObject in deletedObjects) {
@@ -239,14 +239,17 @@
     if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
         FSALog(@"%@", @"Should not be working with the main context!");
     }
-    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
-        [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-        self.syncInProgress = NO;
-        self.progressBlock = nil;
-        self.progress = 0;
-        
-        [self handleError:error];
-        return;
+    
+    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
+        if (!success) {
+            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+            self.syncInProgress = NO;
+            self.progressBlock = nil;
+            self.progress = 0;
+            
+            [self handleError:error];
+            return;
+        }
     }];
     
     //Sync objects changed locally
@@ -258,14 +261,16 @@
     if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
         FSLog(@"NO OBJECTS TO SYNC");
         if ([deletedRemoteObjects count] > 0) {
-            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
-                [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-                self.syncInProgress = NO;
-                self.progressBlock = nil;
-                self.progress = 0;
-                
-                [self handleError:error];
-                return;
+            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
+                if (!success) {
+                    [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+                    self.syncInProgress = NO;
+                    self.progressBlock = nil;
+                    self.progress = 0;
+                    
+                    [self handleError:error];
+                    return;
+                }
             }];
         }
         
@@ -286,14 +291,16 @@
         return;
     } 
     else {
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveErrorHandler:^(NSError *error){
-            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-            self.syncInProgress = NO;
-            self.progressBlock = nil;
-            self.progress = 0;
-            
-            [self handleError:error];
-            return;
+        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
+            if (!success) {
+                [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+                self.syncInProgress = NO;
+                self.progressBlock = nil;
+                self.progress = 0;
+                
+                [self handleError:error];
+                return;
+            }
         }];
     }
 }
@@ -373,10 +380,10 @@
         }];
     };
     
-    [MagicalRecord saveInBackgroundWithBlock:^(NSManagedObjectContext *context) {
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
         //TODO: Is there any user setup needed??
         [self syncAll];
-    }completion:^{
+    } completion:^(BOOL success, NSError *error) {
         if (self.progressBlock)
             self.progressBlock(1.0, @"Complete");
         
@@ -519,16 +526,17 @@
     };
     
     __block BOOL didFail = NO;
-    [MagicalRecord saveInBackgroundWithBlock:^(NSManagedObjectContext *context) {
-        didFail = ![self resetAllSyncStatusAndDeleteRemote:delete inContext:context];
-    }completion:^{
+    
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+        didFail = ![self resetAllSyncStatusAndDeleteRemote:delete inContext:localContext];
+    } completion:^(BOOL success, NSError *error) {
         if (self.progressBlock)
             self.progressBlock(1.0, @"Complete");
         
         if (![NSThread isMainThread]) {
             FSALog(@"%@", @"Completion block must be called on main thread");
         }
-                
+        
         if (completion && !didFail)
             completion(YES, nil);
         else if (completion && didFail)
