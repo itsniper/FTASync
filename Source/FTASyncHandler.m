@@ -300,6 +300,11 @@
                 
                 [self handleError:error];
                 return;
+            } else {
+              // putUpdateObjects method changes the syncStatus column
+              self.ignoreContextSave = YES;
+              [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+              self.ignoreContextSave = NO;
             }
         }];
     }
