@@ -329,6 +329,20 @@
         
         //If attribute is NSData, need to convert this to a PFFile
         if ([value isKindOfClass:[NSData class]]) {
+          // Upload array column (rei kubonaga)
+            id unarchiveObject;
+            @try {
+                unarchiveObject = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData *)value];
+            }@catch (NSException *exception) {
+                // if nsdata is uiimage, exception occurred.
+                unarchiveObject = nil;
+                NSLog(@"unarchive exception name  :%@",exception.name);
+                NSLog(@"unarchive exception reason:%@",exception.reason);
+            }
+            if ([unarchiveObject isKindOfClass:[NSArray class]]){
+                [parseObject setObject:unarchiveObject forKey:attribute];
+                continue;
+            }
             NSString *fileName = nil;
             if (parseObject.objectId) {
                 fileName = [NSString stringWithFormat:@"%@-%@.png", parseObject.objectId, attribute];
@@ -415,9 +429,16 @@
             NSString *className = [[attributes valueForKey:attribute] attributeValueClassName];
             
             if ([className isEqualToString:@"NSData"]) {
-                PFFile* remoteFile = [parseObject objectForKey:attribute];
-                [self setValue:[NSData dataWithData:[remoteFile getData]] forKey:attribute];
-                continue;
+                id value = [parseObject objectForKey:attribute];
+                if ([value isKindOfClass:[NSArray class]]) {
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
+                    [self setValue:data forKey:attribute];
+                    continue;
+                } else {
+                    PFFile* remoteFile = value;
+                    [self setValue:[NSData dataWithData:[remoteFile getData]] forKey:attribute];
+                    continue;
+                }
             }
             
             if (![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
