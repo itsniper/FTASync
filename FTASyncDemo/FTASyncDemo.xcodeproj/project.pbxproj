@@ -25,7 +25,6 @@
 		496E58F6160ABFFE00BC00B5 /* AbstractPerson.m in Sources */ = {isa = PBXBuildFile; fileRef = 496E58F4160ABFFE00BC00B5 /* AbstractPerson.m */; };
 		8B22B7E915C2DFC800F01B27 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B22B7E815C2DFC800F01B27 /* Crashlytics.framework */; };
 		8B345364157C2B4200725E14 /* FTASetupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8B345363157C2B4200725E14 /* FTASetupViewController.m */; };
-		8B5AFC50152D1797000AF428 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC4F152D1797000AF428 /* Parse.framework */; };
 		8B5AFC52152D17C6000AF428 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC51152D17C6000AF428 /* AudioToolbox.framework */; };
 		8B5AFC54152D17D1000AF428 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC53152D17D1000AF428 /* CFNetwork.framework */; };
 		8B5AFC56152D17DD000AF428 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC55152D17DD000AF428 /* SystemConfiguration.framework */; };
@@ -93,8 +92,8 @@
 		B101F15D1783B87A00A529C1 /* MagicalRecord+Setup.m in Sources */ = {isa = PBXBuildFile; fileRef = B101F13F1783B87A00A529C1 /* MagicalRecord+Setup.m */; };
 		B101F15E1783B87A00A529C1 /* MagicalRecord+ShorthandSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = B101F1411783B87A00A529C1 /* MagicalRecord+ShorthandSupport.m */; };
 		B101F15F1783B87A00A529C1 /* MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B101F1431783B87A00A529C1 /* MagicalRecord.m */; };
-		B1C4057A1783C38F00339D27 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC4F152D1797000AF428 /* Parse.framework */; };
 		B1C4057B1783F44100339D27 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D3A0F1528447800B296D6 /* CoreData.framework */; };
+		B1C4057F17848A7F00339D27 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B1C4057E17848A7F00339D27 /* Parse.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -116,7 +115,6 @@
 		8B22B7E815C2DFC800F01B27 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
 		8B345362157C2B4200725E14 /* FTASetupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FTASetupViewController.h; sourceTree = "<group>"; };
 		8B345363157C2B4200725E14 /* FTASetupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FTASetupViewController.m; sourceTree = "<group>"; };
-		8B5AFC4F152D1797000AF428 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		8B5AFC51152D17C6000AF428 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		8B5AFC53152D17D1000AF428 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		8B5AFC55152D17DD000AF428 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
@@ -235,6 +233,7 @@
 		B101F1431783B87A00A529C1 /* MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagicalRecord.m; sourceTree = "<group>"; };
 		B101F1441783B87A00A529C1 /* MagicalRecordShorthand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagicalRecordShorthand.h; sourceTree = "<group>"; };
 		B101F1451783B87A00A529C1 /* CoreData+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreData+MagicalRecord.h"; path = "../../../../MagicalRecord/MagicalRecord/CoreData+MagicalRecord.h"; sourceTree = "<group>"; };
+		B1C4057E17848A7F00339D27 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,8 +252,8 @@
 				8B6D397D15282F1800B296D6 /* UIKit.framework in Frameworks */,
 				8B6D397F15282F1800B296D6 /* Foundation.framework in Frameworks */,
 				8B6D3A101528447800B296D6 /* CoreData.framework in Frameworks */,
-				8B5AFC50152D1797000AF428 /* Parse.framework in Frameworks */,
 				8B22B7E915C2DFC800F01B27 /* Crashlytics.framework in Frameworks */,
+				B1C4057F17848A7F00339D27 /* Parse.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -263,7 +262,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B1C4057B1783F44100339D27 /* CoreData.framework in Frameworks */,
-				B1C4057A1783C38F00339D27 /* Parse.framework in Frameworks */,
 				8B6D399B15282F1800B296D6 /* SenTestingKit.framework in Frameworks */,
 				8B6D399C15282F1800B296D6 /* UIKit.framework in Frameworks */,
 				8B6D399D15282F1800B296D6 /* Foundation.framework in Frameworks */,
@@ -318,6 +316,7 @@
 		8B6D397B15282F1700B296D6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B1C4057E17848A7F00339D27 /* Parse.framework */,
 				8B22B7E815C2DFC800F01B27 /* Crashlytics.framework */,
 				8B5AFC5D152D181F000AF428 /* QuartzCore.framework */,
 				8B5AFC5B152D180D000AF428 /* Security.framework */,
@@ -326,7 +325,6 @@
 				8B5AFC55152D17DD000AF428 /* SystemConfiguration.framework */,
 				8B5AFC53152D17D1000AF428 /* CFNetwork.framework */,
 				8B5AFC51152D17C6000AF428 /* AudioToolbox.framework */,
-				8B5AFC4F152D1797000AF428 /* Parse.framework */,
 				8B6D3A0F1528447800B296D6 /* CoreData.framework */,
 				8B6D397C15282F1800B296D6 /* UIKit.framework */,
 				8B6D397E15282F1800B296D6 /* Foundation.framework */,
@@ -824,6 +822,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../Downloads\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
@@ -841,6 +840,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)\"",
+					"\"$(SRCROOT)/../../../../Downloads\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "FTASyncDemo/FTASyncDemo-Prefix.pch";
