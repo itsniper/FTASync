@@ -34,9 +34,7 @@
   PFUser *user = [[PFUser alloc] init];
   user.username = username;
   user.password = @"test";
-  if (![PFUser currentUser]) {
-    [user signUp];
-  }
+  [user signUp];
   _isFinished = NO;
 }
 
@@ -46,12 +44,13 @@
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   } while (!_isFinished);
   [super tearDown];
-  [self deleteAllPerseObjects];
-  [self deleteAllLocalObjects];
   [MagicalRecord cleanUp];
 }
 
 - (void)testUploadParseFromCreatedLocalObject {
+  [self deleteAllPerseObjects];
+  [self deleteAllLocalObjects];
+
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
   Person *person = [Person MR_createInContext:editingContext];
   person.name = @"taro";
@@ -62,8 +61,10 @@
   assert([[persons[0] syncStatus] isEqualToNumber:@2]);
 
 
-  NSEntityDescription *entity =[NSEntityDescription entityForName:@"CDParson" inManagedObjectContext: [NSManagedObjectContext MR_defaultContext]];
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entity];
+  NSArray *entities = [FTASyncParent allDescedents];
+  NSEntityDescription *entityDesc = entities[0];
+
+  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
@@ -77,8 +78,10 @@
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
     //nowUpdate and lastUpdate is same because the parse objects aren't imported
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entity];
+    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
     assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+
+     _isFinished = YES;
   } progressBlock:nil];
 }
 
@@ -100,11 +103,7 @@
 }
 
 -(void) deleteAllLocalObjects {
-  [FTASyncHandler sharedInstance].ignoreContextSave = YES;
-  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_context];
-  [Person MR_truncateAllInContext:editingContext];
-  [editingContext MR_saveToPersistentStoreAndWait];
-  [FTASyncHandler sharedInstance].ignoreContextSave = NO;
+  [Person MR_truncateAll];
   [[NSUserDefaults standardUserDefaults] setObject:[[NSMutableArray alloc] init] forKey:@"FTASyncDeletedCDPerson"];
 }
 
