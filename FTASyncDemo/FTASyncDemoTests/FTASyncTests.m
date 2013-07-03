@@ -7,26 +7,30 @@
 //
 
 #import "FTASyncTests.h"
+#import "CoreData+MagicalRecord.h"
+#import <Parse/Parse.h>
+#import "ParseKeys.h"
 
 @implementation FTASyncDemoTests
 
-- (void)setUp
-{
-    [super setUp];
-    
-    // Set-up code here.
+- (void)setUp {
+  [super setUp];
+  [MagicalRecord setupAutoMigratingCoreDataStack];
+
+  [Parse setApplicationId:kParseAppId
+                clientKey:kParseClientKey];
+  [PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];
 }
 
-- (void)tearDown
-{
-    // Tear-down code here.
-    
-    [super tearDown];
+- (void)tearDown {
+  [super tearDown];
+  [MagicalRecord cleanUp];
 }
 
-- (void)testExample
-{
-    STFail(@"Unit tests are not implemented yet in FTASyncDemoTests");
+- (void)testUploadParseFromLocalObject {
+  PFObject *person = [PFObject objectWithClassName:@"person"];
+  [person setObject:@"ichiro" forKey:@"name"];
+  assert([person save]);
 }
 
 @end
