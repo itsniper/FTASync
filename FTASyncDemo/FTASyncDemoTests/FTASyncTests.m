@@ -60,6 +60,12 @@
   assert([persons count] == 1);
   assert([[persons[0] syncStatus] isEqualToNumber:@2]);
 
+
+  NSArray *entities = [FTASyncParent allDescedents];
+  NSEntityDescription *entityDesc = entities[0];
+
+  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
@@ -70,7 +76,12 @@
 
     persons = [Person MR_findAll];
     assert([persons count] == 1);
+    NSLog(@"status: %@", [persons[0] syncStatus]);
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+
+    //nowUpdate and lastUpdate is same because the parse objects aren't imported
+    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
     
      _isFinished = YES;
   } progressBlock:nil];
