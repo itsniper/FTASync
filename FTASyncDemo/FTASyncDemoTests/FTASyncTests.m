@@ -34,7 +34,9 @@
   PFUser *user = [[PFUser alloc] init];
   user.username = username;
   user.password = @"test";
-  [user signUp];
+  if (![PFUser currentUser]) {
+    [user signUp];
+  }
   _isFinished = NO;
 }
 
@@ -44,13 +46,12 @@
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   } while (!_isFinished);
   [super tearDown];
+  [self deleteAllPerseObjects];
+  [self deleteAllLocalObjects];
   [MagicalRecord cleanUp];
 }
 
-- (void)testUploadParseFromLocalObject {
-  [self deleteAllPerseObjects];
-  [self deleteAllLocalObjects];
-
+- (void)testUploadParseFromCreatedLocalObject {
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
   Person *person = [Person MR_createInContext:editingContext];
   person.name = @"taro";
@@ -61,10 +62,8 @@
   assert([[persons[0] syncStatus] isEqualToNumber:@2]);
 
 
-  NSArray *entities = [FTASyncParent allDescedents];
-  NSEntityDescription *entityDesc = entities[0];
-
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+  NSEntityDescription *entity =[NSEntityDescription entityForName:@"CDParson" inManagedObjectContext: [NSManagedObjectContext MR_defaultContext]];
+  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entity];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
@@ -72,20 +71,21 @@
     NSArray *persons = [query findObjects];
     assert([persons count] == 1);
     assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
-    NSLog(@"complete testUploadParseFromLocalObject");
 
     persons = [Person MR_findAll];
     assert([persons count] == 1);
-    NSLog(@"status: %@", [persons[0] syncStatus]);
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
     //nowUpdate and lastUpdate is same because the parse objects aren't imported
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entity];
     assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
-    
-     _isFinished = YES;
   } progressBlock:nil];
 }
+
+//- (void)testUploadParseFromUpdatedLocalObject {
+  //NSLog(@"next");
+//}
+
 
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson"];
@@ -100,11 +100,12 @@
 }
 
 -(void) deleteAllLocalObjects {
-  NSArray *allEntities = [NSManagedObjectModel MR_defaultManagedObjectModel].entities;
-
-  [allEntities enumerateObjectsUsingBlock:^(NSEntityDescription *entityDescription, NSUInteger idx, BOOL *stop) {
-    [NSClassFromString([entityDescription managedObjectClassName]) MR_truncateAll];
-  }];
+  [FTASyncHandler sharedInstance].ignoreContextSave = YES;
+  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_context];
+  [Person MR_truncateAllInContext:editingContext];
+  [editingContext MR_saveToPersistentStoreAndWait];
+  [FTASyncHandler sharedInstance].ignoreContextSave = NO;
+  [[NSUserDefaults standardUserDefaults] setObject:[[NSMutableArray alloc] init] forKey:@"FTASyncDeletedCDPerson"];
 }
 
 @end
