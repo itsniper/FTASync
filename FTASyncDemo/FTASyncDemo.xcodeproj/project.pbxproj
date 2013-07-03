@@ -232,7 +232,7 @@
 		8B937B28157AC84C00FA3E39 /* NPReachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NPReachability.m; sourceTree = "<group>"; };
 		8B937B2B157BDDF800FA3E39 /* FTASyncParent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FTASyncParent.h; path = ../../../Source/FTASyncParent.h; sourceTree = "<group>"; };
 		8B937B2C157BDDF800FA3E39 /* FTASyncParent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FTASyncParent.m; path = ../../../Source/FTASyncParent.m; sourceTree = "<group>"; };
-		8B937B2E157BE38000FA3E39 /* ParseKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseKeys.h; sourceTree = "<group>"; };
+		B101F1091783176E00A529C1 /* ParseKeys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ParseKeys.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -459,7 +459,7 @@
 				8B6D398815282F1800B296D6 /* main.m */,
 				8B6D398A15282F1800B296D6 /* FTASyncDemo-Prefix.pch */,
 				8B6D39B11528313900B296D6 /* DefaultPrefs.plist */,
-				8B937B2E157BE38000FA3E39 /* ParseKeys.h */,
+				B101F1091783176E00A529C1 /* ParseKeys.h */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
