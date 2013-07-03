@@ -389,10 +389,9 @@
         [[NSUserDefaults standardUserDefaults] synchronize];
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:@"FTASyncDidSync" object:nil];
+            if (completion)
+              completion();
         });
-        
-        if (completion)
-            completion();
         
         self.syncInProgress = NO;
         self.progressBlock = nil;
