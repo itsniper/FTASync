@@ -18,15 +18,13 @@
   BOOL _isFinished;
 }
 
-- (void)setUp {
-  [super setUp];
+- (void)setUpClass;
+{
   [MagicalRecord setupAutoMigratingCoreDataStack];
 
   [Parse setApplicationId:kParseAppId
                 clientKey:kParseClientKey];
   [PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];
-
-  [FTASyncHandler sharedInstance];
 
   NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
   [formatter setDateFormat:@"yyyy-MM-dd-HH:mm:ss"];
@@ -35,6 +33,13 @@
   user.username = username;
   user.password = @"test";
   [user signUp];
+
+  [FTASyncHandler sharedInstance];
+}
+
+- (void)setUp {
+  //[MagicalRecord setupAutoMigratingCoreDataStack];
+  [super setUp];
   _isFinished = NO;
 }
 
@@ -43,8 +48,8 @@
   do {
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
   } while (!_isFinished);
+  //[MagicalRecord cleanUp];
   [super tearDown];
-  [MagicalRecord cleanUp];
 }
 
 - (void)testUploadParseFromCreatedLocalObject {
@@ -85,10 +90,10 @@
   } progressBlock:nil];
 }
 
-//- (void)testUploadParseFromUpdatedLocalObject {
-  //NSLog(@"next");
-//}
-
+- (void)testUploadParseFromUpdatedLocalObject {
+  NSLog(@"next");
+  _isFinished = YES;
+}
 
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson"];
