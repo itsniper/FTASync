@@ -72,11 +72,12 @@
     NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
     FSLog(@"Preparing to create PFObjects for deletion: %@", deletedLocalObjects);
     for (NSString *objectId in deletedLocalObjects) {
-        PFObject *parseObject = [PFObject objectWithClassName:[entityDesc name]];
-        parseObject.objectId = objectId;
-        [parseObject setObject:[NSNumber numberWithInt:1] forKey:@"deleted"];
-        [updatedParseObjects addObject:parseObject];
-        FSLog(@"Deleting PFObject: %@", parseObject);
+        PFObject *parseObject = [PFObject objectWithoutDataWithClassName:[entityDesc name] objectId:objectId];
+        if ([parseObject isDataAvailable]) {
+          [parseObject setObject:[NSNumber numberWithInt:1] forKey:@"deleted"];
+          [updatedParseObjects addObject:parseObject];
+          FSLog(@"Deleting PFObject: %@", parseObject);
+        }
     }
     NSUInteger deleteCount = [updatedParseObjects count] - updateCount;
     
