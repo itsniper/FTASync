@@ -94,6 +94,7 @@
 		B101F15E1783B87A00A529C1 /* MagicalRecord+ShorthandSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = B101F1411783B87A00A529C1 /* MagicalRecord+ShorthandSupport.m */; };
 		B101F15F1783B87A00A529C1 /* MagicalRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = B101F1431783B87A00A529C1 /* MagicalRecord.m */; };
 		B1C4057A1783C38F00339D27 /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B5AFC4F152D1797000AF428 /* Parse.framework */; };
+		B1C4057B1783F44100339D27 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B6D3A0F1528447800B296D6 /* CoreData.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -261,6 +262,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B1C4057B1783F44100339D27 /* CoreData.framework in Frameworks */,
 				B1C4057A1783C38F00339D27 /* Parse.framework in Frameworks */,
 				8B6D399B15282F1800B296D6 /* SenTestingKit.framework in Frameworks */,
 				8B6D399C15282F1800B296D6 /* UIKit.framework in Frameworks */,

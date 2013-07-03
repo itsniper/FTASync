@@ -7,9 +7,11 @@
 //
 
 #import "FTASyncTests.h"
+#import <CoreData/CoreData.h>
 #import "CoreData+MagicalRecord.h"
 #import <Parse/Parse.h>
 #import "ParseKeys.h"
+#import "Person.h"
 
 @implementation FTASyncDemoTests
 
@@ -20,6 +22,14 @@
   [Parse setApplicationId:kParseAppId
                 clientKey:kParseClientKey];
   [PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];
+
+  NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+  [formatter setDateFormat:@"yyyy-MM-dd-HH:mm:ss"];
+  NSString *username = [formatter stringFromDate:[NSDate date]];
+  PFUser *user = [[PFUser alloc] init];
+  user.username = username;
+  user.password = @"test";
+  [user signUp];
 }
 
 - (void)tearDown {
@@ -28,19 +38,35 @@
 }
 
 - (void)testUploadParseFromLocalObject {
-  [self deleteAllPerseObject];
-  PFObject *person = [PFObject objectWithClassName:@"person"];
-  [person setObject:@"ichiro" forKey:@"name"];
-  assert([person save]);
+  [self deleteAllPerseObjects];
+  [self deleteAllLocalObjects];
+
+  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+  Person *person = [Person MR_createInContext:editingContext];
+  person.name = @"taro";
+  [editingContext MR_saveToPersistentStoreAndWait];
+
+  NSArray *persons = [Person MR_findAll];
+  assert([persons count] == 1);
+
+  
 }
 
-- (void) deleteAllPerseObject {
+- (void) deleteAllPerseObjects {
   PFQuery *query = [PFQuery queryWithClassName:@"person"];
   query.limit = 1000;
   NSArray *persons = [query findObjects];
   for (PFObject *person in persons) {
     assert([person delete]);
   }
+}
+
+-(void) deleteAllLocalObjects {
+  NSArray *allEntities = [NSManagedObjectModel MR_defaultManagedObjectModel].entities;
+
+  [allEntities enumerateObjectsUsingBlock:^(NSEntityDescription *entityDescription, NSUInteger idx, BOOL *stop) {
+    [NSClassFromString([entityDescription managedObjectClassName]) MR_truncateAll];
+  }];
 }
 
 @end
