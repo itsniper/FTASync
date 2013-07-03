@@ -12,6 +12,7 @@
 #import <Parse/Parse.h>
 #import "ParseKeys.h"
 #import "Person.h"
+#import "FTASyncHandler.h"
 
 @implementation FTASyncDemoTests
 
@@ -22,6 +23,8 @@
   [Parse setApplicationId:kParseAppId
                 clientKey:kParseClientKey];
   [PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];
+
+  [FTASyncHandler sharedInstance];
 
   NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
   [formatter setDateFormat:@"yyyy-MM-dd-HH:mm:ss"];
@@ -49,7 +52,14 @@
   NSArray *persons = [Person MR_findAll];
   assert([persons count] == 1);
 
-  
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    PFQuery *query = [PFQuery queryWithClassName:@"person"];
+    query.limit = 1000;
+    NSArray *persons = [query findObjects];
+    assert([persons count] == 1);
+    assert([[persons[0] name] isEqualToString:@"taro"]);
+    NSLog(@"complete testUploadParseFromLocalObject");
+  } progressBlock:nil];
 }
 
 - (void) deleteAllPerseObjects {
