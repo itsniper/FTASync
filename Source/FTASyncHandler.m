@@ -291,22 +291,10 @@
         return;
     } 
     else {
-        [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
-            if (!success) {
-                [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-                self.syncInProgress = NO;
-                self.progressBlock = nil;
-                self.progress = 0;
-                
-                [self handleError:error];
-                return;
-            } else {
-              // putUpdateObjects method changes the syncStatus column
-              self.ignoreContextSave = YES;
-              [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
-              self.ignoreContextSave = NO;
-            }
-        }];
+      self.ignoreContextSave = YES;
+      [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+      self.ignoreContextSave = NO;
+      return;
     }
 }
 
