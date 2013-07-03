@@ -14,7 +14,9 @@
 #import "Person.h"
 #import "FTASyncHandler.h"
 
-@implementation FTASyncDemoTests
+@implementation FTASyncDemoTests {
+  BOOL _isFinished;
+}
 
 - (void)setUp {
   [super setUp];
@@ -33,9 +35,14 @@
   user.username = username;
   user.password = @"test";
   [user signUp];
+  _isFinished = NO;
 }
 
 - (void)tearDown {
+  // wait for using multi thread
+  do {
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  } while (!_isFinished);
   [super tearDown];
   [MagicalRecord cleanUp];
 }
@@ -51,23 +58,33 @@
 
   NSArray *persons = [Person MR_findAll];
   assert([persons count] == 1);
+  assert([[persons[0] syncStatus] isEqualToNumber:@2]);
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
-    PFQuery *query = [PFQuery queryWithClassName:@"person"];
+    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
     NSArray *persons = [query findObjects];
     assert([persons count] == 1);
-    assert([[persons[0] name] isEqualToString:@"taro"]);
+    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
     NSLog(@"complete testUploadParseFromLocalObject");
+
+    persons = [Person MR_findAll];
+    assert([persons count] == 1);
+    assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+    
+     _isFinished = YES;
   } progressBlock:nil];
 }
 
 - (void) deleteAllPerseObjects {
-  PFQuery *query = [PFQuery queryWithClassName:@"person"];
-  query.limit = 1000;
-  NSArray *persons = [query findObjects];
-  for (PFObject *person in persons) {
-    assert([person delete]);
+  NSArray *entityNames = @[@"CDPerson"];
+  for (NSString *name in entityNames) {
+    PFQuery *query = [PFQuery queryWithClassName:name];
+    query.limit = 1000;
+    NSArray *persons = [query findObjects];
+    for (PFObject *person in persons) {
+      assert([person delete]);
+    }
   }
 }
 
