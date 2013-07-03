@@ -28,9 +28,19 @@
 }
 
 - (void)testUploadParseFromLocalObject {
+  [self deleteAllPerseObject];
   PFObject *person = [PFObject objectWithClassName:@"person"];
   [person setObject:@"ichiro" forKey:@"name"];
   assert([person save]);
+}
+
+- (void) deleteAllPerseObject {
+  PFQuery *query = [PFQuery queryWithClassName:@"person"];
+  query.limit = 1000;
+  NSArray *persons = [query findObjects];
+  for (PFObject *person in persons) {
+    assert([person delete]);
+  }
 }
 
 @end
