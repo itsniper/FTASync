@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 Five3 Apps. All rights reserved.
 //
 
-#import "FTASyncDemoTests.h"
+#import "FTASyncTests.h"
 
 @implementation FTASyncDemoTests
 
