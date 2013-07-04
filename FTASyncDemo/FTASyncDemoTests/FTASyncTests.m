@@ -57,6 +57,7 @@
 
 - (void)testUploadCreatedLocalObjectToParse {
   [self createLocalObjectAndUploadToParse];
+  _isFinished = YES;
 }
 
 - (void)testUploadUpdatedLocalObjectToParse {
