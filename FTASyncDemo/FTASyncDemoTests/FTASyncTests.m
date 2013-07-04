@@ -73,6 +73,11 @@
   assert([persons count] == 1);
   assert([[persons[0] syncStatus] isEqualToNumber:@1]);
 
+  PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+  query.limit = 1000;
+  persons = [query findObjects];
+  assert([persons count] == 1);
+
   NSArray *entities = [FTASyncParent allDescedents];
   NSEntityDescription *entityDesc = entities[0];
 
@@ -211,6 +216,46 @@
   } progressBlock:nil];
 }
 
+
+- (void)testStoreDeletedParseObject {
+  [self createLocalObjectAndUploadToParse];
+
+  PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+  query.limit = 1000;
+  NSArray *persons = [query findObjects];
+  assert([persons count] == 1);
+  PFObject *person = persons[0];
+  assert([[person objectForKey:@"name"] isEqualToString:@"taro"]);
+
+  persons = [Person MR_findAll];
+  assert([persons count] == 1);
+  assert([[persons[0] name] isEqualToString:@"taro"]);
+
+  [person setObject:@1 forKey:@"deleted"];
+  [person save];
+
+  NSArray *entities = [FTASyncParent allDescedents];
+  NSEntityDescription *entityDesc = entities[0];
+
+  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+    query.limit = 1000;
+    NSArray *persons = [query findObjects];
+    assert([persons count] == 1);
+    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
+    assert([[persons[0] objectForKey:@"deleted"] isEqualToNumber:@1]);
+
+    persons = [Person MR_findAll];
+    assert([persons count] == 0);
+
+    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+
+    _isFinished = YES;
+  } progressBlock:nil];
+}
 
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson"];
