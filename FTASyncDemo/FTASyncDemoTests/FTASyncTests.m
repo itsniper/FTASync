@@ -142,7 +142,6 @@
   [person save];
 
   PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-  query.limit = 1000;
   NSArray *persons = [query findObjects];
   assert([persons count] == 1);
   assert([[persons[0] objectForKey:@"name"] isEqualToString:@"messi"]);
@@ -178,16 +177,8 @@
   [self createLocalObjectAndUploadToParse];
   
   PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-  query.limit = 1000;
   NSArray *persons = [query findObjects];
-  assert([persons count] == 1);
   PFObject *person = persons[0];
-  assert([[person objectForKey:@"name"] isEqualToString:@"taro"]);
-
-  persons = [Person MR_findAll];
-  assert([persons count] == 1);
-  assert([[persons[0] name] isEqualToString:@"taro"]);
-
   [person setObject:@"ichiro" forKey:@"name"];
   [person save];
 
@@ -221,16 +212,8 @@
   [self createLocalObjectAndUploadToParse];
 
   PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-  query.limit = 1000;
   NSArray *persons = [query findObjects];
-  assert([persons count] == 1);
   PFObject *person = persons[0];
-  assert([[person objectForKey:@"name"] isEqualToString:@"taro"]);
-
-  persons = [Person MR_findAll];
-  assert([persons count] == 1);
-  assert([[persons[0] name] isEqualToString:@"taro"]);
-
   [person setObject:@1 forKey:@"deleted"];
   [person save];
 
@@ -241,7 +224,6 @@
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-    query.limit = 1000;
     NSArray *persons = [query findObjects];
     assert([persons count] == 1);
     assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
