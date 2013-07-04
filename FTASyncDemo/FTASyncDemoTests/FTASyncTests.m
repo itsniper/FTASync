@@ -41,6 +41,8 @@
 - (void)setUp {
   //[MagicalRecord setupAutoMigratingCoreDataStack];
   [super setUp];
+  [self deleteAllPerseObjects];
+  [self deleteAllLocalObjects];
   _isFinished = NO;
 }
 
@@ -54,44 +56,11 @@
 }
 
 - (void)testUploadCreatedLocalObjectToParse {
-  [self deleteAllPerseObjects];
-  [self deleteAllLocalObjects];
-
-  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
-  Person *person = [Person MR_createInContext:editingContext];
-  person.name = @"taro";
-  [editingContext MR_saveToPersistentStoreAndWait];
-
-  NSArray *persons = [Person MR_findAll];
-  assert([persons count] == 1);
-  assert([[persons[0] syncStatus] isEqualToNumber:@2]);
-
-
-  NSArray *entities = [FTASyncParent allDescedents];
-  NSEntityDescription *entityDesc = entities[0];
-
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
-
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
-    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-    query.limit = 1000;
-    NSArray *persons = [query findObjects];
-    assert([persons count] == 1);
-    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
-
-    persons = [Person MR_findAll];
-    assert([persons count] == 1);
-    assert([[persons[0] syncStatus] isEqualToNumber:@0]);
-
-    //nowUpdate and lastUpdate is same because the parse objects aren't imported
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
-    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
-
-     _isFinished = YES;
-  } progressBlock:nil];
+  [self createLocalObjectAndUploadToParse];
 }
 
 - (void)testUploadUpdatedLocalObjectToParse {
+  [self createLocalObjectAndUploadToParse];
   Person *person = [Person MR_findFirst];
   
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
@@ -127,6 +96,7 @@
 }
 
 - (void)testUploadDeletedLocalObjectToParse {
+  [self createLocalObjectAndUploadToParse];
   Person *person = [Person MR_findFirst];
 
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
@@ -147,7 +117,7 @@
     query.limit = 1000;
     NSArray *persons = [query findObjects];
     assert([persons count] == 1);
-    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"ichiro"]);
+    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
     assert([[persons[0] objectForKey:@"deleted"] isEqualToNumber:@1]);
 
     persons = [Person MR_findAll];
@@ -180,5 +150,46 @@
   [[NSUserDefaults standardUserDefaults] setObject:[[NSMutableArray alloc] init] forKey:@"FTASyncDeletedCDPerson"];
 }
 
+-(void) createLocalObjectAndUploadToParse {
+  _isFinished = NO;
+  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+  Person *person = [Person MR_createInContext:editingContext];
+  person.name = @"taro";
+  [editingContext MR_saveToPersistentStoreAndWait];
+
+  NSArray *persons = [Person MR_findAll];
+  assert([persons count] == 1);
+  assert([[persons[0] syncStatus] isEqualToNumber:@2]);
+
+
+  NSArray *entities = [FTASyncParent allDescedents];
+  NSEntityDescription *entityDesc = entities[0];
+
+  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+    query.limit = 1000;
+    NSArray *persons = [query findObjects];
+    assert([persons count] == 1);
+    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
+
+    persons = [Person MR_findAll];
+    assert([persons count] == 1);
+    assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+
+    //nowUpdate and lastUpdate is same because the parse objects aren't imported
+    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+
+    _isFinished = YES;
+  } progressBlock:nil];
+
+  do {
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  } while (!_isFinished);
+  
+  _isFinished = NO;
+}
 
 @end
