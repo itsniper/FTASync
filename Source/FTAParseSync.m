@@ -72,8 +72,8 @@
     NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
     FSLog(@"Preparing to create PFObjects for deletion: %@", deletedLocalObjects);
     for (NSString *objectId in deletedLocalObjects) {
-        PFObject *parseObject = [PFObject objectWithoutDataWithClassName:[entityDesc name] objectId:objectId];
-        if ([parseObject isDataAvailable]) {
+        PFObject *parseObject = [PFQuery getObjectOfClass:[entityDesc name] objectId:objectId];
+        if (parseObject) {
           [parseObject setObject:[NSNumber numberWithInt:1] forKey:@"deleted"];
           [updatedParseObjects addObject:parseObject];
           FSLog(@"Deleting PFObject: %@", parseObject);
