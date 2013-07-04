@@ -205,7 +205,7 @@
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
-    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+    assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
   } progressBlock:nil];
