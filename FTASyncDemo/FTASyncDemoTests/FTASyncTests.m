@@ -92,6 +92,7 @@
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [self personUpdatedAt];
+    assert([[persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
     assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
@@ -158,6 +159,7 @@
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [self personUpdatedAt];
+    assert([[persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
     assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
 
     _isFinished = YES;
@@ -189,6 +191,7 @@
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [self personUpdatedAt];
+    assert([[persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
     assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
@@ -269,6 +272,7 @@
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [self personUpdatedAt];
+    assert([[persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
     assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
 
     _isFinished = YES;
