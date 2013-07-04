@@ -201,7 +201,7 @@
     [fetchRequest setEntity:entityDesc];
     [fetchRequest setSortDescriptors:[NSManagedObject MR_descendingSortDescriptors:[NSArray arrayWithObject:@"updatedAt"]]];
     
-    NSArray *results = [self MR_executeFetchRequest:fetchRequest];
+    NSArray *results = [self MR_executeFetchRequest:fetchRequest inContext:[NSManagedObjectContext MR_defaultContext]];
     if([results count] == 0) {
         return nil;
     }
@@ -622,10 +622,10 @@
 + (void)FTA_deleteObjectsForClass:(NSEntityDescription *)entityDesc withRemoteObjects:(NSArray *)parseObjects {
     for (PFObject *remoteObject in parseObjects) {
         FTASyncParent *localObject = [self FTA_localObjectForClass:entityDesc WithRemoteId:remoteObject.objectId];
+
         if (!localObject) {
             FSLog(@"Object already removed locally: %@", remoteObject);
         }
-        
         [localObject MR_deleteEntity];
     }
 }
