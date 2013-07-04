@@ -239,18 +239,10 @@
     if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
         FSALog(@"%@", @"Should not be working with the main context!");
     }
-    
-    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
-        if (!success) {
-            [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-            self.syncInProgress = NO;
-            self.progressBlock = nil;
-            self.progress = 0;
-            
-            [self handleError:error];
-            return;
-        }
-    }];
+
+    self.ignoreContextSave = YES;
+    [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+    self.ignoreContextSave = NO;
     
     //Sync objects changed locally
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
