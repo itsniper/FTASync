@@ -173,7 +173,10 @@
 }
 
 -(void) deleteAllLocalObjects {
-  [Person MR_truncateAll];
+  NSArray *persons = [Person MR_findAll];
+  for (Person *person in persons) {
+    [person MR_deleteEntity];
+  }
   [[NSUserDefaults standardUserDefaults] setObject:[[NSMutableArray alloc] init] forKey:@"FTASyncDeletedCDPerson"];
 }
 
