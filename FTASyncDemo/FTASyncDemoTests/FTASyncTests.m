@@ -131,6 +131,44 @@
   } progressBlock:nil];
 }
 
+- (void)testStoreCreatedParseObject {
+  PFObject *person = [PFObject objectWithClassName:@"CDPerson"];
+  [person setObject:@"messi" forKey:@"name"];
+  [person save];
+
+  PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+  query.limit = 1000;
+  NSArray *persons = [query findObjects];
+  assert([persons count] == 1);
+  assert([[persons[0] objectForKey:@"name"] isEqualToString:@"messi"]);
+
+  persons = [Person MR_findAll];
+  assert([persons count] == 0);
+
+  NSArray *entities = [FTASyncParent allDescedents];
+  NSEntityDescription *entityDesc = entities[0];
+
+  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+    query.limit = 1000;
+    NSArray *persons = [query findObjects];
+    assert([persons count] == 1);
+    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"messi"]);
+
+    persons = [Person MR_findAll];
+    assert([persons count] == 1);
+    assert([[persons[0] name] isEqualToString:@"messi"]);
+    assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+
+    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+
+    _isFinished = YES;
+  } progressBlock:nil];
+}
+
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson"];
   for (NSString *name in entityNames) {
