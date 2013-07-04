@@ -126,6 +126,40 @@
   } progressBlock:nil];
 }
 
+- (void)testUploadParseFromDeletedLocalObject {
+  Person *person = [Person MR_findFirst];
+
+  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+  person = (id)[editingContext existingObjectWithID:[person objectID] error:nil];
+  [Person MR_truncateAllInContext:editingContext];
+  [editingContext MR_saveToPersistentStoreAndWait];
+
+  NSArray *persons = [Person MR_findAll];
+  assert([persons count] == 0);
+
+  NSArray *entities = [FTASyncParent allDescedents];
+  NSEntityDescription *entityDesc = entities[0];
+
+  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+    query.limit = 1000;
+    NSArray *persons = [query findObjects];
+    assert([persons count] == 1);
+    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"ichiro"]);
+    assert([[persons[0] objectForKey:@"deleted"] isEqualToNumber:@1]);
+
+    persons = [Person MR_findAll];
+    assert([persons count] == 0);
+
+    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
+
+    _isFinished = YES;
+  } progressBlock:nil];
+}
+
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson"];
   for (NSString *name in entityNames) {
