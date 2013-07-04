@@ -53,7 +53,7 @@
   [super tearDown];
 }
 
-- (void)testUploadParseFromCreatedLocalObject {
+- (void)testUploadCreatedLocalObjectToParse {
   [self deleteAllPerseObjects];
   [self deleteAllLocalObjects];
 
@@ -91,7 +91,7 @@
   } progressBlock:nil];
 }
 
-- (void)testUploadParseFromUpdatedLocalObject {
+- (void)testUploadUpdatedLocalObjectToParse {
   Person *person = [Person MR_findFirst];
   
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
@@ -126,7 +126,7 @@
   } progressBlock:nil];
 }
 
-- (void)testUploadParseFromDeletedLocalObject {
+- (void)testUploadDeletedLocalObjectToParse {
   Person *person = [Person MR_findFirst];
 
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
