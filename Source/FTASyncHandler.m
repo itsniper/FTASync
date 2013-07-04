@@ -184,7 +184,7 @@
     //Add new local objects
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = nil OR syncStatus = 2 OR syncStatus = 3"]];
     NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request inContext:[NSManagedObjectContext MR_defaultContext]];
-    FSLog(@"Number of new local objects: %i", [newLocalObjects count]);
+    FSLog(@"Number of new local objects: %i %@", [newLocalObjects count], newLocalObjects);
 #ifdef DEBUG
     for (FTASyncParent *object in newLocalObjects) {
         if (object.syncStatusValue == 3) {
@@ -198,7 +198,7 @@
     
     //Get updated remote objects
     NSMutableArray *remoteObjectsForSync = [NSMutableArray arrayWithArray:[self.remoteInterface getObjectsOfClass:[entityDesc name] updatedSince:lastUpdate]];
-    FSLog(@"Number of remote objects: %i", [remoteObjectsForSync count]);
+    FSLog(@"Number of remote objects: %i %@", [remoteObjectsForSync count], remoteObjectsForSync);
 #ifdef DEBUG
     for (PFObject *object in remoteObjectsForSync) {
         FSLog(@"%@", object.updatedAt);
@@ -221,7 +221,7 @@
         newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = NO OR deleted = nil", lastUpdate];
     }
     NSArray *newRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:newRemotePredicate];
-    FSLog(@"Number of new remote objects: %i", [newRemoteObjects count]);
+    FSLog(@"Number of new remote objects: %i %@", [newRemoteObjects count], newRemoteObjects);
     [remoteObjectsForSync removeObjectsInArray:newRemoteObjects];
     [FTASyncParent FTA_newObjectsForClass:entityDesc withRemoteObjects:newRemoteObjects];
     
@@ -229,7 +229,7 @@
     NSPredicate *deletedRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = YES"];
     NSArray *deletedRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:deletedRemotePredicate];
     [remoteObjectsForSync removeObjectsInArray:deletedRemoteObjects];
-    FSLog(@"Number of deleted remote objects: %i", [deletedRemoteObjects count]);
+    FSLog(@"Number of deleted remote objects: %i %@", [deletedRemoteObjects count], deletedRemoteObjects);
     [FTASyncParent FTA_deleteObjectsForClass:entityDesc withRemoteObjects:deletedRemoteObjects];
     
     //Sync objects changed on remote
