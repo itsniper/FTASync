@@ -183,7 +183,7 @@
     
     //Add new local objects
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = nil OR syncStatus = 2 OR syncStatus = 3"]];
-    NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
+    NSArray *newLocalObjects = [NSManagedObject MR_executeFetchRequest:request inContext:[NSManagedObjectContext MR_defaultContext]];
     FSLog(@"Number of new local objects: %i", [newLocalObjects count]);
 #ifdef DEBUG
     for (FTASyncParent *object in newLocalObjects) {
@@ -254,7 +254,7 @@
     
     //Sync objects changed locally
     [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 1"]];
-    NSArray *updatedLocalObjects = [NSManagedObject MR_executeFetchRequest:request];
+    NSArray *updatedLocalObjects = [NSManagedObject MR_executeFetchRequest:request inContext:[NSManagedObjectContext MR_defaultContext]];
     FSLog(@"Number of updated local objects: %i", [updatedLocalObjects count]);
     [objectsToSync addObjectsFromArray:updatedLocalObjects];
     
