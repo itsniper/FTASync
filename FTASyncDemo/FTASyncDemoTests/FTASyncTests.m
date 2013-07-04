@@ -78,10 +78,7 @@
   persons = [query findObjects];
   assert([persons count] == 1);
 
-  NSArray *entities = [FTASyncParent allDescedents];
-  NSEntityDescription *entityDesc = entities[0];
-
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+  NSDate *lastUpdate = [self personUpdatedAt];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
@@ -94,7 +91,7 @@
     assert([persons count] == 1);
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    NSDate *nowUpdate = [self personUpdatedAt];
     assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
@@ -113,10 +110,7 @@
   NSArray *persons = [Person MR_findAll];
   assert([persons count] == 0);
 
-  NSArray *entities = [FTASyncParent allDescedents];
-  NSEntityDescription *entityDesc = entities[0];
-
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+  NSDate *lastUpdate = [self personUpdatedAt];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
@@ -129,7 +123,7 @@
     persons = [Person MR_findAll];
     assert([persons count] == 0);
 
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    NSDate *nowUpdate = [self personUpdatedAt];
     assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
 
     _isFinished = YES;
@@ -149,10 +143,7 @@
   persons = [Person MR_findAll];
   assert([persons count] == 0);
 
-  NSArray *entities = [FTASyncParent allDescedents];
-  NSEntityDescription *entityDesc = entities[0];
-
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+  NSDate *lastUpdate = [self personUpdatedAt];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
@@ -166,7 +157,7 @@
     assert([[persons[0] name] isEqualToString:@"messi"]);
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    NSDate *nowUpdate = [self personUpdatedAt];
     assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
 
     _isFinished = YES;
@@ -182,11 +173,8 @@
   [person setObject:@"ichiro" forKey:@"name"];
   [person save];
 
-  NSArray *entities = [FTASyncParent allDescedents];
-  NSEntityDescription *entityDesc = entities[0];
-
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
-
+  NSDate *lastUpdate = [self personUpdatedAt];
+  
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
@@ -200,7 +188,7 @@
     NSLog(@"person: %@", persons[0]);
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    NSDate *nowUpdate = [self personUpdatedAt];
     assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
@@ -217,10 +205,7 @@
   [person setObject:@1 forKey:@"deleted"];
   [person save];
 
-  NSArray *entities = [FTASyncParent allDescedents];
-  NSEntityDescription *entityDesc = entities[0];
-
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+  NSDate *lastUpdate = [self personUpdatedAt];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
@@ -232,7 +217,7 @@
     persons = [Person MR_findAll];
     assert([persons count] == 0);
 
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    NSDate *nowUpdate = [self personUpdatedAt];
     assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
 
     _isFinished = YES;
@@ -270,11 +255,7 @@
   assert([persons count] == 1);
   assert([[persons[0] syncStatus] isEqualToNumber:@2]);
 
-
-  NSArray *entities = [FTASyncParent allDescedents];
-  NSEntityDescription *entityDesc = entities[0];
-
-  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+  NSDate *lastUpdate = [self personUpdatedAt];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
@@ -287,8 +268,7 @@
     assert([persons count] == 1);
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
-    //nowUpdate and lastUpdate is same because the parse objects aren't imported
-    NSDate *nowUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    NSDate *nowUpdate = [self personUpdatedAt];
     assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
 
     _isFinished = YES;
@@ -299,6 +279,14 @@
   } while (!_isFinished);
   
   _isFinished = NO;
+}
+
+-(NSDate*) personUpdatedAt {
+  NSArray *entities = [FTASyncParent allDescedents];
+  NSEntityDescription *entityDesc = entities[0];
+
+  NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+  return lastUpdate;
 }
 
 @end
