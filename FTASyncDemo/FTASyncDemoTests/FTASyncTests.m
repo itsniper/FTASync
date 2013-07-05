@@ -227,6 +227,31 @@
   } progressBlock:nil];
 }
 
+- (void)testIgnoreCompleteDeletedParseObject {
+  [self createLocalObjectAndUploadToParse];
+
+  PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+  NSArray *persons = [query findObjects];
+  PFObject *person = persons[0];
+  [person delete];
+
+  NSDate *lastUpdate = [self personUpdatedAt];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+    NSArray *persons = [query findObjects];
+    assert([persons count] == 0);
+
+    persons = [Person MR_findAll];
+    assert([persons count] == 1);
+
+    NSDate *nowUpdate = [self personUpdatedAt];
+    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+
+    _isFinished = YES;
+  } progressBlock:nil];
+}
+
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson"];
   for (NSString *name in entityNames) {
