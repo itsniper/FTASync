@@ -539,6 +539,41 @@
     }];
 }
 
+-(void)deleteEntityDeletedByRemote:(NSEntityDescription *) entityDesc {
+    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+    [request setEntity:entityDesc];
+
+    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 0"]];
+    NSArray *localObjects = [NSManagedObject MR_executeFetchRequest:request inContext:[NSManagedObjectContext MR_defaultContext]];
+
+    NSMutableArray *objectIds = [@[] mutableCopy];
+    for (FTASyncParent *object in localObjects) {
+        [objectIds addObject:object.objectId];
+    }
+
+    PFQuery *query = [PFQuery queryWithClassName:[entityDesc name]];
+    [query whereKey:@"objectId" containedIn:objectIds];
+    NSArray *parseObjects = [query findObjects];
+
+    NSMutableArray *existingObjectIds = [@[] mutableCopy];
+    for (PFObject *parseObject in parseObjects) {
+        [existingObjectIds addObject:parseObject.objectId];
+    }
+  
+    for (FTASyncParent *object in localObjects) {
+        if (![existingObjectIds containsObject:object.objectId]) {
+            [object MR_deleteEntity];
+        }
+    }
+}
+
+-(void)deleteAllDeletedByRemote {
+    NSArray *entitiesToSync = [self entitiesToSync];
+    for (NSEntityDescription *anEntity in entitiesToSync) {
+        [self deleteEntityDeletedByRemote: anEntity];
+    }
+}
+
 #pragma mark - Error Handling
 
 -(void)handleError:(NSError *)error {
