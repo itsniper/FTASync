@@ -62,8 +62,17 @@
     
     //Get parse objects for all updated objects
     for (FTASyncParent *localObject in updatedObjects) {
-        PFObject *parseObject = localObject.remoteObject;
-        [updatedParseObjects addObject:parseObject];
+        PFObject *parseObject = [PFQuery getObjectOfClass:[entityDesc name] objectId:localObject.remoteObject.objectId];
+      if (!parseObject && localObject.remoteObject.objectId) {
+        localObject.objectId = NULL;
+        NSMutableDictionary *dic = [@{} mutableCopy];
+        for (NSString *key in localObject.remoteObject.allKeys) {
+          if ([@[@"createdAt"] containsObject:key]) continue;
+          dic[key] = [localObject.remoteObject objectForKey:key];
+        }
+        localObject.remoteObject = [PFObject objectWithClassName:[entityDesc name] dictionary:dic];
+      }
+      [updatedParseObjects addObject:localObject.remoteObject];
     }
     NSUInteger updateCount = [updatedParseObjects count];
     
