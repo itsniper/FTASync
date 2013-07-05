@@ -282,7 +282,7 @@
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [self personUpdatedAt];
-    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+    assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
   } progressBlock:nil];
