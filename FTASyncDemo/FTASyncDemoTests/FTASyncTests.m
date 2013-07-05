@@ -288,6 +288,31 @@
   } progressBlock:nil];
 }
 
+-(void) testDeleteAllDeletedByRemote {
+  [self createLocalObjectAndUploadToParse];
+
+  PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+  NSArray *persons = [query findObjects];
+  PFObject *person = persons[0];
+  [person delete];
+
+  [[FTASyncHandler sharedInstance] deleteAllDeletedByRemote];
+
+  NSArray *localPersons = [Person MR_findAll];
+  assert([localPersons count] == 0);
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+    NSArray *persons = [query findObjects];
+    assert([persons count] == 0);
+
+    persons = [Person MR_findAll];
+    assert([persons count] == 0);
+
+    _isFinished = YES;
+  } progressBlock:nil];
+}
+
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson"];
   for (NSString *name in entityNames) {
