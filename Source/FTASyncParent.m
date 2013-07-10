@@ -442,8 +442,11 @@
             }
             
             if (![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
-                //TODO: Catch NSUndefinedKeyException if key does not exist on PFObject
+              //TODO: Catch NSUndefinedKeyException if key does not exist on PFObject
+              id value = [parseObject objectForKey:attribute];
+              if (value && ![value isKindOfClass:[NSNull class]]) {
                 [self setValue:[parseObject valueForKey:attribute] forKey:attribute];
+              }
             }
         }
     }
