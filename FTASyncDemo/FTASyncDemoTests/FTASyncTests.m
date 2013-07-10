@@ -338,6 +338,7 @@
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
   Person *person = [Person MR_createInContext:editingContext];
   person.name = @"taro";
+  person.updatedAt = [NSDate date];
   [editingContext MR_saveToPersistentStoreAndWait];
 
   NSArray *persons = [Person MR_findAll];
@@ -359,7 +360,7 @@
 
     NSDate *nowUpdate = [self personUpdatedAt];
     assert([[persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
-    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+    assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
   } progressBlock:nil];
