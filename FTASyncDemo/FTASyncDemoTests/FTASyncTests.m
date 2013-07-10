@@ -67,6 +67,7 @@
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
   person = (id)[editingContext existingObjectWithID:[person objectID] error:nil];
   person.name = @"ichiro";
+  [person syncUpdate];
   [editingContext MR_saveToPersistentStoreAndWait];
 
   NSArray *persons = [Person MR_findAll];
@@ -264,6 +265,7 @@
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
   localPerson = (id)[editingContext existingObjectWithID:[localPerson objectID] error:nil];
   localPerson.name = @"ichiro";
+  [localPerson syncUpdate];
   [editingContext MR_saveToPersistentStoreAndWait];
 
   NSArray *localPersons = [Person MR_findAll];

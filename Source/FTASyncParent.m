@@ -83,6 +83,10 @@
     return _remoteObject;
 }
 
+- (void)syncUpdate {
+  self.syncStatus = @1;
+}
+
 #pragma mark - KVO
 
 - (void)setupRelationshipObservation {
