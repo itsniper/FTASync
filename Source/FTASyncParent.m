@@ -620,7 +620,7 @@
     for (PFObject *remoteObject in parseObjects) {
         FTASyncParent *localObject = [self FTA_localObjectForClass:entityDesc WithRemoteId:remoteObject.objectId];
         if (!localObject) {
-            FSALog(@"Could not find local object matching remote object: %@", remoteObject);
+            //FSALog(@"Could not find local object matching remote object: %@", remoteObject);
             localObject = [FTASyncParent FTA_newObjectForClass:entityDesc WithRemoteObject:remoteObject];
             //break;
         }
