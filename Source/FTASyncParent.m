@@ -568,6 +568,7 @@
     
     if (self.syncStatusValue == 2) { 
         //This is a new object from remote so reset syncStatus
+      NSLog(@"sync new object!");
         [self FTA_updateObjectMetadataWithRemoteObject:parseObject andResetSyncStatus:YES];
     }
     else {
@@ -579,6 +580,7 @@
 
 - (void)FTA_updateObjectMetadataWithRemoteObject:(PFObject *)parseObject andResetSyncStatus:(BOOL)resetStatus {
     if (!self.objectId) {
+      NSLog(@"set!!! %@", parseObject.objectId);
         self.objectId = parseObject.objectId;
     }
     else if (![[self valueForKey:@"objectId"] isEqualToString:parseObject.objectId]) {
