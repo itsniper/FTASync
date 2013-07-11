@@ -72,6 +72,9 @@
         }
         localObject.remoteObject = [PFObject objectWithClassName:[entityDesc name] dictionary:dic];
       }
+      if (!localObject.remoteObject.objectId) {
+        [localObject.remoteObject setObject:[PFUser currentUser] forKey:@"user"];
+      }
       [updatedParseObjects addObject:localObject.remoteObject];
     }
     NSUInteger updateCount = [updatedParseObjects count];
