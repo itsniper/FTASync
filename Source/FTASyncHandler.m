@@ -221,6 +221,14 @@
     FSLog(@"Number of deleted remote objects: %i %@", [deletedRemoteObjects count], deletedRemoteObjects);
     [FTASyncParent FTA_deleteObjectsForClass:entityDesc withRemoteObjects:deletedRemoteObjects];
 
+    NSMutableArray *remoteObjectsWithACL = [@[] mutableCopy];
+    for (PFObject *remoteObject in remoteObjectsForSync) {
+      if (remoteObject.ACL != nil){
+        [remoteObjectsWithACL addObject:remoteObject];
+      }
+    }
+    remoteObjectsForSync = remoteObjectsWithACL;
+
     //Sync objects changed on remote
     FSLog(@"Number of updated remote objects: %i", [remoteObjectsForSync count]);
     [FTASyncParent FTA_updateObjectsForClass:entityDesc withRemoteObjects:remoteObjectsForSync];
