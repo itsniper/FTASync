@@ -44,12 +44,14 @@
 
 - (NSArray *)getObjectsOfClass:(NSString *)className updatedSince:(NSDate *)lastUpdate {
     PFQuery *query = [PFQuery queryWithClassName:className];
-    query.limit = 1000;
+    //query.limit = 1000;
+    query.limit = 10;
     //Cache the query in case we need one of the objects for merging later
     query.cachePolicy = kPFCachePolicyNetworkOnly;
     
     if (lastUpdate) {
         [query whereKey:@"updatedAt" greaterThan:lastUpdate];
+        [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO]];
     }
     
     NSArray *returnObjects = [query findObjects];
