@@ -51,9 +51,9 @@
     
     if (lastUpdate) {
         [query whereKey:@"updatedAt" greaterThan:lastUpdate];
-        [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:NO]];
     }
-    
+    [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:YES]];
+
     NSArray *returnObjects = [query findObjects];
     
     return returnObjects;

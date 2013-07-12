@@ -315,25 +315,33 @@
   } progressBlock:nil];
 }
 
-- (void) testSomePFObjectToLocalObjects {
+- (void) testSyncHandlerSomeTimes {
   for (NSInteger i = 0; i < 12; ++i) {
     PFObject *person = [PFObject objectWithClassName:@"CDPerson"];
     [person setObject:[NSString stringWithFormat:@"person%d", i] forKey:@"name"];
     [person save];
   }
+  FTASyncHandler *shared = [FTASyncHandler sharedInstance];
+  shared.queryLimit = 5;
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     NSArray *persons = [Person MR_findAllSortedBy:@"updatedAt" ascending:NO];
-    NSLog(@"persons: %@", persons);
-    assert([persons count] == 10);
-    assert([[persons[0] name] isEqualToString:@"person9"]);
+    assert([persons count] == 5);
+    assert([[persons[0] name] isEqualToString:@"person4"]);
 
+    shared.queryLimit = 5;
     [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
       NSArray *persons = [Person MR_findAllSortedBy:@"updatedAt" ascending:NO];
-      NSLog(@"persons: %@", persons);
-      assert([persons count] == 12);
-      assert([[persons[0] name] isEqualToString:@"person11"]);
+      assert([persons count] == 10);
+      assert([[persons[0] name] isEqualToString:@"person9"]);
 
-      _isFinished = YES;
+      shared.queryLimit = 10;
+      [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+        NSArray *persons = [Person MR_findAllSortedBy:@"updatedAt" ascending:NO];
+        assert([persons count] == 12);
+        assert([[persons[0] name] isEqualToString:@"person11"]);
+
+        _isFinished = YES;
+      } progressBlock:nil];
     } progressBlock:nil];
   } progressBlock:nil];
 }
