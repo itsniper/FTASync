@@ -315,6 +315,29 @@
   } progressBlock:nil];
 }
 
+- (void) testSomePFObjectToLocalObjects {
+  for (NSInteger i = 0; i < 12; ++i) {
+    PFObject *person = [PFObject objectWithClassName:@"CDPerson"];
+    [person setObject:[NSString stringWithFormat:@"person%d", i] forKey:@"name"];
+    [person save];
+  }
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    NSArray *persons = [Person MR_findAllSortedBy:@"updatedAt" ascending:NO];
+    NSLog(@"persons: %@", persons);
+    assert([persons count] == 10);
+    assert([[persons[0] name] isEqualToString:@"person9"]);
+
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+      NSArray *persons = [Person MR_findAllSortedBy:@"updatedAt" ascending:NO];
+      NSLog(@"persons: %@", persons);
+      assert([persons count] == 12);
+      assert([[persons[0] name] isEqualToString:@"person11"]);
+
+      _isFinished = YES;
+    } progressBlock:nil];
+  } progressBlock:nil];
+}
+
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson"];
   for (NSString *name in entityNames) {
