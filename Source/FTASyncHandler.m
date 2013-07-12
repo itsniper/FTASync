@@ -54,6 +54,7 @@
     dispatch_once(&pred, ^{
         shared = [[FTASyncHandler alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:shared selector:@selector(contextWasSaved:) name:NSManagedObjectContextDidSaveNotification object:[NSManagedObjectContext MR_defaultContext]];
+        shared.queryLimit = 10;
     });
 
     return shared;

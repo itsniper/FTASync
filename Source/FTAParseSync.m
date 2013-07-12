@@ -45,7 +45,7 @@
 - (NSArray *)getObjectsOfClass:(NSString *)className updatedSince:(NSDate *)lastUpdate {
     PFQuery *query = [PFQuery queryWithClassName:className];
     //query.limit = 1000;
-    query.limit = 10;
+    query.limit = [[FTASyncHandler sharedInstance] queryLimit];
     //Cache the query in case we need one of the objects for merging later
     query.cachePolicy = kPFCachePolicyNetworkOnly;
     
