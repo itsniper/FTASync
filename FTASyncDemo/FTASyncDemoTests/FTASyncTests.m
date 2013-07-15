@@ -84,16 +84,16 @@
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
-    NSArray *persons = [query findObjects];
-    assert([persons count] == 1);
-    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"ichiro"]);
+    NSArray *remote_persons = [query findObjects];
+    assert([remote_persons count] == 1);
+    assert([[remote_persons[0] objectForKey:@"name"] isEqualToString:@"ichiro"]);
 
-    persons = [Person MR_findAll];
-    assert([persons count] == 1);
-    assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+    NSArray *local_persons = [Person MR_findAll];
+    assert([local_persons count] == 1);
+    assert([[local_persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [self personUpdatedAt];
-    assert([[persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
+    assert([[remote_persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
     assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
@@ -112,21 +112,18 @@
   NSArray *persons = [Person MR_findAll];
   assert([persons count] == 0);
 
-  NSDate *lastUpdate = [self personUpdatedAt];
-
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-    query.limit = 1000;
-    NSArray *persons = [query findObjects];
-    assert([persons count] == 1);
-    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
-    assert([[persons[0] objectForKey:@"deleted"] isEqualToNumber:@1]);
+    NSArray *remote_persons = [query findObjects];
+    assert([remote_persons count] == 1);
+    assert([[remote_persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
+    assert([[remote_persons[0] objectForKey:@"deleted"] isEqualToNumber:@1]);
 
-    persons = [Person MR_findAll];
-    assert([persons count] == 0);
+    NSArray *local_persons = [Person MR_findAll];
+    assert([local_persons count] == 0);
 
     NSDate *nowUpdate = [self personUpdatedAt];
-    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+    assert(nowUpdate == nil);
 
     _isFinished = YES;
   } progressBlock:nil];
@@ -146,22 +143,22 @@
   assert([persons count] == 0);
 
   NSDate *lastUpdate = [self personUpdatedAt];
-
+  assert(lastUpdate == nil);
+  
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
-    NSArray *persons = [query findObjects];
-    assert([persons count] == 1);
-    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"messi"]);
+    NSArray *remote_persons = [query findObjects];
+    assert([remote_persons count] == 1);
+    assert([[remote_persons[0] objectForKey:@"name"] isEqualToString:@"messi"]);
 
-    persons = [Person MR_findAll];
-    assert([persons count] == 1);
-    assert([[persons[0] name] isEqualToString:@"messi"]);
-    assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+    NSArray *local_persons = [Person MR_findAll];
+    assert([local_persons count] == 1);
+    assert([[local_persons[0] name] isEqualToString:@"messi"]);
+    assert([[local_persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [self personUpdatedAt];
-    assert([[persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
-    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+    assert([[remote_persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
 
     _isFinished = YES;
   } progressBlock:nil];
@@ -181,18 +178,18 @@
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
-    NSArray *persons = [query findObjects];
-    assert([persons count] == 1);
-    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"ichiro"]);
+    NSArray *remote_persons = [query findObjects];
+    assert([remote_persons count] == 1);
+    assert([[remote_persons[0] objectForKey:@"name"] isEqualToString:@"ichiro"]);
 
-    persons = [Person MR_findAll];
-    assert([persons count] == 1);
-    assert([[persons[0] name] isEqualToString:@"ichiro"]);
-    NSLog(@"person: %@", persons[0]);
-    assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+    NSArray *local_persons = [Person MR_findAll];
+    assert([local_persons count] == 1);
+    assert([[local_persons[0] name] isEqualToString:@"ichiro"]);
+    NSLog(@"person: %@", local_persons[0]);
+    assert([[local_persons[0] syncStatus] isEqualToNumber:@0]);
 
     NSDate *nowUpdate = [self personUpdatedAt];
-    assert([[persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
+    assert([[remote_persons[0] updatedAt] compare:nowUpdate] == NSOrderedSame);
     assert([lastUpdate compare:nowUpdate] == NSOrderedAscending);
 
     _isFinished = YES;
@@ -213,16 +210,16 @@
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-    NSArray *persons = [query findObjects];
-    assert([persons count] == 1);
-    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
-    assert([[persons[0] objectForKey:@"deleted"] isEqualToNumber:@1]);
+    NSArray *remote_persons = [query findObjects];
+    assert([remote_persons count] == 1);
+    assert([[remote_persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
+    assert([[remote_persons[0] objectForKey:@"deleted"] isEqualToNumber:@1]);
 
-    persons = [Person MR_findAll];
-    assert([persons count] == 0);
+    NSArray *local_persons = [Person MR_findAll];
+    assert([local_persons count] == 0);
 
     NSDate *nowUpdate = [self personUpdatedAt];
-    assert([lastUpdate compare:nowUpdate] == NSOrderedSame);
+    assert(nowUpdate == nil);
 
     _isFinished = YES;
   } progressBlock:nil];
