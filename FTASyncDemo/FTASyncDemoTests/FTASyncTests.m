@@ -41,6 +41,7 @@
 - (void)setUp {
   //[MagicalRecord setupAutoMigratingCoreDataStack];
   [super setUp];
+  [self setUpClass];
   [self deleteAllPerseObjects];
   [self deleteAllLocalObjects];
   _isFinished = NO;
