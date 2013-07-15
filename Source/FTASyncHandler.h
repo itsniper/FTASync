@@ -25,6 +25,7 @@ typedef void (^FTABoolCompletionBlock)(BOOL success, NSError* error);
 
 @property (atomic, getter = isSyncInProgress) BOOL syncInProgress;
 @property (nonatomic, getter = isIgnoreContextSave) BOOL ignoreContextSave;
+@property (atomic) NSInteger queryLimit;
 
 + (FTASyncHandler *)sharedInstance;
 
@@ -34,5 +35,7 @@ typedef void (^FTABoolCompletionBlock)(BOOL success, NSError* error);
 - (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
 
 - (void)resetAllSyncStatusAndDeleteRemote:(BOOL)delete withCompletionBlock:(FTABoolCompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
+
+-(void)deleteAllDeletedByRemote;
 
 @end
