@@ -62,16 +62,23 @@
 }
 
 - (void)testUploadImageDataToParse {
+  NSArray *imageNames =  [NSArray arrayWithObjects:@"parse_small.png", @"parse_medium.png", @"parse_large.png", nil];
+
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
-  Person *person = [Person MR_createInContext:editingContext];
-  person.name = @"taro";
-  person.photo = UIImagePNGRepresentation([UIImage imageNamed:@"preview.png"]);
+  for (NSString *imageName in imageNames) {
+    Person *person = [Person MR_createInContext:editingContext];
+    person.name = imageName;
+    person.photo = UIImagePNGRepresentation([UIImage imageNamed:imageName]);
+  }
   [editingContext MR_saveToPersistentStoreAndWait];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
-    NSArray *remotePersons = [[PFQuery queryWithClassName:@"CDPerson"] findObjects];
-    assert([remotePersons count] == 1);
-    assert([[[remotePersons[0] objectForKey:@"photo"] getData] isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"preview.png"])]);
+    for (NSString *imageName in imageNames) {
+      PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+      [query whereKey:@"name" equalTo:imageName];
+      PFObject *remotePerson = [query getFirstObject];
+      assert([[[remotePerson objectForKey:@"photo"] getData] isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:imageName])]);
+    }
     _isFinished = YES;
   } progressBlock:nil];
 }
