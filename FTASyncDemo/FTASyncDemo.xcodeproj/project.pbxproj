@@ -234,7 +234,7 @@
 		B101F1421783B87A00A529C1 /* MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagicalRecord.h; sourceTree = "<group>"; };
 		B101F1431783B87A00A529C1 /* MagicalRecord.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagicalRecord.m; sourceTree = "<group>"; };
 		B101F1441783B87A00A529C1 /* MagicalRecordShorthand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagicalRecordShorthand.h; sourceTree = "<group>"; };
-		B101F1451783B87A00A529C1 /* CoreData+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "CoreData+MagicalRecord.h"; path = "../../../../MagicalRecord/MagicalRecord/CoreData+MagicalRecord.h"; sourceTree = "<group>"; };
+		B101F1451783B87A00A529C1 /* CoreData+MagicalRecord.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CoreData+MagicalRecord.h"; sourceTree = "<group>"; };
 		B1C4057E17848A7F00339D27 /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		B1C4058217848B9100339D27 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -283,7 +283,8 @@
 				B101F1351783B87A00A529C1 /* Core */,
 				B101F1451783B87A00A529C1 /* CoreData+MagicalRecord.h */,
 			);
-			path = MagicalRecord;
+			name = MagicalRecord;
+			path = ../../../MagicalRecord/MagicalRecord;
 			sourceTree = "<group>";
 		};
 		8B5AFC35152D137D000AF428 /* FTASync */ = {
@@ -467,8 +468,7 @@
 				B101F1331783B87A00A529C1 /* NSPersistentStoreCoordinator+MagicalRecord.h */,
 				B101F1341783B87A00A529C1 /* NSPersistentStoreCoordinator+MagicalRecord.m */,
 			);
-			name = Categories;
-			path = ../../../../MagicalRecord/MagicalRecord/Categories;
+			path = Categories;
 			sourceTree = "<group>";
 		};
 		B101F10C1783B87A00A529C1 /* DataImport */ = {
@@ -543,8 +543,7 @@
 				B101F1431783B87A00A529C1 /* MagicalRecord.m */,
 				B101F1441783B87A00A529C1 /* MagicalRecordShorthand.h */,
 			);
-			name = Core;
-			path = ../../../../MagicalRecord/MagicalRecord/Core;
+			path = Core;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
