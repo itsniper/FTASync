@@ -61,6 +61,21 @@
   _isFinished = YES;
 }
 
+- (void)testUploadImageDataToParse {
+  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+  Person *person = [Person MR_createInContext:editingContext];
+  person.name = @"taro";
+  person.photo = UIImagePNGRepresentation([UIImage imageNamed:@"preview.png"]);
+  [editingContext MR_saveToPersistentStoreAndWait];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    NSArray *remotePersons = [[PFQuery queryWithClassName:@"CDPerson"] findObjects];
+    assert([remotePersons count] == 1);
+    assert([[[remotePersons[0] objectForKey:@"photo"] getData] isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:@"preview.png"])]);
+    _isFinished = YES;
+  } progressBlock:nil];
+}
+
 - (void)testUploadUpdatedLocalObjectToParse {
   [self createLocalObjectAndUploadToParse];
   Person *person = [Person MR_findFirst];
