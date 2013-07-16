@@ -41,6 +41,7 @@
 - (void)setUp {
   //[MagicalRecord setupAutoMigratingCoreDataStack];
   [super setUp];
+  [self setUpClass];
   [self deleteAllPerseObjects];
   [self deleteAllLocalObjects];
   _isFinished = NO;
@@ -58,6 +59,28 @@
 - (void)testUploadCreatedLocalObjectToParse {
   [self createLocalObjectAndUploadToParse];
   _isFinished = YES;
+}
+
+- (void)testUploadImageDataToParse {
+  NSArray *imageNames =  [NSArray arrayWithObjects:@"parse_small.png", @"parse_medium.png", @"parse_large.png", nil];
+
+  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+  for (NSString *imageName in imageNames) {
+    Person *person = [Person MR_createInContext:editingContext];
+    person.name = imageName;
+    person.photo = UIImagePNGRepresentation([UIImage imageNamed:imageName]);
+  }
+  [editingContext MR_saveToPersistentStoreAndWait];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    for (NSString *imageName in imageNames) {
+      PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+      [query whereKey:@"name" equalTo:imageName];
+      PFObject *remotePerson = [query getFirstObject];
+      assert([[[remotePerson objectForKey:@"photo"] getData] isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:imageName])]);
+    }
+    _isFinished = YES;
+  } progressBlock:nil];
 }
 
 - (void)testUploadUpdatedLocalObjectToParse {
