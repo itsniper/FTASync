@@ -84,7 +84,9 @@
 }
 
 - (void)syncUpdate {
-  self.syncStatus = @1;
+  if (![self.syncStatus isEqualToNumber:@2]) {
+    self.syncStatus = @1;
+  }
 }
 
 #pragma mark - KVO
