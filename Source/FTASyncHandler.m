@@ -334,11 +334,11 @@
 #endif
 }
 
-- (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress {
+- (void)syncWithCompletionBlock:(FTABoolCompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress {
     //Quick sanity check to fail early if a sync is in progress, or cannot be completed
     if (![self.remoteInterface canSync] || self.syncInProgress) {
         if (completion)
-            completion();
+            completion(NO, nil);
 
         return;
     }
@@ -384,7 +384,7 @@
         dispatch_async(dispatch_get_main_queue(), ^{
             [[NSNotificationCenter defaultCenter] postNotificationName:@"FTASyncDidSync" object:nil];
             if (completion)
-              completion();
+              completion(YES, nil);
         });
 
         self.syncInProgress = NO;

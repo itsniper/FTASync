@@ -129,7 +129,8 @@
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user {
     [self.tabBarController dismissModalViewControllerAnimated:YES];
     DCLog(@"Login Success!");
-    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+        assert(success);
         DCLog(@"Completion Block Called");
     } progressBlock:^(float progress, NSString *message) {
         DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
@@ -150,7 +151,8 @@
 - (void)signUpViewController:(PFSignUpViewController *)signUpController didSignUpUser:(PFUser *)user {
     DCLog(@"Signup Success!");
     [self.tabBarController dismissModalViewControllerAnimated:YES];
-    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+        assert(success);
         DCLog(@"Completion Block Called");
     } progressBlock:^(float progress, NSString *message) {
         DLog(@"PROGRESS UPDATE: %f - %@", progress, message);
