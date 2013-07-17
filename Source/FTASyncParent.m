@@ -89,6 +89,22 @@
   }
 }
 
+- (id) unarchivePhotoData:(NSString *) propertyName {
+  id unarchiveObject;
+  @try {
+    unarchiveObject = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData *)[self valueForKey:propertyName]];
+  }@catch (NSException *exception) {
+    // if nsdata is uiimage, exception occurred.
+    unarchiveObject = nil;
+    NSLog(@"unarchive exception name  :%@",exception.name);
+    NSLog(@"unarchive exception reason:%@",exception.reason);
+  }
+  if ([[unarchiveObject class] isSubclassOfClass:[NSURL class]]) {
+    return unarchiveObject;
+  }
+  return [UIImage imageWithData: [self valueForKey:propertyName]];
+}
+
 #pragma mark - KVO
 
 - (void)setupRelationshipObservation {
