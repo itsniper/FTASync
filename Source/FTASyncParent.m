@@ -203,16 +203,19 @@
 }
 
 + (NSDate *)FTA_lastUpdateForClass:(NSEntityDescription *)entityDesc {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:entityDesc];
-    [fetchRequest setSortDescriptors:[NSManagedObject MR_descendingSortDescriptors:[NSArray arrayWithObject:@"updatedAt"]]];
-    
-    NSArray *results = [self MR_executeFetchRequest:fetchRequest inContext:[NSManagedObjectContext MR_defaultContext]];
-    if([results count] == 0) {
-        return nil;
+  return [[[NSUserDefaults standardUserDefaults] objectForKey:@"FTASyncLastUpdates"] objectForKey:entityDesc.name];
+}
+
++ (void)FTA_setLastUpdate:(NSDate *)date forClass:(NSEntityDescription *)entityDesc {
+  if (date) {
+    NSMutableDictionary *lastParseFetchedDates = [[[NSUserDefaults standardUserDefaults] objectForKey:@"FTASyncLastUpdates"] mutableCopy];
+    if (!lastParseFetchedDates) {
+      lastParseFetchedDates = [NSMutableDictionary dictionary];
     }
-    
-    return [[results objectAtIndex:0] valueForKey:@"updatedAt"];
+    [lastParseFetchedDates setObject:date forKey:entityDesc.name];
+    [[NSUserDefaults standardUserDefaults] setObject:lastParseFetchedDates forKey:@"FTASyncLastUpdates"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+  }
 }
 
 - (BOOL)shouldUseRemoteObject:(PFObject *)remoteObject

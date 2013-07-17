@@ -22,6 +22,7 @@
 + (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId;
 + (NSArray *)FTA_localObjectsForClass:(NSEntityDescription *)entityDesc WithRemoteIds:(NSArray *)objectIds;
 + (NSDate *)FTA_lastUpdateForClass:(NSEntityDescription *)entityDesc;
++ (void)FTA_setLastUpdate:(NSDate *)date forClass:(NSEntityDescription *)entityDesc;
 
 + (NSArray *)allDescedents;
 + (BOOL)isParentOfEntity:(NSEntityDescription *)entityDesc;
