@@ -541,12 +541,16 @@
     }];
 }
 
--(void)deleteEntityDeletedByRemote:(NSEntityDescription *) entityDesc {
+-(void)deleteEntityDeletedByRemote:(NSEntityDescription *) entityDesc inContext:(NSManagedObjectContext *)context {
+    if ([NSThread isMainThread]) {
+      FSALog(@"%@", @"This should NEVER be run on the main thread!!");
+      return;
+    }
+
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
     [request setEntity:entityDesc];
 
-    [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = 0"]];
-    NSArray *localObjects = [NSManagedObject MR_executeFetchRequest:request inContext:[NSManagedObjectContext MR_defaultContext]];
+    NSArray *localObjects = [NSManagedObject MR_executeFetchRequest:request inContext:context];
 
     NSMutableArray *objectIds = [@[] mutableCopy];
     for (FTASyncParent *object in localObjects) {
@@ -564,16 +568,57 @@
 
     for (FTASyncParent *object in localObjects) {
         if (![existingObjectIds containsObject:object.objectId]) {
-            [object MR_deleteEntity];
+            [object MR_deleteInContext:context];
         }
     }
 }
 
--(void)deleteAllDeletedByRemote {
-    NSArray *entitiesToSync = [self entitiesToSync];
-    for (NSEntityDescription *anEntity in entitiesToSync) {
-        [self deleteEntityDeletedByRemote: anEntity];
+-(void)deleteAllDeletedByRemote:(FTABoolCompletionBlock)completion {
+    if (![self.remoteInterface canSync] || self.syncInProgress) {
+      if (completion)
+        completion(NO, nil);
+      return;
     }
+
+    self.syncInProgress = YES;
+
+    //Setup background process tags so we can complete on app exit
+    __block UIBackgroundTaskIdentifier bgTask = 0;
+    if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+      //Create a background task identifier and specify the exception handler
+      bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        NSLog(@"Background sync on exit failed to complete in time limit");
+        //TODO: This is the wrong context since this code will be running on main thread. Is there a way to get
+        //   access to the context running [self syncAll] below??
+        [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+        self.syncInProgress = NO;
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+      }];
+    };
+
+    [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+      NSArray *entitiesToSync = [[FTASyncParent entityInManagedObjectContext:localContext] subentities];
+      for (NSEntityDescription *anEntity in entitiesToSync) {
+        [self deleteEntityDeletedByRemote: anEntity inContext:localContext];
+      }
+    } completion:^(BOOL success, NSError *error) {
+      if (![NSThread isMainThread]) {
+        FSALog(@"%@", @"Completion block must be called on main thread");
+      }
+
+      self.syncInProgress = NO;
+
+      if (completion)
+        completion(YES, nil);
+
+      //End background task
+      if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+        FSCLog(@"Completed sync.");
+        [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+        bgTask = UIBackgroundTaskInvalid;
+      }
+    }];
 }
 
 #pragma mark - Error Handling

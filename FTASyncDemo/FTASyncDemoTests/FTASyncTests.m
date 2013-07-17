@@ -290,22 +290,24 @@
   PFObject *person = persons[0];
   [person delete];
 
-  [[FTASyncHandler sharedInstance] deleteAllDeletedByRemote];
-
-  NSArray *localPersons = [Person MR_findAll];
-  assert([localPersons count] == 0);
-
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+  [[FTASyncHandler sharedInstance] deleteAllDeletedByRemote:^(BOOL success, NSError *error) {
     assert(success);
-    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-    NSArray *persons = [query findObjects];
-    assert([persons count] == 0);
 
-    persons = [Person MR_findAll];
-    assert([persons count] == 0);
+    NSArray *localPersons = [Person MR_findAll];
+    assert([localPersons count] == 0);
 
-    _isFinished = YES;
-  } progressBlock:nil];
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+      assert(success);
+      PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+      NSArray *persons = [query findObjects];
+      assert([persons count] == 0);
+
+      persons = [Person MR_findAll];
+      assert([persons count] == 0);
+
+      _isFinished = YES;
+    } progressBlock:nil];
+  }];
 }
 
 - (void) testSyncHandlerSomeTimes {

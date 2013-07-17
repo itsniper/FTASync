@@ -36,6 +36,6 @@ typedef void (^FTABoolCompletionBlock)(BOOL success, NSError* error);
 
 - (void)resetAllSyncStatusAndDeleteRemote:(BOOL)delete withCompletionBlock:(FTABoolCompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
 
--(void)deleteAllDeletedByRemote;
+-(void)deleteAllDeletedByRemote:(FTABoolCompletionBlock)completion;
 
 @end
