@@ -89,6 +89,22 @@
   }
 }
 
+- (id) unarchivePhotoData:(NSString *) propertyName {
+  id unarchiveObject;
+  @try {
+    unarchiveObject = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData *)[self valueForKey:propertyName]];
+  }@catch (NSException *exception) {
+    // if nsdata is uiimage, exception occurred.
+    unarchiveObject = nil;
+    NSLog(@"unarchive exception name  :%@",exception.name);
+    NSLog(@"unarchive exception reason:%@",exception.reason);
+  }
+  if ([[unarchiveObject class] isSubclassOfClass:[NSURL class]]) {
+    return unarchiveObject;
+  }
+  return [UIImage imageWithData: [self valueForKey:propertyName]];
+}
+
 #pragma mark - KVO
 
 - (void)setupRelationshipObservation {
@@ -443,11 +459,13 @@
                     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
                     [self setValue:data forKey:attribute];
                     continue;
-                } else if ([value isKindOfClass:[NSNull class]]) {
+                } else if ([value isKindOfClass:[NSNull class]] || value == nil) {
                   continue;
                 }else {
                     PFFile* remoteFile = value;
-                    [self setValue:[NSData dataWithData:[remoteFile getData]] forKey:attribute];
+                    NSURL *url = [NSURL URLWithString:remoteFile.url];
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:url];
+                    [self setValue:data forKey:attribute];
                     continue;
                 }
             }

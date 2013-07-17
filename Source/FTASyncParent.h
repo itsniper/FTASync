@@ -30,6 +30,7 @@
 + (FTASyncParent *)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithRemoteObject:(PFObject *)parseObject;
 - (void)FTA_updateObjectMetadataWithRemoteObject:(PFObject *)parseObject andResetSyncStatus:(BOOL)resetStatus;
 - (void)syncUpdate;
+- (id) unarchivePhotoData:(NSString *) propertyName;
 
 + (void)FTA_newObjectsForClass:(NSEntityDescription *)entityDesc withRemoteObjects:(NSArray *)parseObjects;
 + (void)FTA_updateObjectsForClass:(NSEntityDescription *)entityDesc withRemoteObjects:(NSArray *)parseObjects;
