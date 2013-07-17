@@ -168,7 +168,7 @@
 	[request setEntity:entityDesc];
 
     //Get the time of the most recently sync'd object
-    NSDate *lastUpdate = [self lastParseFetchedFor:entityDesc];
+    NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
     FSLog(@"Last update: %@", lastUpdate);
 
     //Add new local objects
@@ -188,7 +188,7 @@
 
     //Get updated remote objects
     NSMutableArray *remoteObjectsForSync = [NSMutableArray arrayWithArray:[self.remoteInterface getObjectsOfClass:[entityDesc name] updatedSince:lastUpdate]];
-    [self setLastParseFetched:[[remoteObjectsForSync lastObject] updatedAt] for:entityDesc];
+    [FTASyncParent FTA_setLastUpdate:[[remoteObjectsForSync lastObject] updatedAt] forClass:entityDesc];
 
     FSLog(@"Number of remote objects: %i %@", [remoteObjectsForSync count], remoteObjectsForSync);
 #ifdef DEBUG
@@ -572,22 +572,6 @@
     for (NSEntityDescription *anEntity in entitiesToSync) {
         [self deleteEntityDeletedByRemote: anEntity];
     }
-}
-
--(NSDate *)lastParseFetchedFor:(NSEntityDescription *)entityDesc {
-  return [[[NSUserDefaults standardUserDefaults] objectForKey:@"FTASyncLastParseFetchedDates"] objectForKey:entityDesc.name];
-}
-
--(void)setLastParseFetched:(NSDate *)date for:(NSEntityDescription *)entityDesc {
-  if (date) {
-    NSMutableDictionary *lastParseFetchedDates = [[[NSUserDefaults standardUserDefaults] objectForKey:@"FTASyncLastParseFetchedDates"] mutableCopy];
-    if (!lastParseFetchedDates) {
-      lastParseFetchedDates = [NSMutableDictionary dictionary];
-    }
-    [lastParseFetchedDates setObject:date forKey:entityDesc.name];
-    [[NSUserDefaults standardUserDefaults] setObject:lastParseFetchedDates forKey:@"FTASyncLastParseFetchedDates"];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-  }
 }
 
 #pragma mark - Error Handling
