@@ -440,7 +440,7 @@
                     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
                     [self setValue:data forKey:attribute];
                     continue;
-                } else if ([value isKindOfClass:[NSNull class]]) {
+                } else if ([value isKindOfClass:[NSNull class]] || value == nil) {
                   continue;
                 }else {
                     PFFile* remoteFile = value;
