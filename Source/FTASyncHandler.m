@@ -188,7 +188,7 @@
 
     //Get updated remote objects
     NSMutableArray *remoteObjectsForSync = [NSMutableArray arrayWithArray:[self.remoteInterface getObjectsOfClass:[entityDesc name] updatedSince:lastUpdate]];
-    [FTASyncParent FTA_setLastUpdate:[[remoteObjectsForSync lastObject] updatedAt] forClass:entityDesc];
+    NSDate *lastFetched = [[remoteObjectsForSync lastObject] updatedAt];
 
     FSLog(@"Number of remote objects: %i %@", [remoteObjectsForSync count], remoteObjectsForSync);
 #ifdef DEBUG
@@ -266,6 +266,7 @@
             }];
         }
 
+        [FTASyncParent FTA_setLastUpdate:lastFetched forClass:entityDesc];
         return;
     }
 
@@ -286,6 +287,7 @@
       self.ignoreContextSave = YES;
       [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
       self.ignoreContextSave = NO;
+      [FTASyncParent FTA_setLastUpdate:lastFetched forClass:entityDesc];
       return;
     }
 }
