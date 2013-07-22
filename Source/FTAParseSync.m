@@ -55,7 +55,9 @@
     [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:YES]];
 
     NSArray *returnObjects = [query findObjects];
-    
+    NSLog(@"returnObjects: %@ %@", returnObjects, className);
+    [[FTASyncHandler sharedInstance] setReceivedPFObjects:returnObjects entityName:className];
+
     return returnObjects;
 }
 
