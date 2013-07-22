@@ -129,7 +129,8 @@
 - (void)syncPerson {
     DCLog(@"SYNCING PERSON");
     //[[FTASyncHandler sharedInstance] syncEntity:[NSEntityDescription entityForName:@"Reward" inManagedObjectContext:[NSManagedObjectContext MR_context]]];
-    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+        assert(success);
         DCLog(@"Completion Block Called");
     } progressBlock:^(float progress, NSString *message) {
         DLog(@"PROGRESS UPDATE: %f - %@", progress, message);

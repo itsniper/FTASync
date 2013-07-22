@@ -72,7 +72,8 @@
   }
   [editingContext MR_saveToPersistentStoreAndWait];
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     for (NSString *imageName in imageNames) {
       PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
       [query whereKey:@"name" equalTo:imageName];
@@ -102,7 +103,8 @@
   persons = [query findObjects];
   assert([persons count] == 1);
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
     NSArray *remote_persons = [query findObjects];
@@ -129,7 +131,8 @@
   NSArray *persons = [Person MR_findAll];
   assert([persons count] == 0);
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     NSArray *remote_persons = [query findObjects];
     assert([remote_persons count] == 1);
@@ -156,7 +159,8 @@
   persons = [Person MR_findAll];
   assert([persons count] == 0);
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
     NSArray *remote_persons = [query findObjects];
@@ -181,7 +185,8 @@
   [person setObject:@"ichiro" forKey:@"name"];
   [person save];
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
     NSArray *remote_persons = [query findObjects];
@@ -208,7 +213,8 @@
   [person setObject:@1 forKey:@"deleted"];
   [person save];
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     NSArray *remote_persons = [query findObjects];
     assert([remote_persons count] == 1);
@@ -230,7 +236,8 @@
   PFObject *person = persons[0];
   [person delete];
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     NSArray *persons = [query findObjects];
     assert([persons count] == 0);
@@ -261,7 +268,8 @@
   assert([localPersons count] == 1);
   assert([[localPersons[0] syncStatus] isEqualToNumber:@1]);
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     NSArray *persons = [query findObjects];
     assert([persons count] == 1);
@@ -282,21 +290,24 @@
   PFObject *person = persons[0];
   [person delete];
 
-  [[FTASyncHandler sharedInstance] deleteAllDeletedByRemote];
+  [[FTASyncHandler sharedInstance] deleteAllDeletedByRemote:^(BOOL success, NSError *error) {
+    assert(success);
 
-  NSArray *localPersons = [Person MR_findAll];
-  assert([localPersons count] == 0);
+    NSArray *localPersons = [Person MR_findAll];
+    assert([localPersons count] == 0);
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
-    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
-    NSArray *persons = [query findObjects];
-    assert([persons count] == 0);
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+      assert(success);
+      PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+      NSArray *persons = [query findObjects];
+      assert([persons count] == 0);
 
-    persons = [Person MR_findAll];
-    assert([persons count] == 0);
+      persons = [Person MR_findAll];
+      assert([persons count] == 0);
 
-    _isFinished = YES;
-  } progressBlock:nil];
+      _isFinished = YES;
+    } progressBlock:nil];
+  }];
 }
 
 - (void) testSyncHandlerSomeTimes {
@@ -312,21 +323,24 @@
 
   FTASyncHandler *shared = [FTASyncHandler sharedInstance];
   shared.queryLimit = 5;
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     NSArray *persons = [Person MR_findAllSortedBy:@"updatedAt" ascending:NO];
     assert([persons count] == 6);
     assert([[persons[0] name] isEqualToString:@"local_person"]);
     assert([[persons[1] name] isEqualToString:@"remote_person4"]);
 
     shared.queryLimit = 5;
-    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+      assert(success);
       NSArray *persons = [Person MR_findAllSortedBy:@"updatedAt" ascending:NO];
       assert([persons count] == 11);
       assert([[persons[0] name] isEqualToString:@"local_person"]);
       assert([[persons[1] name] isEqualToString:@"remote_person9"]);
 
       shared.queryLimit = 10;
-      [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+      [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+        assert(success);
         NSArray *persons = [Person MR_findAllSortedBy:@"updatedAt" ascending:NO];
         assert([persons count] == 13);
         assert([[persons[0] name] isEqualToString:@"local_person"]);
@@ -335,6 +349,21 @@
         _isFinished = YES;
       } progressBlock:nil];
     } progressBlock:nil];
+  } progressBlock:nil];
+}
+
+- (void) testSyncFailWhileAnotherSyncInProgress {
+  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+  Person *person = [Person MR_createInContext:editingContext];
+  person.name = @"taro";
+  [editingContext MR_saveToPersistentStoreAndWait];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
+    _isFinished = YES;
+  } progressBlock:nil];
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(!success);
   } progressBlock:nil];
 }
 
@@ -369,7 +398,8 @@
   assert([persons count] == 1);
   assert([[persons[0] syncStatus] isEqualToNumber:@2]);
 
-  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^{
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
     PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
     query.limit = 1000;
     NSArray *persons = [query findObjects];
