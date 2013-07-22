@@ -55,6 +55,7 @@
         shared = [[FTASyncHandler alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:shared selector:@selector(contextWasSaved:) name:NSManagedObjectContextDidSaveNotification object:[NSManagedObjectContext MR_defaultContext]];
         shared.queryLimit = 10;
+        shared.receivedPFObjectDictionary = @{};
     });
 
     return shared;
@@ -68,6 +69,16 @@
     }
 
     return _remoteInterface;
+}
+
+- (NSArray *) receivedPFObjects:(NSString *) entityName {
+  return self.receivedPFObjectDictionary[entityName];
+}
+
+- (void) setReceivedPFObjects:(NSArray *)receivedPFObjects entityName:(NSString *) entityName {
+  NSMutableDictionary *dic = [self.receivedPFObjectDictionary mutableCopy];
+  dic[entityName] = receivedPFObjects;
+  self.receivedPFObjectDictionary = dic;
 }
 
 #pragma mark - CoreData Maintenance

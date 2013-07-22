@@ -172,6 +172,11 @@
     assert([[local_persons[0] name] isEqualToString:@"messi"]);
     assert([[local_persons[0] syncStatus] isEqualToNumber:@0]);
 
+    NSArray *recievedPFObjects = [[FTASyncHandler sharedInstance] receivedPFObjects:@"CDPerson"];
+    NSLog(@"dic: %@", [[FTASyncHandler sharedInstance] receivedPFObjectDictionary]);
+    assert([recievedPFObjects count] == 1);
+    assert([[recievedPFObjects[0] objectForKey:@"name"] isEqualToString:@"messi"]);
+
     _isFinished = YES;
   } progressBlock:nil];
 }
@@ -199,6 +204,11 @@
     NSLog(@"person: %@", local_persons[0]);
     assert([[local_persons[0] syncStatus] isEqualToNumber:@0]);
 
+    NSArray *recievedPFObjects = [[FTASyncHandler sharedInstance] receivedPFObjects:@"CDPerson"];
+    NSLog(@"dic: %@", [[FTASyncHandler sharedInstance] receivedPFObjectDictionary]);
+    assert([recievedPFObjects count] == 1);
+    assert([[recievedPFObjects[0] objectForKey:@"name"] isEqualToString:@"ichiro"]);
+
     _isFinished = YES;
   } progressBlock:nil];
 }
@@ -223,6 +233,12 @@
 
     NSArray *local_persons = [Person MR_findAll];
     assert([local_persons count] == 0);
+
+    NSArray *recievedPFObjects = [[FTASyncHandler sharedInstance] receivedPFObjects:@"CDPerson"];
+    NSLog(@"dic: %@", [[FTASyncHandler sharedInstance] receivedPFObjectDictionary]);
+    assert([recievedPFObjects count] == 1);
+    assert([[recievedPFObjects[0] objectForKey:@"name"] isEqualToString:@"taro"]);
+    assert([[recievedPFObjects[0] objectForKey:@"deleted"] isEqualToNumber:@1]);
 
     _isFinished = YES;
   } progressBlock:nil];
