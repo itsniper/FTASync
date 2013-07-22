@@ -91,6 +91,7 @@
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
   person = (id)[editingContext existingObjectWithID:[person objectID] error:nil];
   person.name = @"ichiro";
+  person.photo = nil;
   [person syncUpdate];
   [editingContext MR_saveToPersistentStoreAndWait];
 
@@ -110,6 +111,7 @@
     NSArray *remote_persons = [query findObjects];
     assert([remote_persons count] == 1);
     assert([[remote_persons[0] objectForKey:@"name"] isEqualToString:@"ichiro"]);
+    assert([remote_persons[0] objectForKey:@"photo"] == [NSNull null]);
 
     NSArray *local_persons = [Person MR_findAll];
     assert([local_persons count] == 1);
@@ -211,6 +213,7 @@
   NSArray *persons = [query findObjects];
   PFObject *person = persons[0];
   [person setObject:@"ichiro" forKey:@"name"];
+  [person setObject:[NSNull null] forKey:@"photo"];
   [person save];
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
@@ -224,6 +227,7 @@
     NSArray *local_persons = [Person MR_findAll];
     assert([local_persons count] == 1);
     assert([[local_persons[0] name] isEqualToString:@"ichiro"]);
+    assert(![local_persons[0] photo]);
     NSLog(@"person: %@", local_persons[0]);
     assert([[local_persons[0] syncStatus] isEqualToNumber:@0]);
 
@@ -431,6 +435,7 @@
   NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
   Person *person = [Person MR_createInContext:editingContext];
   person.name = @"taro";
+  person.photo = UIImagePNGRepresentation([UIImage imageNamed:@"parse_small.png"]);
   [editingContext MR_saveToPersistentStoreAndWait];
 
   NSArray *persons = [Person MR_findAll];
@@ -444,6 +449,7 @@
     NSArray *persons = [query findObjects];
     assert([persons count] == 1);
     assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
+    assert([[persons[0] objectForKey:@"photo"] isKindOfClass:[PFFile class]]);
 
     persons = [Person MR_findAll];
     assert([persons count] == 1);
