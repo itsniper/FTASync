@@ -181,6 +181,29 @@
   } progressBlock:nil];
 }
 
+- (void)testStoreCreatedParseImageData {
+  NSArray *imageNames =  [NSArray arrayWithObjects:@"parse_small.png", @"parse_medium.png", @"parse_large.png", nil];
+
+  for (NSString *imageName in imageNames) {
+    PFObject *person = [PFObject objectWithClassName:@"CDPerson"];
+    NSData *imageData = UIImagePNGRepresentation([UIImage imageNamed:imageName]);
+    [person setObject:imageName forKey:@"name"];
+    [person setObject:[PFFile fileWithData:imageData] forKey:@"photo"];
+    [person save];
+  }
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
+    for (NSString *imageName in imageNames) {
+      Person *person = [Person MR_findFirstByAttribute:@"name" withValue:imageName];
+      assert([[person unarchivePhotoData:@"photo"] isKindOfClass:[NSURL class]]);
+      NSData *imageData = [NSData dataWithContentsOfURL:[person unarchivePhotoData:@"photo"]];
+      assert([imageData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:imageName])]);
+    }
+    _isFinished = YES;
+  } progressBlock:nil];
+}
+
 - (void)testStoreUpdatedParseObject {
   [self createLocalObjectAndUploadToParse];
   
