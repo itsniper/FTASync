@@ -423,11 +423,13 @@
 }
 
 -(void) deleteAllLocalObjects {
+  [[FTASyncHandler sharedInstance] setIgnoreContextSave:YES];
   NSArray *persons = [Person MR_findAll];
   for (Person *person in persons) {
     [person MR_deleteEntity];
   }
   [[NSUserDefaults standardUserDefaults] setObject:[[NSMutableArray alloc] init] forKey:@"FTASyncDeletedCDPerson"];
+  [[FTASyncHandler sharedInstance] setIgnoreContextSave:NO];
 }
 
 -(void) createLocalObjectAndUploadToParse {
