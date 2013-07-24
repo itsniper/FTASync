@@ -219,9 +219,8 @@
     NSPredicate *newRemotePredicate = nil;
     if (lastUpdate) {
         newRemotePredicate = [NSPredicate predicateWithFormat:@"createdAt > %@ AND (deleted = NO OR deleted = nil)", lastUpdate];
-    }
-    else {
-        newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = NO OR deleted = nil", lastUpdate];
+    } else {
+        newRemotePredicate = [NSPredicate predicateWithFormat:@"deleted = NO OR deleted = nil"];
     }
     NSArray *newRemoteObjects = [remoteObjectsForSync filteredArrayUsingPredicate:newRemotePredicate];
     FSLog(@"Number of new remote objects: %i %@", [newRemoteObjects count], newRemoteObjects);
