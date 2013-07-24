@@ -83,6 +83,28 @@
     return _remoteObject;
 }
 
+- (void)syncUpdate {
+  if (![self.syncStatus isEqualToNumber:@2]) {
+    self.syncStatus = @1;
+  }
+}
+
+- (id) unarchivePhotoData:(NSString *) propertyName {
+  id unarchiveObject;
+  @try {
+    unarchiveObject = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData *)[self valueForKey:propertyName]];
+  }@catch (NSException *exception) {
+    // if nsdata is uiimage, exception occurred.
+    unarchiveObject = nil;
+    NSLog(@"unarchive exception name  :%@",exception.name);
+    NSLog(@"unarchive exception reason:%@",exception.reason);
+  }
+  if ([[unarchiveObject class] isSubclassOfClass:[NSURL class]]) {
+    return unarchiveObject;
+  }
+  return [UIImage imageWithData: [self valueForKey:propertyName]];
+}
+
 #pragma mark - KVO
 
 - (void)setupRelationshipObservation {
@@ -197,16 +219,19 @@
 }
 
 + (NSDate *)FTA_lastUpdateForClass:(NSEntityDescription *)entityDesc {
-    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    [fetchRequest setEntity:entityDesc];
-    [fetchRequest setSortDescriptors:[NSManagedObject MR_descendingSortDescriptors:[NSArray arrayWithObject:@"updatedAt"]]];
-    
-    NSArray *results = [self MR_executeFetchRequest:fetchRequest];
-    if([results count] == 0) {
-        return nil;
+  return [[[NSUserDefaults standardUserDefaults] objectForKey:@"FTASyncLastUpdates"] objectForKey:entityDesc.name];
+}
+
++ (void)FTA_setLastUpdate:(NSDate *)date forClass:(NSEntityDescription *)entityDesc {
+  if (date) {
+    NSMutableDictionary *lastParseFetchedDates = [[[NSUserDefaults standardUserDefaults] objectForKey:@"FTASyncLastUpdates"] mutableCopy];
+    if (!lastParseFetchedDates) {
+      lastParseFetchedDates = [NSMutableDictionary dictionary];
     }
-    
-    return [[results objectAtIndex:0] valueForKey:@"updatedAt"];
+    [lastParseFetchedDates setObject:date forKey:entityDesc.name];
+    [[NSUserDefaults standardUserDefaults] setObject:lastParseFetchedDates forKey:@"FTASyncLastUpdates"];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+  }
 }
 
 - (BOOL)shouldUseRemoteObject:(PFObject *)remoteObject
@@ -329,6 +354,20 @@
         
         //If attribute is NSData, need to convert this to a PFFile
         if ([value isKindOfClass:[NSData class]]) {
+          // Upload array column (rei kubonaga)
+            id unarchiveObject;
+            @try {
+                unarchiveObject = [NSKeyedUnarchiver unarchiveObjectWithData:(NSData *)value];
+            }@catch (NSException *exception) {
+                // if nsdata is uiimage, exception occurred.
+                unarchiveObject = nil;
+                NSLog(@"unarchive exception name  :%@",exception.name);
+                NSLog(@"unarchive exception reason:%@",exception.reason);
+            }
+            if ([unarchiveObject isKindOfClass:[NSArray class]]){
+                [parseObject setObject:unarchiveObject forKey:attribute];
+                continue;
+            }
             NSString *fileName = nil;
             if (parseObject.objectId) {
                 fileName = [NSString stringWithFormat:@"%@-%@.png", parseObject.objectId, attribute];
@@ -344,8 +383,12 @@
             continue;
         }
         
-        if (value != nil && ![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
-            [parseObject setObject:value forKey:attribute];
+        if (![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"createdAt"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
+            if (value) {
+                [parseObject setObject:value forKey:attribute];
+            } else {
+                [parseObject setObject:[NSNull null] forKey:attribute];
+            }
         }
     }
     
@@ -413,16 +456,31 @@
     if (self.syncStatusValue != 1) { //Local changes take priority
         for (NSString *attribute in attributes) {
             NSString *className = [[attributes valueForKey:attribute] attributeValueClassName];
-            
+
             if ([className isEqualToString:@"NSData"]) {
-                PFFile* remoteFile = [parseObject objectForKey:attribute];
-                [self setValue:[NSData dataWithData:[remoteFile getData]] forKey:attribute];
-                continue;
+                id value = [parseObject objectForKey:attribute];
+                if ([value isKindOfClass:[NSArray class]]) {
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
+                    [self setValue:data forKey:attribute];
+                    continue;
+                } else if ([value isKindOfClass:[NSNull class]] || value == nil) {
+                    [self setValue:nil forKey:attribute];
+                    continue;
+                } else {
+                    PFFile* remoteFile = value;
+                    NSURL *url = [NSURL URLWithString:remoteFile.url];
+                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:url];
+                    [self setValue:data forKey:attribute];
+                    continue;
+                }
             }
             
             if (![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
-                //TODO: Catch NSUndefinedKeyException if key does not exist on PFObject
+              //TODO: Catch NSUndefinedKeyException if key does not exist on PFObject
+              id value = [parseObject objectForKey:attribute];
+              if (value && ![value isKindOfClass:[NSNull class]]) {
                 [self setValue:[parseObject valueForKey:attribute] forKey:attribute];
+              }
             }
         }
     }
@@ -540,6 +598,7 @@
     
     if (self.syncStatusValue == 2) { 
         //This is a new object from remote so reset syncStatus
+      NSLog(@"sync new object!");
         [self FTA_updateObjectMetadataWithRemoteObject:parseObject andResetSyncStatus:YES];
     }
     else {
@@ -551,6 +610,7 @@
 
 - (void)FTA_updateObjectMetadataWithRemoteObject:(PFObject *)parseObject andResetSyncStatus:(BOOL)resetStatus {
     if (!self.objectId) {
+      NSLog(@"set!!! %@", parseObject.objectId);
         self.objectId = parseObject.objectId;
     }
     else if (![[self valueForKey:@"objectId"] isEqualToString:parseObject.objectId]) {
@@ -559,6 +619,7 @@
     }
     
     self.updatedAt = parseObject.updatedAt;
+    self.createdAt = parseObject.createdAt;
     
     if (resetStatus) {
         self.syncStatusValue = 0;
@@ -589,7 +650,7 @@
     for (PFObject *remoteObject in parseObjects) {
         FTASyncParent *localObject = [self FTA_localObjectForClass:entityDesc WithRemoteId:remoteObject.objectId];
         if (!localObject) {
-            FSALog(@"Could not find local object matching remote object: %@", remoteObject);
+            //FSALog(@"Could not find local object matching remote object: %@", remoteObject);
             localObject = [FTASyncParent FTA_newObjectForClass:entityDesc WithRemoteObject:remoteObject];
             //break;
         }
@@ -601,10 +662,10 @@
 + (void)FTA_deleteObjectsForClass:(NSEntityDescription *)entityDesc withRemoteObjects:(NSArray *)parseObjects {
     for (PFObject *remoteObject in parseObjects) {
         FTASyncParent *localObject = [self FTA_localObjectForClass:entityDesc WithRemoteId:remoteObject.objectId];
+
         if (!localObject) {
             FSLog(@"Object already removed locally: %@", remoteObject);
         }
-        
         [localObject MR_deleteEntity];
     }
 }

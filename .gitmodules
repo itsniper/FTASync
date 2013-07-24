@@ -1,0 +1,3 @@
+[submodule "MagicalRecord"]
+	path = MagicalRecord
+	url = git@github.com:magicalpanda/MagicalRecord.git
