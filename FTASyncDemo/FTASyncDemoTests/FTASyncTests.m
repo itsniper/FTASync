@@ -12,6 +12,7 @@
 #import <Parse/Parse.h>
 #import "ParseKeys.h"
 #import "Person.h"
+#import "ToDoItem.h"
 #import "FTASyncHandler.h"
 
 @implementation FTASyncDemoTests {
@@ -331,7 +332,7 @@
   PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
   NSArray *persons = [query findObjects];
   PFObject *person = persons[0];
-  [person delete];
+  assert([person delete]);
 
   [[FTASyncHandler sharedInstance] deleteAllDeletedByRemote:^(BOOL success, NSError *error) {
     assert(success);
@@ -436,11 +437,23 @@
   Person *person = [Person MR_createInContext:editingContext];
   person.name = @"taro";
   person.photo = UIImagePNGRepresentation([UIImage imageNamed:@"parse_small.png"]);
+  ToDoItem *item1 = [ToDoItem MR_createInContext:editingContext];
+  item1.name = @"todo1";
+  item1.priority = @1;
+  item1.syncStatus = @3;
+  [person addToDoItemObject:item1];
+  ToDoItem *item2 = [ToDoItem MR_createInContext:editingContext];
+  item2.name = @"todo2";
+  item2.priority = @2;
+  item2.syncStatus = @3;
+  [person addToDoItemObject:item2];
   [editingContext MR_saveToPersistentStoreAndWait];
 
   NSArray *persons = [Person MR_findAll];
   assert([persons count] == 1);
   assert([[persons[0] syncStatus] isEqualToNumber:@2]);
+  NSSet *todoItems = [persons[0] toDoItemSet];
+  assert((int)[todoItems count] == 2);
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
     assert(success);
