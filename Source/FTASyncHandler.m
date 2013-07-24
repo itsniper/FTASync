@@ -268,17 +268,9 @@
     if ([objectsToSync count] < 1 && [deletedLocalObjects count] < 1) {
         FSLog(@"NO OBJECTS TO SYNC");
         if ([deletedRemoteObjects count] > 0) {
-            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
-                if (!success && error) {
-                    [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
-                    self.syncInProgress = NO;
-                    self.progressBlock = nil;
-                    self.progress = 0;
-
-                    [self handleError:error];
-                    return;
-                }
-            }];
+            self.ignoreContextSave = YES;
+            [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+            self.ignoreContextSave = NO;
         }
 
         [FTASyncParent FTA_setLastUpdate:lastFetched forClass:entityDesc];
