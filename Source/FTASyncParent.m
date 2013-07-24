@@ -602,7 +602,9 @@
                 FSLog(@"Local object with remoteId %@ in relationship %@ was not found %@", relatedRemoteObject.objectId, relationship, relatedRemoteObject);
                 localRelatedObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject WithContext:context];
                 localRelatedObject.syncStatusValue = 0;
-                [localRelatedObject updateObjectWithRemoteObject:relatedRemoteObject WithContext:context];
+                if ([relatedRemoteObject isDataAvailable]) {
+                  [localRelatedObject updateObjectWithRemoteObject:relatedRemoteObject WithContext:context];
+                }
             }
             else if(![self shouldUseRemoteObject:relatedRemoteObject insteadOfLocal:currentLocalRelatedObject forToMany:NO relationship:relationship]) {
                 continue;
