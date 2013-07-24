@@ -476,8 +476,10 @@
                     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value];
                     [self setValue:data forKey:attribute];
                     continue;
-                } else if ([value isKindOfClass:[NSNull class]] || value == nil) {
+                } else if ([value isKindOfClass:[NSNull class]]) {
                     [self setValue:nil forKey:attribute];
+                    continue;
+                } else if (value == nil) {
                     continue;
                 } else {
                     PFFile* remoteFile = value;
