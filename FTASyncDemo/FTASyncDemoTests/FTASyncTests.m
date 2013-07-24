@@ -248,7 +248,7 @@
   NSArray *persons = [query findObjects];
   PFObject *person = persons[0];
   [person setObject:@1 forKey:@"deleted"];
-  [person save];
+  assert([person save]);
 
   [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
     assert(success);
