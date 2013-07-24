@@ -113,7 +113,7 @@
     }
     //TODO: A temporary solution. Why does the ignoreContextSave not work??
     if (![self managedObjectContext]) {
-        FSCLog(@"Missing context, likly an ignoreContextSave");
+        FSCLog(@"Missing context, likely an ignoreContextSave");
         return;
     }
     
@@ -331,10 +331,10 @@
         if ([value isKindOfClass:[NSData class]]) {
             NSString *fileName = nil;
             if (parseObject.objectId) {
-                fileName = [NSString stringWithFormat:@"%@-%@.png", parseObject.objectId, attribute];
+                fileName = [NSString stringWithFormat:@"%@-%@", parseObject.objectId, attribute];
             }
             else {
-                fileName = [NSString stringWithFormat:@"newObj-%@.png", attribute];
+                fileName = [NSString stringWithFormat:@"newObj-%@", attribute];
             }
             
             PFFile *file = [PFFile fileWithName:fileName data:(NSData *)value];
@@ -345,7 +345,13 @@
         }
         
         if (value != nil && ![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
-            [parseObject setObject:value forKey:attribute];
+            NSAttributeDescription *attributeDescription = [attributes objectForKey:attribute];
+            
+            if (attributeDescription.attributeType == NSBooleanAttributeType && ![attribute isEqualToString:@"deleted"]) {
+                [parseObject setObject:[NSNumber numberWithBool:(bool)value] forKey:attribute];
+            } else {
+                [parseObject setObject:value forKey:attribute];
+            }
         }
     }
     

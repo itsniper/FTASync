@@ -241,7 +241,7 @@
     }
     
     [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
-        if (!success) {
+        if (error) {
             [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
             self.syncInProgress = NO;
             self.progressBlock = nil;
@@ -262,7 +262,7 @@
         FSLog(@"NO OBJECTS TO SYNC");
         if ([deletedRemoteObjects count] > 0) {
             [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
-                if (!success) {
+                if (error) {
                     [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
                     self.syncInProgress = NO;
                     self.progressBlock = nil;
@@ -292,7 +292,7 @@
     } 
     else {
         [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreWithCompletion:^(BOOL success, NSError *error) {
-            if (!success) {
+            if (error) {
                 [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
                 self.syncInProgress = NO;
                 self.progressBlock = nil;
