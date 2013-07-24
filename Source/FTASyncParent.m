@@ -199,13 +199,18 @@
 }
 
 + (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId {
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    [request setEntity:entityDesc];
-    
-    [request setPredicate:[NSPredicate predicateWithFormat:@"objectId = %@", objectId]];
-    FTASyncParent *localObject = [NSManagedObject MR_executeFetchRequestAndReturnFirstObject:request];
-    
-    return localObject;
+    return [self FTA_localObjectForClass:entityDesc WithRemoteId:objectId WithContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+}
+
++ (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId WithContext:(NSManagedObjectContext *) context{
+
+  NSFetchRequest *request = [[NSFetchRequest alloc] init];
+  [request setEntity:entityDesc];
+
+  [request setPredicate:[NSPredicate predicateWithFormat:@"objectId = %@", objectId]];
+  FTASyncParent *localObject = [self MR_executeFetchRequestAndReturnFirstObject:request inContext:context];
+
+  return localObject;
 }
 
 + (NSArray *)FTA_localObjectsForClass:(NSEntityDescription *)entityDesc WithRemoteIds:(NSArray *)objectIds {
@@ -322,19 +327,23 @@
 #pragma mark - Object Conversion
 
 + (FTASyncParent *)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithRemoteObject:(PFObject *)parseObject {
-    //Make sure a local object doesn't already exist from traversing a relationship
-    FTASyncParent *localObject = [FTASyncParent FTA_localObjectForClass:entityDesc WithRemoteId:parseObject.objectId];
-    if (localObject) {
-        return localObject;
-    }
-    
-    FTASyncParent *newObject = [NSEntityDescription insertNewObjectForEntityForName:[entityDesc name] inManagedObjectContext:[NSManagedObjectContext MR_contextForCurrentThread]];
-    [newObject setValue:[NSNumber numberWithBool:NO] forKey:@"createdHere"];
-    
-    //Make sure objectId is set
-    newObject.objectId = parseObject.objectId;
-    
-    return newObject;
+  return [self FTA_newObjectForClass:entityDesc WithRemoteObject:parseObject WithContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+}
+
++ (FTASyncParent *)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithRemoteObject:(PFObject *)parseObject WithContext:(NSManagedObjectContext *) context {
+  //Make sure a local object doesn't already exist from traversing a relationship
+  FTASyncParent *localObject = [FTASyncParent FTA_localObjectForClass:entityDesc WithRemoteId:parseObject.objectId WithContext:context];
+  if (localObject) {
+    return localObject;
+  }
+
+  FTASyncParent *newObject = [NSEntityDescription insertNewObjectForEntityForName:[entityDesc name] inManagedObjectContext:context];
+  [newObject setValue:[NSNumber numberWithBool:NO] forKey:@"createdHere"];
+
+  //Make sure objectId is set
+  newObject.objectId = parseObject.objectId;
+
+  return newObject;
 }
 
 - (void)updateRemoteObject:(PFObject *)parseObject {
@@ -445,6 +454,10 @@
 }
 
 - (void)updateObjectWithRemoteObject:(PFObject *)parseObject {
+  [self updateObjectWithRemoteObject:parseObject WithContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+}
+
+- (void)updateObjectWithRemoteObject:(PFObject *)parseObject WithContext:(NSManagedObjectContext *) context {
     NSDictionary *attributes = [[self entity] attributesByName];
     NSDictionary *relationships = [[self entity] relationshipsByName];
     
@@ -528,7 +541,7 @@
             [relatedRemoteObjects removeObjectsInArray:localObjectsForRemoteIds];
             FSLog(@"Walking through adding objects: %@", relatedRemoteObjects);
             for (PFObject *relatedRemoteObject in relatedRemoteObjects) {
-                FTASyncParent *localObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId];
+                FTASyncParent *localObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId WithContext:context];
                 
                 if (!localObject) {
                     //Related object doesn't exist locally
@@ -540,7 +553,7 @@
                     }
                     
                     FSLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
-                    localObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject];
+                    localObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject WithContext:context];
                     localObject.syncStatusValue = 0; //Object is not new local nor does it have local changes
                 }
                 else if (![self shouldUseRemoteObject:relatedRemoteObject insteadOfLocal:nil forToMany:YES relationship:relationship]) {
@@ -565,9 +578,11 @@
             }
         }
         else {
+          NSLog(@"relation ship!");
             //To-one relationship
             PFObject *relatedRemoteObject = [parseObject objectForKey:relationship];
-            FTASyncParent *localRelatedObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId];
+          NSLog(@"parseObject: %@", relatedRemoteObject);
+            FTASyncParent *localRelatedObject = [FTASyncParent FTA_localObjectForClass:destEntity WithRemoteId:relatedRemoteObject.objectId WithContext:context];
             FTASyncParent *currentLocalRelatedObject = [self valueForKey:relationship];
             
             if (!localRelatedObject && relatedRemoteObject) {
@@ -579,9 +594,10 @@
                     continue;
                 }
                 
-                FSLog(@"Local object with remoteId %@ in relationship %@ was not found", relatedRemoteObject.objectId, relationship);
-                localRelatedObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject];
+                FSLog(@"Local object with remoteId %@ in relationship %@ was not found %@", relatedRemoteObject.objectId, relationship, relatedRemoteObject);
+                localRelatedObject = [FTASyncParent FTA_newObjectForClass:destEntity WithRemoteObject:relatedRemoteObject WithContext:context];
                 localRelatedObject.syncStatusValue = 0;
+                [localRelatedObject updateObjectWithRemoteObject:relatedRemoteObject WithContext:context];
             }
             else if(![self shouldUseRemoteObject:relatedRemoteObject insteadOfLocal:currentLocalRelatedObject forToMany:NO relationship:relationship]) {
                 continue;
