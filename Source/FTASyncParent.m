@@ -392,8 +392,12 @@
             continue;
         }
         
-        if (value != nil && ![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
-            [parseObject setObject:value forKey:attribute];
+        if (![attribute isEqualToString:@"createdHere"] && ![attribute isEqualToString:@"createdAt"] && ![attribute isEqualToString:@"updatedAt"] && ![attribute isEqualToString:@"syncStatus"] && ![attribute isEqualToString:@"objectId"]) {
+            if (value) {
+                [parseObject setObject:value forKey:attribute];
+            } else {
+                [parseObject setObject:[NSNull null] forKey:attribute];
+            }
         }
     }
     
@@ -465,7 +469,7 @@
     if (self.syncStatusValue != 1) { //Local changes take priority
         for (NSString *attribute in attributes) {
             NSString *className = [[attributes valueForKey:attribute] attributeValueClassName];
-            
+
             if ([className isEqualToString:@"NSData"]) {
                 id value = [parseObject objectForKey:attribute];
                 if ([value isKindOfClass:[NSArray class]]) {
@@ -473,8 +477,9 @@
                     [self setValue:data forKey:attribute];
                     continue;
                 } else if ([value isKindOfClass:[NSNull class]] || value == nil) {
-                  continue;
-                }else {
+                    [self setValue:nil forKey:attribute];
+                    continue;
+                } else {
                     PFFile* remoteFile = value;
                     NSURL *url = [NSURL URLWithString:remoteFile.url];
                     NSData *data = [NSKeyedArchiver archivedDataWithRootObject:url];
