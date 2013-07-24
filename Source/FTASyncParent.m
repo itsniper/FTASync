@@ -639,7 +639,6 @@
     }
     
     self.updatedAt = parseObject.updatedAt;
-    self.createdAt = parseObject.createdAt;
     
     if (resetStatus) {
         self.syncStatusValue = 0;
