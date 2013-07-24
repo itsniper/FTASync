@@ -12,6 +12,7 @@
 #import <Parse/Parse.h>
 #import "ParseKeys.h"
 #import "Person.h"
+#import "ToDoItem.h"
 #import "FTASyncHandler.h"
 
 @implementation FTASyncDemoTests {
@@ -331,7 +332,7 @@
   PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
   NSArray *persons = [query findObjects];
   PFObject *person = persons[0];
-  [person delete];
+  assert([person delete]);
 
   [[FTASyncHandler sharedInstance] deleteAllDeletedByRemote:^(BOOL success, NSError *error) {
     assert(success);
@@ -410,8 +411,13 @@
   } progressBlock:nil];
 }
 
+- (void)testUploadCreatedLocalObjectWithRelationToParse {
+  [self createLocalObjectWithRelationAndUploadToParse];
+  _isFinished = YES;
+}
+
 - (void) deleteAllPerseObjects {
-  NSArray *entityNames = @[@"CDPerson"];
+  NSArray *entityNames = @[@"CDPerson", @"CDToDoItem"];
   for (NSString *name in entityNames) {
     PFQuery *query = [PFQuery queryWithClassName:name];
     query.limit = 1000;
@@ -424,10 +430,14 @@
 
 -(void) deleteAllLocalObjects {
   [[FTASyncHandler sharedInstance] setIgnoreContextSave:YES];
-  NSArray *persons = [Person MR_findAll];
-  for (Person *person in persons) {
-    [person MR_deleteEntity];
+  NSArray *classNames = @[@"Person", @"ToDoItem"];
+  for (NSString *className in classNames) {
+    NSArray *models = [NSClassFromString(className) MR_findAll];
+    for (NSManagedObject *model in models) {
+      [model MR_deleteEntity];
+    }
   }
+  
   [[NSUserDefaults standardUserDefaults] setObject:[[NSMutableArray alloc] init] forKey:@"FTASyncDeletedCDPerson"];
   [[FTASyncHandler sharedInstance] setIgnoreContextSave:NO];
 }
@@ -456,6 +466,58 @@
     persons = [Person MR_findAll];
     assert([persons count] == 1);
     assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+
+    _isFinished = YES;
+  } progressBlock:nil];
+
+  do {
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:1.0]];
+  } while (!_isFinished);
+
+  _isFinished = NO;
+}
+
+-(void) createLocalObjectWithRelationAndUploadToParse {
+  _isFinished = NO;
+  NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+  Person *person = [Person MR_createInContext:editingContext];
+  person.name = @"taro";
+  person.photo = UIImagePNGRepresentation([UIImage imageNamed:@"parse_small.png"]);
+  ToDoItem *item1 = [ToDoItem MR_createInContext:editingContext];
+  item1.name = @"todo1";
+  item1.priority = @1;
+  item1.syncStatus = @3;
+  [person addToDoItemObject:item1];
+  ToDoItem *item2 = [ToDoItem MR_createInContext:editingContext];
+  item2.name = @"todo2";
+  item2.priority = @2;
+  item2.syncStatus = @3;
+  [person addToDoItemObject:item2];
+  [editingContext MR_saveToPersistentStoreAndWait];
+
+  NSArray *persons = [Person MR_findAll];
+  assert([persons count] == 1);
+  assert([[persons[0] syncStatus] isEqualToNumber:@2]);
+  NSSet *todoItems = [persons[0] toDoItemSet];
+  assert((int)[todoItems count] == 2);
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
+    PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+    query.limit = 1000;
+    NSArray *persons = [query findObjects];
+    assert([persons count] == 1);
+    assert([[persons[0] objectForKey:@"name"] isEqualToString:@"taro"]);
+    assert([[persons[0] objectForKey:@"photo"] isKindOfClass:[PFFile class]]);
+
+    persons = [Person MR_findAll];
+    assert([persons count] == 1);
+    assert([[persons[0] syncStatus] isEqualToNumber:@0]);
+
+    NSArray *items = [ToDoItem MR_findAll];
+    assert([items count] == 2);
+    assert([[items[0] syncStatus] isEqualToNumber:@0]);
+    assert([[items[1] syncStatus] isEqualToNumber:@0]);
 
     _isFinished = YES;
   } progressBlock:nil];
