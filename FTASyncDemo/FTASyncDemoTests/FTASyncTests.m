@@ -207,6 +207,49 @@
   } progressBlock:nil];
 }
 
+- (void)testAStoreCreatedParseImageDataAndUpdate {
+  NSString *imageName =  @"parse_small.png";
+
+  PFObject *person = [PFObject objectWithClassName:@"CDPerson"];
+  NSData *imageData = UIImagePNGRepresentation([UIImage imageNamed:imageName]);
+  [person setObject:imageName forKey:@"name"];
+  PFFile *pfFile = [PFFile fileWithData:imageData];
+  [person setObject:pfFile forKey:@"photo"];
+  [person save];
+
+  [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+    assert(success);
+    Person *person = [Person MR_findFirstByAttribute:@"name" withValue:imageName];
+    assert([[person unarchivePhotoData:@"photo"] isKindOfClass:[NSURL class]]);
+    NSData *imageData = [NSData dataWithContentsOfURL:[person unarchivePhotoData:@"photo"]];
+    assert([imageData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:imageName])]);
+
+    NSManagedObjectContext *editingContext = [NSManagedObjectContext MR_contextWithParent:[NSManagedObjectContext MR_defaultContext]];
+
+    person = (id)[editingContext existingObjectWithID:[person objectID] error:nil];
+    person.name = @"taro";
+    [person syncUpdate];
+    [editingContext MR_saveToPersistentStoreAndWait];
+
+    [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+      assert(success);
+      Person *person = [Person MR_findFirstByAttribute:@"name" withValue:@"taro"];
+      assert([[person unarchivePhotoData:@"photo"] isKindOfClass:[NSURL class]]);
+      NSData *imageData = [NSData dataWithContentsOfURL:[person unarchivePhotoData:@"photo"]];
+      assert([imageData isEqualToData:UIImagePNGRepresentation([UIImage imageNamed:imageName])]);
+
+      PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+      query.limit = 1000;
+      NSArray *remote_persons = [query findObjects];
+      assert([remote_persons count] == 1);
+      NSString *remote_url = [(PFFile *)[remote_persons[0] objectForKey:@"photo"] url];
+      assert([remote_url isEqualToString: [pfFile url]]);
+      
+      _isFinished = YES;
+    } progressBlock:nil];
+  } progressBlock:nil];
+}
+
 - (void)testStoreUpdatedParseObject {
   [self createLocalObjectAndUploadToParse];
   

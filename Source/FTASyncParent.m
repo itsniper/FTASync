@@ -377,6 +377,9 @@
                 [parseObject setObject:unarchiveObject forKey:attribute];
                 continue;
             }
+            if ([unarchiveObject isKindOfClass:[NSURL class]]){
+              continue;
+            }
             NSString *fileName = nil;
             if (parseObject.objectId) {
                 fileName = [NSString stringWithFormat:@"%@-%@.png", parseObject.objectId, attribute];
