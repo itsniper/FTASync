@@ -25,14 +25,25 @@ typedef void (^FTABoolCompletionBlock)(BOOL success, NSError* error);
 
 @property (atomic, getter = isSyncInProgress) BOOL syncInProgress;
 @property (nonatomic, getter = isIgnoreContextSave) BOOL ignoreContextSave;
+@property (atomic) NSInteger queryLimit;
+@property (strong, atomic) NSDictionary *receivedPFObjectDictionary;
 
 + (FTASyncHandler *)sharedInstance;
 
 + (NSString *)getMetadataForKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 + (void)setMetadataValue:(id)value forKey:(NSString *)key forEntity:(NSString *)entityName inContext:(NSManagedObjectContext *)context;
 
-- (void)syncWithCompletionBlock:(FTACompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
+- (NSArray *) receivedPFObjects:(NSString *) entityName;
+- (void) setReceivedPFObjects:(NSArray *)receivedPFObjects entityName:(NSString *) entityName;
+
+- (void)syncWithCompletionBlock:(FTABoolCompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
 
 - (void)resetAllSyncStatusAndDeleteRemote:(BOOL)delete withCompletionBlock:(FTABoolCompletionBlock)completion progressBlock:(FTASyncProgressBlock)progress;
+
+-(void)deleteAllDeletedByRemote:(FTABoolCompletionBlock)completion;
+
+-(void)updateByRemote:(FTABoolCompletionBlock)completion withParseObjects:(NSArray *)parseObjects withEnityName:(NSString *) entityName;
+
+
 
 @end

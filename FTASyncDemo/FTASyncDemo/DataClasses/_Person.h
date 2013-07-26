@@ -31,7 +31,9 @@ extern const struct PersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSData *photo;
+
+@property (nonatomic, strong) NSData* photo;
+
 
 
 //- (BOOL)validatePhoto:(id*)value_ error:(NSError**)error_;
@@ -40,7 +42,7 @@ extern const struct PersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSSet* toDoItem;
+@property (nonatomic, strong) NSSet *toDoItem;
 
 - (NSMutableSet*)toDoItemSet;
 
@@ -62,8 +64,8 @@ extern const struct PersonFetchedProperties {
 @interface _Person (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSData *)primitivePhoto;
-- (void)setPrimitivePhoto:(NSData *)value;
+- (NSData*)primitivePhoto;
+- (void)setPrimitivePhoto:(NSData*)value;
 
 
 
