@@ -459,6 +459,38 @@
   _isFinished = YES;
 }
 
+- (void)testOnlyCreateFromParseObjects {
+  PFObject *person1 = [PFObject objectWithClassName:@"CDPerson"];
+  [person1 setObject:@"test1" forKey:@"name"];
+  PFObject *person2 = [PFObject objectWithClassName:@"CDPerson"];
+  [person2 setObject:@"test2" forKey:@"name"];
+  NSArray *persons = @[person1, person2];
+  assert([PFObject saveAll:persons]);
+
+  PFQuery *query = [PFQuery queryWithClassName:@"CDPerson"];
+  [query whereKey:@"name" equalTo:@"test1"];
+  [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+    assert(!error);
+    [[FTASyncHandler sharedInstance] updateByRemote:^(BOOL success, NSError *error) {
+      assert(success);
+      NSArray *persons = [Person MR_findAll];
+      assert([persons count] == 1);
+      assert([[persons[0] name] isEqualToString:@"test1"]);
+
+      [[FTASyncHandler sharedInstance] syncWithCompletionBlock:^(BOOL success, NSError *error) {
+        assert(success);
+        NSArray *persons = [Person MR_findAll];
+        assert([persons count] == 2);
+        NSSet *set = [NSSet setWithObjects:[persons[0] name], [persons[1] name], nil];
+        NSSet *compareSet = [NSSet setWithArray:@[@"test1", @"test2"]];
+        assert([set isEqualToSet:compareSet]);
+        _isFinished = YES;
+      } progressBlock:nil];
+    } withParseObjects:objects withEnityName:@"CDPerson"];
+  }];
+  _isFinished = YES;
+}
+
 - (void) deleteAllPerseObjects {
   NSArray *entityNames = @[@"CDPerson", @"CDToDoItem"];
   for (NSString *name in entityNames) {
