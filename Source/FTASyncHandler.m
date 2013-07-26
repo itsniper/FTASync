@@ -654,7 +654,7 @@
     }];
 }
 
--(void)createByRemote:(FTABoolCompletionBlock)completion withParseObjects:(NSArray *)parseObjects withEnityName:(NSString *) entityName {
+-(void)updateByRemote:(FTABoolCompletionBlock)completion withParseObjects:(NSArray *)parseObjects withEnityName:(NSString *) entityName {
   if (![self.remoteInterface canSync] || self.syncInProgress) {
     if (completion)
       completion(NO, nil);

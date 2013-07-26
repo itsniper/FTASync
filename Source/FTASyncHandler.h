@@ -42,6 +42,8 @@ typedef void (^FTABoolCompletionBlock)(BOOL success, NSError* error);
 
 -(void)deleteAllDeletedByRemote:(FTABoolCompletionBlock)completion;
 
+-(void)updateByRemote:(FTABoolCompletionBlock)completion withParseObjects:(NSArray *)parseObjects withEnityName:(NSString *) entityName;
+
 
 
 @end
