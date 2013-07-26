@@ -589,6 +589,23 @@
     }
 }
 
+-(void)createEntityByRemote:(NSEntityDescription *) entityDesc inContext:(NSManagedObjectContext *)context withParseObjects:(NSMutableArray *)remoteObjectsForSync {
+  if ([NSThread isMainThread]) {
+    FSALog(@"%@", @"This should NEVER be run on the main thread!!");
+    return;
+  }
+
+  [FTASyncParent FTA_updateObjectsForClass:entityDesc withRemoteObjects:remoteObjectsForSync];
+
+  if ([NSManagedObjectContext MR_contextForCurrentThread] == [NSManagedObjectContext MR_defaultContext]) {
+    FSALog(@"%@", @"Should not be working with the main context!");
+  }
+
+  self.ignoreContextSave = YES;
+  [[NSManagedObjectContext MR_contextForCurrentThread] MR_saveToPersistentStoreAndWait];
+  self.ignoreContextSave = NO;
+}
+
 -(void)deleteAllDeletedByRemote:(FTABoolCompletionBlock)completion {
     if (![self.remoteInterface canSync] || self.syncInProgress) {
       if (completion)
@@ -635,6 +652,52 @@
         bgTask = UIBackgroundTaskInvalid;
       }
     }];
+}
+
+-(void)createByRemote:(FTABoolCompletionBlock)completion withParseObjects:(NSArray *)parseObjects withEnityName:(NSString *) entityName {
+  if (![self.remoteInterface canSync] || self.syncInProgress) {
+    if (completion)
+      completion(NO, nil);
+    return;
+  }
+
+  self.syncInProgress = YES;
+
+  //Setup background process tags so we can complete on app exit
+  __block UIBackgroundTaskIdentifier bgTask = 0;
+  if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+    //Create a background task identifier and specify the exception handler
+    bgTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+      NSLog(@"Background sync on exit failed to complete in time limit");
+      //TODO: This is the wrong context since this code will be running on main thread. Is there a way to get
+      //   access to the context running [self syncAll] below??
+      [[NSManagedObjectContext MR_contextForCurrentThread] rollback];
+      self.syncInProgress = NO;
+      [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+      bgTask = UIBackgroundTaskInvalid;
+    }];
+  };
+
+  [MagicalRecord saveWithBlock:^(NSManagedObjectContext *localContext) {
+    NSEntityDescription *entity = [NSEntityDescription entityForName:entityName inManagedObjectContext:localContext];
+    [self createEntityByRemote:entity inContext:localContext withParseObjects:parseObjects];
+  } completion:^(BOOL success, NSError *error) {
+    if (![NSThread isMainThread]) {
+      FSALog(@"%@", @"Completion block must be called on main thread");
+    }
+
+    self.syncInProgress = NO;
+
+    if (completion)
+      completion(YES, nil);
+
+    //End background task
+    if ([[UIDevice currentDevice] isMultitaskingSupported]) {
+      FSCLog(@"Completed sync.");
+      [[UIApplication sharedApplication] endBackgroundTask:bgTask];
+      bgTask = UIBackgroundTaskInvalid;
+    }
+  }];
 }
 
 #pragma mark - Error Handling
