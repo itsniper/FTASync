@@ -483,9 +483,7 @@
                     continue;
                 } else {
                     PFFile* remoteFile = value;
-                    NSURL *url = [NSURL URLWithString:remoteFile.url];
-                    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:url];
-                    [self setValue:data forKey:attribute];
+                    [self setValue:[NSData dataWithData:[remoteFile getData]] forKey:attribute];
                     continue;
                 }
             }
