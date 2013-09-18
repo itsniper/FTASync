@@ -92,6 +92,7 @@
         return;
     }
 
+    NSSet *updatedObjects = [[notification userInfo] objectForKey:NSUpdatedObjectsKey];
     NSSet *deletedObjects = [[notification userInfo] objectForKey:NSDeletedObjectsKey];
 
     for (NSManagedObject *updatedObject in updatedObjects) {
@@ -188,10 +189,6 @@
     NSFetchRequest *request = [[NSFetchRequest alloc] init];
 	[request setEntity:entityDesc];
     
-    //Get the time of the most recently sync'd object
-    NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
-    FSLog(@"Last update: %@", lastUpdate);
-    
     if (![managedObjectClass readOnly]) {
         //Add new local objects
         [request setPredicate:[NSPredicate predicateWithFormat:@"syncStatus = nil OR syncStatus = 2 OR syncStatus = 3"]];
@@ -213,7 +210,9 @@
         
     }
 
+    //Get the time of the most recently sync'd object
     NSDate *lastUpdate = [FTASyncParent FTA_lastUpdateForClass:entityDesc];
+    FSLog(@"Last update: %@", lastUpdate);
 
     //Get updated remote objects
     NSError *error = nil;
