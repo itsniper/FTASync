@@ -29,7 +29,9 @@ extern const struct AbstractPersonFetchedProperties {
 
 
 
-@property (nonatomic, strong) NSString *name;
+
+@property (nonatomic, strong) NSString* name;
+
 
 
 //- (BOOL)validateName:(id*)value_ error:(NSError**)error_;
@@ -48,8 +50,8 @@ extern const struct AbstractPersonFetchedProperties {
 @interface _AbstractPerson (CoreDataGeneratedPrimitiveAccessors)
 
 
-- (NSString *)primitiveName;
-- (void)setPrimitiveName:(NSString *)value;
+- (NSString*)primitiveName;
+- (void)setPrimitiveName:(NSString*)value;
 
 
 

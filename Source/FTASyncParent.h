@@ -22,14 +22,20 @@
 + (BOOL)readOnly;
 
 + (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId;
++ (FTASyncParent *)FTA_localObjectForClass:(NSEntityDescription *)entityDesc WithRemoteId:(NSString *)objectId WithContext:(NSManagedObjectContext *) context;
 + (NSArray *)FTA_localObjectsForClass:(NSEntityDescription *)entityDesc WithRemoteIds:(NSArray *)objectIds;
 + (NSDate *)FTA_lastUpdateForClass:(NSEntityDescription *)entityDesc;
++ (void)FTA_setLastUpdate:(NSDate *)date forClass:(NSEntityDescription *)entityDesc;
 
 + (NSArray *)allDescendants;
 + (BOOL)isParentOfEntity:(NSEntityDescription *)entityDesc;
 
 + (FTASyncParent *)FTA_newObjectForClass:(NSEntityDescription *)entityDesc WithRemoteObject:(PFObject *)parseObject;
 - (void)FTA_updateObjectMetadataWithRemoteObject:(PFObject *)parseObject andResetSyncStatus:(BOOL)resetStatus;
+- (void)syncUpdate;
+- (id) unarchivePhotoData:(NSString *) propertyName;
+- (void)updateObjectWithRemoteObject:(PFObject *)parseObject;
+- (void)updateObjectWithRemoteObject:(PFObject *)parseObject WithContext:(NSManagedObjectContext *) context;
 
 + (void)FTA_newObjectsForClass:(NSEntityDescription *)entityDesc withRemoteObjects:(NSArray *)parseObjects;
 + (void)FTA_updateObjectsForClass:(NSEntityDescription *)entityDesc withRemoteObjects:(NSArray *)parseObjects;

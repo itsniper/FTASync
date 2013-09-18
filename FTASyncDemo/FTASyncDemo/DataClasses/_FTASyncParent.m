@@ -4,6 +4,7 @@
 #import "_FTASyncParent.h"
 
 const struct FTASyncParentAttributes FTASyncParentAttributes = {
+	.createdAt = @"createdAt",
 	.createdHere = @"createdHere",
 	.objectId = @"objectId",
 	.syncStatus = @"syncStatus",
@@ -39,20 +40,29 @@ const struct FTASyncParentFetchedProperties FTASyncParentFetchedProperties = {
 	return (FTASyncParentID*)[super objectID];
 }
 
-+ (NSSet *)keyPathsForValuesAffectingValueForKey:(NSString *)key {
++ (NSSet*)keyPathsForValuesAffectingValueForKey:(NSString*)key {
 	NSSet *keyPaths = [super keyPathsForValuesAffectingValueForKey:key];
 	
 	if ([key isEqualToString:@"createdHereValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"createdHere"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
+		return keyPaths;
 	}
 	if ([key isEqualToString:@"syncStatusValue"]) {
 		NSSet *affectingKey = [NSSet setWithObject:@"syncStatus"];
 		keyPaths = [keyPaths setByAddingObjectsFromSet:affectingKey];
+		return keyPaths;
 	}
 
 	return keyPaths;
 }
+
+
+
+
+@dynamic createdAt;
+
+
 
 
 
