@@ -27,6 +27,8 @@
         return NO;
     }
     
+
+    /*
     if (![PFUser currentUser]) {
         //This can be enabled if you wish to alert the user that they are not signed in
 //        UIAlertView *noLogin = [[UIAlertView alloc] initWithTitle:@"Cannot Sync" 
@@ -38,23 +40,33 @@
         FSCLog(@"No Parse user is logged in");
         return NO;
     }
+     */
     
     return YES;
 }
 
-- (NSArray *)getObjectsOfClass:(NSString *)className updatedSince:(NSDate *)lastUpdate {
+- (NSArray *)getObjectsOfClass:(NSString *)className updatedSince:(NSDate *)lastUpdate error:(NSError **)error {
     PFQuery *query = [PFQuery queryWithClassName:className];
-    query.limit = 1000;
+    query.limit = [[FTASyncHandler sharedInstance] queryLimit];
     //Cache the query in case we need one of the objects for merging later
     query.cachePolicy = kPFCachePolicyNetworkOnly;
     
     if (lastUpdate) {
         [query whereKey:@"updatedAt" greaterThan:lastUpdate];
     }
-    
-    NSArray *returnObjects = [query findObjects];
-    
+    [query orderBySortDescriptor:[NSSortDescriptor sortDescriptorWithKey:@"updatedAt" ascending:YES]];
+
+    NSArray *returnObjects = [query findObjects:error];
+    NSLog(@"returnObjects: %@ %@", returnObjects, className);
+    if (!*error) {
+        [[FTASyncHandler sharedInstance] setReceivedPFObjects:returnObjects entityName:className];
+    }
+
     return returnObjects;
+}
+
+- (NSArray *)getObjectsOfClass:(NSString *)className updatedSince:(NSDate *)lastUpdate {
+    return [self getObjectsOfClass:className updatedSince:lastUpdate error:nil];
 }
 
 - (BOOL)putUpdatedObjects:(NSArray *)updatedObjects forClass:(NSEntityDescription *)entityDesc error:(NSError **)error {
@@ -62,8 +74,20 @@
     
     //Get parse objects for all updated objects
     for (FTASyncParent *localObject in updatedObjects) {
-        PFObject *parseObject = localObject.remoteObject;
-        [updatedParseObjects addObject:parseObject];
+        PFObject *parseObject = [PFQuery getObjectOfClass:[entityDesc name] objectId:localObject.remoteObject.objectId];
+      if (!parseObject && localObject.remoteObject.objectId) {
+        localObject.objectId = NULL;
+        NSMutableDictionary *dic = [@{} mutableCopy];
+        for (NSString *key in localObject.remoteObject.allKeys) {
+          if ([@[@"createdAt"] containsObject:key]) continue;
+          dic[key] = [localObject.remoteObject objectForKey:key];
+        }
+        localObject.remoteObject = [PFObject objectWithClassName:[entityDesc name] dictionary:dic];
+      }
+      if (!localObject.remoteObject.objectId) {
+        [localObject.remoteObject setObject:[PFUser currentUser] forKey:@"user"];
+      }
+      [updatedParseObjects addObject:localObject.remoteObject];
     }
     NSUInteger updateCount = [updatedParseObjects count];
     
@@ -72,11 +96,12 @@
     NSArray *deletedLocalObjects = [[NSUserDefaults standardUserDefaults] objectForKey:defaultsKey];
     FSLog(@"Preparing to create PFObjects for deletion: %@", deletedLocalObjects);
     for (NSString *objectId in deletedLocalObjects) {
-        PFObject *parseObject = [PFObject objectWithClassName:[entityDesc name]];
-        parseObject.objectId = objectId;
-        [parseObject setObject:[NSNumber numberWithInt:1] forKey:@"deleted"];
-        [updatedParseObjects addObject:parseObject];
-        FSLog(@"Deleting PFObject: %@", parseObject);
+        PFObject *parseObject = [PFQuery getObjectOfClass:[entityDesc name] objectId:objectId];
+        if (parseObject) {
+          [parseObject setObject:[NSNumber numberWithInt:1] forKey:@"deleted"];
+          [updatedParseObjects addObject:parseObject];
+          FSLog(@"Deleting PFObject: %@", parseObject);
+        }
     }
     NSUInteger deleteCount = [updatedParseObjects count] - updateCount;
     

@@ -10,7 +10,7 @@ Because sync and conflict resolution is very complex, there is bunch of debug lo
 
 It is assumed that you have already installed and setup these:
 
-* [Magical Record](https://github.com/magicalpanda/MagicalRecord) - Easier handling of the CoreData stuff. (Note: FTASync uses MR 2.0 and will not work with earlier versions)
+* [Magical Record](https://github.com/magicalpanda/MagicalRecord) - Easier handling of the CoreData stuff. (Note: This fork of FTASync uses MR 2.1 and will not work with earlier versions)
 * [mogenerator] (https://github.com/rentzsch/mogenerator) - If you've never used it you should.
 * [NPReachability] (https://github.com/Abizern/NPReachability) - Used to check for network connectivity pre-sync.
 * [Parse SDK](https://www.parse.com/apps/quickstart)
@@ -19,15 +19,31 @@ It is assumed that you have already installed and setup these:
 # Installation
 
 1. Add a new data model version.
-2. Add a new *abstract* entity to the data model and name it (and it's class name) FTASyncParent. Add the following attributes:
+2. Add a new *abstract* entity to the data model and name it ***(and it's class name)*** FTASyncParent. Add the following attributes:
     * BOOL createdHere (Default: YES)
     * BOOL deleted (Default: NO)
     * String objectId
     * Int16 syncStatus (Default: 2)
     * Date updatedAt
-3. For each entity that should sync, set the parent entity field to FTASyncParent.
+3. For each entity that should sync, set the parent entity field to FTASyncParent.  Also, set the class name of each object to it's entity name.
 4. Run mogenerator to generate your entity class files.
-5. Add all the .h and .m files from the *Source* folder into your project. (FTASyncParent.h/m will replace the mogenerator generated files)
+
+Some mogenerator quirks:
+
+If mogenerator does not seem to create the data model for you, try running it from the command line (from your project directory):
+
+mogenerator --template-var arc=true -m PROJECT_NAME.xcdatamodeld/PROJECT_NAME.xcdatamodel/
+
+If you get an error from the command line that says "Illegal Instruction: 4", try installing from brew.  This recompiles the code for your updated OS X.
+
+$ brew update && brew upgrade mogenerator to install not the DMG
+
+5. Add all the .h and .m files from the *Source* folder into your project. 
+
+Be sure that you do this after you generate your data model using mogenerator.
+
+FTASyncParent.h/m will replace the mogenerator generated files.
+
 6. Add *FTASync.h* to your AppDelegate file.
 7. Create a file with the name *ParseKeys.h* with these two lines:
     * `#define kParseAppId @"<Your Parse App ID>"`
@@ -36,8 +52,15 @@ It is assumed that you have already installed and setup these:
 8. Add `[FTASyncHandler sharedInstance];` to the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate.
 9. Add `[PFACL setDefaultACL:[PFACL ACL] withAccessForCurrentUser:YES];` to the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate. You can also setup some other ACL if you wish.
 10. (Optional) Uncomment out `//[Crashlytics startWithAPIKey:kCrashlyticsKey];` in the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate.
+11. Add `[MagicalRecord setupAutoMigratingCoreDataStack];` in the `- (BOOL)application:didFinishLaunchingWithOptions:` method in your AppDelegate.  This initializes your managed object context for CoreData.
 
-It is assumed that you will handle user sign up and login on your own.
+#Other Setup Notes:
+If you get an error regarding FTASyncParent duplicate definition, fix other errors and warnings and this will often go away.
+
+It is assumed that you will handle user sign up and login on your own.  You must have a user signed in to Parse in order to sync.  
+
+You can test your sync with an anonymous user:
+Add `[PFUser enableAutomaticUser];` to your `- (BOOL)application:didFinishLaunchingWithOptions:` to get an anonymous user.
 
 # Usage
 
