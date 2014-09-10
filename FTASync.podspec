@@ -19,6 +19,6 @@ Pod::Spec.new do |s|
   s.platform     = :ios
 
   s.source_files = 'Source', 'Source/*.{h,m}'
-  s.dependency 'Parse', '= 1.2.8'
+  s.dependency 'Parse', '>= 1.2.8'
   s.dependency 'MagicalRecord', '>= 2.1.0'
 end
